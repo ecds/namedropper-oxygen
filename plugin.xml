@@ -1,0 +1,13 @@
+<!DOCTYPE plugin SYSTEM "../plugin.dtd">
+<plugin
+    name="UpperCase"
+    description="Convert the selection to uppercase"
+    version="1.0.0"
+    vendor="SyncRO"
+    class="ro.sync.sample.plugin.uppercase.UppercasePlugin">
+    <runtime>
+        <library name="Upper.jar"/>
+    </runtime>
+    <extension type="selectionProcessor" 
+     class="ro.sync.sample.plugin.uppercase.UppercasePluginExtension"/>
+</plugin>
