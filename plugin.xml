@@ -6,7 +6,7 @@
     vendor="SyncRO"
     class="ro.sync.sample.plugin.uppercase.UppercasePlugin">
     <runtime>
-        <library name="Upper.jar"/>
+        <library name="NameDropper.jar"/>
     </runtime>
     <extension type="selectionProcessor" 
      class="ro.sync.sample.plugin.uppercase.UppercasePluginExtension"/>

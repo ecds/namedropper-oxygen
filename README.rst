@@ -2,6 +2,7 @@ Requirements
 ============
 Ant
 Java
+json-simple http://code.google.com/p/json-simple/
 
 
 Installation(With-NetBeans)
@@ -10,7 +11,7 @@ You can ignore the netbeansproject.dist and build.xml.dist folder and files. Goo
 
 * Create a new project "From Existing Source"
 * Set the source directory to the base directory (where this file is)
-* Edit the project properties > Libraries and add lib/oxygen.jar and lib/api.zip
+* Edit the project properties > Libraries and add lib/oxygen.jar  lib/api.zip, json-simple-1.1.1.jar
 
 
 

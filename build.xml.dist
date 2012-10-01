@@ -12,8 +12,8 @@
 
     <import file="nbproject/build-impl.xml"/>
 
-    <property name="dist.dir" location="dist/Upper" />
-    <property name="dist.jar" location="${dist.dir}/Upper.jar" />
+    <property name="dist.dir" location="dist/NameDropper" />
+    <property name="dist.jar" location="${dist.dir}/NameDropper.jar" />
     
     <target name="-post-jar">
         <copyfile src="plugin.xml" dest="${dist.dir}/plugin.xml"/>
