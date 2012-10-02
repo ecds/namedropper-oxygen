@@ -35,4 +35,7 @@ Installation(Non-NetBeans)
 
 Install The Compiled Plugin in Oxygen
 =====================================
-* Copy the directory in the dist directory to your installation of Oxygen. Put it in the oxygen/plugins directory.
+* Close the Oxygen program
+* Delete the entire director of any old copies of NameDropper in oxygen/plugins
+* Copy the directory in the dist directory to your installation of Oxygen. Put it in the oxygen/plugins directory
+  
