@@ -1,13 +1,13 @@
 <!DOCTYPE plugin SYSTEM "../plugin.dtd">
 <plugin
-    name="UpperCase"
-    description="Convert the selection to uppercase"
+    name="NameDropper"
+    description="Looks up names in name authority"
     version="1.0.0"
-    vendor="SyncRO"
-    class="ro.sync.sample.plugin.uppercase.UppercasePlugin">
+    vendor="Emory University"
+    class="edu.emory.library.oxygen_plugin.NameDropper.NameDropperPlugin">
     <runtime>
         <library name="NameDropper.jar"/>
     </runtime>
     <extension type="selectionProcessor" 
-     class="ro.sync.sample.plugin.uppercase.UppercasePluginExtension"/>
+     class="edu.emory.library.oxygen_plugin.NameDropper.NameDropperPluginExtension"/>
 </plugin>

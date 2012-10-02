@@ -1,20 +1,20 @@
-package ro.sync.sample.plugin.uppercase;
+package edu.emory.library.oxygen_plugin.NameDropper;
 
 import ro.sync.exml.plugin.Plugin;
 import ro.sync.exml.plugin.PluginDescriptor;
 
-public class UppercasePlugin extends Plugin {
+public class NameDropperPlugin extends Plugin {
     /**
     * Plugin instance.
     */
-    private static UppercasePlugin instance = null;  
+    private static NameDropperPlugin instance = null;  
     
     /**
-    * UppercasePlugin constructor.
+    * NameDropperPlugin constructor.
     * 
     * @param descriptor Plugin descriptor object.
     */
-    public UppercasePlugin(PluginDescriptor descriptor) {
+    public NameDropperPlugin(PluginDescriptor descriptor) {
         super(descriptor);
     
         if (instance != null) {
@@ -28,7 +28,7 @@ public class UppercasePlugin extends Plugin {
     * 
     * @return the shared plugin instance.
     */
-    public static UppercasePlugin getInstance() {
+    public static NameDropperPlugin getInstance() {
         return instance;
     }
 }

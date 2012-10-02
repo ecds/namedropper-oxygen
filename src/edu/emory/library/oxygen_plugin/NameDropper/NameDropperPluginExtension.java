@@ -1,4 +1,4 @@
-package ro.sync.sample.plugin.uppercase;
+package edu.emory.library.oxygen_plugin.NameDropper;
 
 
 import ro.sync.exml.plugin.selection.SelectionPluginContext;
@@ -19,7 +19,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONArray;
 
 
-public class UppercasePluginExtension implements SelectionPluginExtension {
+public class NameDropperPluginExtension implements SelectionPluginExtension {
     /**
     * Lookup name in name authority.
     *
@@ -45,7 +45,7 @@ public class UppercasePluginExtension implements SelectionPluginExtension {
     public String queryVIAF(String name){
         String result = name;  //This is retutned if no resulsts are found
 
-        // url paramters
+        // url query paramters
         HashMap  params = new HashMap();
         params.put("query", name);
         
@@ -61,7 +61,7 @@ public class UppercasePluginExtension implements SelectionPluginExtension {
             JSONObject obj = (JSONObject) json_array.get(0);
             String viafid = (String)obj.get("viafid");
 //            
-            result = "<persname source=\"viaf\" authfilenumber=\"" + viafid + "\">" + name + "</persname>";
+            result = String.format("<persname source=\"viaf\" authfilenumber=\"%s\">%s</persname>", viafid, name);
         }catch(Exception e){}               
         
         return result;

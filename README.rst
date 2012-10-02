@@ -2,7 +2,13 @@ Requirements
 ============
 Ant
 Java
+
+oxygen.jar and api.zip - http://oxygenxml.com/InstData/Editor/Plugins/OxygenPluginsDevelopmentKit.zip
 json-simple http://code.google.com/p/json-simple/
+
+.. Note::
+
+   Originally api.zip was named src.zip.  In this project it has been renamed to api.zip to reduce confusion.
 
 
 Installation(With-NetBeans)
