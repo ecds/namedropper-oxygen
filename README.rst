@@ -1,4 +1,4 @@
-OxygenXML "NameDropper" plugin
+NameDropper OxygenXML  plugin
 ******************************
 
 This is a plugin or add-on for the `Oxygen XML editor`_ to simplify the process of tagging names in XML and
