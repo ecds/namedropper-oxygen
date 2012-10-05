@@ -26,22 +26,22 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
     /**
     * Lookup name in name authority.
     *
-    *@param  context  Selection context.
-    *@return          NameDropper plugin result.
+    * @param  context  Selection context.
+    * @return          NameDropper plugin result.
     */
     public SelectionPluginResult process(SelectionPluginContext context) {
-        
+
         //query VIAF for name data
         String orig = "";
         String result = "";
-        
-        try{
+
+        try {
             orig = context.getSelection();
             result = orig; // put back original if something goes BOOM!
-            
+
             result = this.queryVIAF(orig);
-        }catch(Exception e){
-            //This section is in case you want the whole stack trace in the error message
+        } catch(Exception e) {
+            // This section is in case you want the whole stack trace in the error message
             // Pass sw.toString() instead of e.getMessage() in the showMessageDialog function
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
@@ -50,91 +50,80 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             JOptionPane.showMessageDialog(context.getFrame(), e.getMessage(), "Exception",
                     JOptionPane.ERROR_MESSAGE);
         }
+
         return new SelectionPluginResultImpl(result);
-        
-        
     }
-    
-    
+
     /**
     * Query VIAF for name data
     *
-    *@param  name  Name to query.
-    *@return          String containing persname xml tag data.
+    * @param  name  Name to query.
+    * @return          String containing persname xml tag data.
     */
     public String queryVIAF(String name) throws Exception{
         String result = name;  //This is retutned if no resulsts are found
 
         // url query paramters
         HashMap  params = new HashMap();
-        String query_result = "";
-        
-        try{
-            
+        String queryResult = "";
+
+        try {
             params.put("query", name);
-        
-        
+
             // get the result of the query
-            query_result = this.query("http://viaf.org/viaf/AutoSuggest", params);
-        
-        
+            queryResult = this.query("http://viaf.org/viaf/AutoSuggest", params);
+
             // parse the JSON and return resut in the correct format
-            JSONObject json = (JSONObject)new JSONParser().parse(query_result);
-            JSONArray json_array = (JSONArray)json.get("result");
-            JSONObject obj = (JSONObject) json_array.get(0);
+            JSONObject json = (JSONObject)new JSONParser().parse(queryResult);
+            JSONArray jsonArray = (JSONArray)json.get("result");
+            JSONObject obj = (JSONObject) jsonArray.get(0);
             String viafid = (String)obj.get("viafid");
-//            
+
             result = String.format("<persname source=\"viaf\" authfilenumber=\"%s\">%s</persname>", viafid, name);
             return result;
-        }catch(Exception e){
+        } catch(Exception e) {
             throw e; //Throw up
-        }               
+        }
     }
-    
+
     /**
     * performs a query against the provided url using the provided query parms.
     *
-    *@param  ulr  Base url to query.
-    *@param  params   key value pairs of query parameters.
-    *@return          Results of query.
+    * @param  ulr  Base url to query.
+    * @param  params   key value pairs of query parameters.
+    * @return          Results of query.
     */
     public String query(String url, HashMap params) throws Exception {
-        String result ="";
-        StringBuffer url_buf = new StringBuffer();
+        String result = "";
+        StringBuffer urlBuf = new StringBuffer();
         
-        try{
-            
+        try {
             result = (String)params.get("query");  //Used if there are no results
-            url_buf = new StringBuffer();
-            url_buf.append(url);
+            urlBuf = new StringBuffer();
+            urlBuf.append(url);
         
-           //Build query string
+            //Build query string
             for (int i=0; i < params.size(); i++) {
                 String key = (String)params.keySet().toArray()[i];
                 String val = (String)params.values().toArray()[i];
-            
-            
+
                 //put the ?  if params exits
                 if(i==0 && !url.endsWith("?")){
-                    url_buf.append("?");
+                    urlBuf.append("?");
                 }
-            
-            
+
                 //Append the key, value pairs
-                url_buf.append(key + "=" + URLEncoder.encode(val, "UTF-8"));    
+                urlBuf.append(key + "=" + URLEncoder.encode(val, "UTF-8"));    
 
-            
-            
                 if(i != params.size());{
-                    url_buf.append("&");
+                    urlBuf.append("&");
                 }
+            }
 
-        }
-        
-        // Do the acual query
-            URL url_obj = new URL(url_buf.toString());
+            // Do the acual query
+            URL urlObj = new URL(urlBuf.toString());
             HttpURLConnection connection = null;
-            connection = (HttpURLConnection)url_obj.openConnection();
+            connection = (HttpURLConnection)urlObj.openConnection();
             connection.setDoOutput(true);
             BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             StringBuilder sb = new StringBuilder();
@@ -145,9 +134,10 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             br.close();
             result = sb.toString();
             
+            // TODO: move return outside of try block
             return result;
             
-        }catch(Exception e){
+        } catch(Exception e){
             throw e; //Throw up
         }
     }
