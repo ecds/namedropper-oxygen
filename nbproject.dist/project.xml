@@ -3,9 +3,9 @@
     <type>org.netbeans.modules.java.j2seproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/j2se-project/3">
-            <name>Upper</name>
+            <name>NameDropper</name>
             <source-roots>
-                <root id="src.upper.dir"/>
+                <root id="src.oxygen.dir"/>
             </source-roots>
             <test-roots/>
         </data>

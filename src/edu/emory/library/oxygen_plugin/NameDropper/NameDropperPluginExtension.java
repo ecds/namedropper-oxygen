@@ -1,25 +1,41 @@
 package edu.emory.library.oxygen_plugin.NameDropper;
 
 
+//Oxygen stuff
 import ro.sync.exml.plugin.selection.SelectionPluginContext;
 import ro.sync.exml.plugin.selection.SelectionPluginExtension;
 import ro.sync.exml.plugin.selection.SelectionPluginResult;
 import ro.sync.exml.plugin.selection.SelectionPluginResultImpl;
 
 
+// Http Requests
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.lang.StringBuffer;
 import java.net.URLEncoder;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.HashMap;
+
+
+// Pop Up Message when errors
 import javax.swing.JOptionPane;
+
+//JSON Parsing
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONArray;
+
+//XML Parsing
+import nu.xom.Builder;
+import nu.xom.Document;
+import nu.xom.Element;
+
+
+//Used when getting full stack trace
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 
 
 public class NameDropperPluginExtension implements SelectionPluginExtension {
@@ -62,12 +78,15 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
     */
     public String queryVIAF(String name) throws Exception{
         String result = name;  //This is retutned if no resulsts are found
+        String queryResult = "";
 
         // url query paramters
         HashMap  params = new HashMap();
-        String queryResult = "";
+        Document doc = null;
+        Element root = null;
 
         try {
+
             params.put("query", name);
 
             // get the result of the query
@@ -79,11 +98,31 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             JSONObject obj = (JSONObject) jsonArray.get(0);
             String viafid = (String)obj.get("viafid");
 
-            result = String.format("<persname source=\"viaf\" authfilenumber=\"%s\">%s</persname>", viafid, name);
-            return result;
+            //Query by viafid and get name type
+            Builder builder = new Builder(); 
+            doc = builder.build(String.format("http://viaf.org/viaf/%s/viaf.xml", viafid));
+            root = doc.getRootElement();
+            String nameType = root.getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").getValue();
+            String tag = null;
+
+            if(nameType.equals("Personal")) {tag = "persname";}
+            else if(nameType.equals("Corporate")) {tag = "corpname";}
+            else if(nameType.equals("Geographic")) {tag = "geoname";}
+
+
+            //create tag with viafid if result is one of the suppoeted types
+            if (tag != null){
+              result = String.format("<%s source=\"viaf\" authfilenumber=\"%s\">%s</%s>", tag, viafid, name, tag);
+            }
+            else{
+                result = name;  //no resulsts or no supported nameTypes
+            }
+            
+
         } catch(Exception e) {
             throw e; //Throw up
         }
+        return result;
     }
 
     /**
@@ -134,11 +173,11 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             br.close();
             result = sb.toString();
             
-            // TODO: move return outside of try block
-            return result;
             
         } catch(Exception e){
             throw e; //Throw up
         }
+         return result;
     }
+    
 }
