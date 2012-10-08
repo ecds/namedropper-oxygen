@@ -4,12 +4,12 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:xi="http://www.w3.org/2001/XInclude"
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
-    
+
     <!-- NOTE: if we ever want to split out, or list multiple plugins, look at using an include for each plugin -->
     <!-- <xi:include href="OxygenExtension-NameDropper.xml" /> -->
-    
+
     <xt:extension id="edu.emory.library.oxygen_plugin.NameDropper" >
-        <xt:location href="https://github.com/downloads/emory-libraries-disc/name-dropper/NameDropper-0.1.0-dev.jar"/>
+        <xt:location href="https://github.com/downloads/emory-libraries-disc/name-dropper/NameDropper-0.1.0-pre.jar"/>
         <xt:version>0.1.0</xt:version>
         <xt:oxy_version>14.0</xt:oxy_version>
         <xt:type>plugin</xt:type>
@@ -28,6 +28,6 @@
         </html>
         </xt:description>
         <xt:license>(License TODO)</xt:license>
-    </xt:extension>    
+    </xt:extension>
 </xt:extensions>
 
