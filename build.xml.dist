@@ -17,6 +17,9 @@
 
     <target name="-post-jar">
         <copyfile src="plugin.xml" dest="${dist.dir}/plugin.xml"/>
+        
+        <!-- package all of the plugin contents into a jar for installation 
+        via Oxygen Add-Ons interface -->
         <jar jarfile="dist/NameDropper-plugin.jar" basedir="dist" includes="NameDropper/**"/>
     </target>
 
