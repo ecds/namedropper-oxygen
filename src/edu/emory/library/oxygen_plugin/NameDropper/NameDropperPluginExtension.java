@@ -62,7 +62,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
-            
+
             JOptionPane.showMessageDialog(context.getFrame(), e.getMessage(), "Exception",
                     JOptionPane.ERROR_MESSAGE);
         }
@@ -99,7 +99,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             String viafid = (String)obj.get("viafid");
 
             //Query by viafid and get name type
-            Builder builder = new Builder(); 
+            Builder builder = new Builder();
             doc = builder.build(String.format("http://viaf.org/viaf/%s/viaf.xml", viafid));
             root = doc.getRootElement();
             String nameType = root.getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").getValue();
@@ -117,7 +117,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             else{
                 result = name;  //no resulsts or no supported nameTypes
             }
-            
+
 
         } catch(Exception e) {
             throw e; //Throw up
@@ -128,19 +128,19 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
     /**
     * performs a query against the provided url using the provided query parms.
     *
-    * @param  ulr  Base url to query.
+    * @param  url  Base url to query.
     * @param  params   key value pairs of query parameters.
     * @return          Results of query.
     */
     public String query(String url, HashMap params) throws Exception {
         String result = "";
         StringBuffer urlBuf = new StringBuffer();
-        
+
         try {
             result = (String)params.get("query");  //Used if there are no results
             urlBuf = new StringBuffer();
             urlBuf.append(url);
-        
+
             //Build query string
             for (int i=0; i < params.size(); i++) {
                 String key = (String)params.keySet().toArray()[i];
@@ -152,7 +152,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
                 }
 
                 //Append the key, value pairs
-                urlBuf.append(key + "=" + URLEncoder.encode(val, "UTF-8"));    
+                urlBuf.append(key + "=" + URLEncoder.encode(val, "UTF-8"));
 
                 if(i != params.size());{
                     urlBuf.append("&");
@@ -172,12 +172,12 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             }
             br.close();
             result = sb.toString();
-            
-            
+
+
         } catch(Exception e){
             throw e; //Throw up
         }
          return result;
     }
-    
+
 }
