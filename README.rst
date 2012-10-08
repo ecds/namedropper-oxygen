@@ -6,6 +6,18 @@ associating those names with authoritative identifiers.
 
 .. _`Oxygen XML editor`: http://oxygenxml.com/
 
+Plugin installation via Oxygen Add-Ons
+======================================
+
+To install the *development* version of the plugin as an Oxygen Add-On:
+
+* Open Oxygen Preferences and select **Add-Ons**
+* Add a new add-on site URL:
+  https://raw.github.com/emory-libraries-disc/name-dropper/develop/oxygen/res/OxygenAddons.xml
+* Under the Oxygen Help menu, select **Manage add-ons...**
+* Select **NameDropper* and then click install.  You should be prompted to accept the
+  license and then restart Oxygen.
+
 
 Development Requirements
 ========================
@@ -20,7 +32,7 @@ Development Requirements
    Originally ``api.zip`` was named ``src.zip``.  In this project it has been renamed to api.zip to reduce confusion.
 
 
-Installation (with NetBeans)
+Setup (with NetBeans)
 ============================
 You can ignore the netbeansproject.dist and build.xml.dist folder and files. Good versions will be created for you.
 
@@ -29,8 +41,7 @@ You can ignore the netbeansproject.dist and build.xml.dist folder and files. Goo
 * Edit the project properties > Libraries and add lib/oxygen.jar  lib/api.zip, json-simple-1.1.1.jar
 
 
-
-Installation (without NetBeans)
+Setup (without NetBeans)
 ===============================
 * Copy build.xml.dist to build.xml
 * Copy nbproject.dist to nbproject
@@ -39,9 +50,12 @@ Installation (without NetBeans)
    To build the project run 'ant' in the base directory.
 
 
-Install The Compiled Plugin in Oxygen
-=====================================
-* Close the Oxygen program
+Manually install the Compiled Plugin in Oxygen
+==============================================
+* Make sure the Oxygen program is not running
 * Delete the entire director of any old copies of NameDropper in oxygen/plugins
-* Copy the directory in the dist directory to your installation of Oxygen. Put it in the oxygen/plugins directory
+* Copy the **NameDropper** directory in the dist directory to your installation of Oxygen,
+  inside the ``oxygen/plugins`` directory.
+
+To update the add-on installation version, run ant to generate the plugin jar file, upload that jar file to github as a project download, and then update the URL in ``res/OxygenExtension-NameDropper.xml``.
 
