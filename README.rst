@@ -27,6 +27,7 @@ Development Requirements and Setup
 * oxygen.jar and api.zip (from http://oxygenxml.com/InstData/Editor/Plugins/OxygenPluginsDevelopmentKit.zip ,
   included in ``lib`` directory)
 * json-simple (from http://code.google.com/p/json-simple/ , included in ``lib``)
+* xom (from http://www.cafeconleche.org/XOM/xom-1.2.8.jar , included in ``lib``)
 
 .. Note::
    Originally ``api.zip`` was named ``src.zip``.  In this project it has been renamed to api.zip to reduce confusion.
@@ -38,7 +39,7 @@ You can ignore the ``netbeansproject.dist`` and ``build.xml.dist`` folder and fi
 
 * Create a new project "From Existing Source"
 * Set the source directory to the base directory (where this file is)
-* Edit the project properties > Libraries and add lib/oxygen.jar  lib/api.zip, json-simple-1.1.1.jar
+* Edit the project properties > Libraries and add lib/oxygen.jar  lib/api.zip, json-simple-1.1.1.jar, lib/xom-1.2.8.jar
 
 
 Setup without NetBeans
