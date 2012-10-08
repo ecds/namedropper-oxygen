@@ -63,7 +63,9 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
 
-            JOptionPane.showMessageDialog(context.getFrame(), e.getMessage(), "Exception",
+
+            
+            JOptionPane.showMessageDialog(context.getFrame(), e.getMessage(), "Warning",
                     JOptionPane.ERROR_MESSAGE);
         }
 
@@ -95,6 +97,12 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             // parse the JSON and return resut in the correct format
             JSONObject json = (JSONObject)new JSONParser().parse(queryResult);
             JSONArray jsonArray = (JSONArray)json.get("result");
+            
+            //No results from query
+            if (jsonArray == null){
+                throw new Exception("No Results");
+            }
+            
             JSONObject obj = (JSONObject) jsonArray.get(0);
             String viafid = (String)obj.get("viafid");
 
@@ -108,6 +116,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             if(nameType.equals("Personal")) {tag = "persname";}
             else if(nameType.equals("Corporate")) {tag = "corpname";}
             else if(nameType.equals("Geographic")) {tag = "geoname";}
+            else throw new Exception("Unsupported nameType: " + nameType);
 
 
             //create tag with viafid if result is one of the suppoeted types
