@@ -22,8 +22,13 @@
         via Oxygen Add-Ons interface -->
         <jar jarfile="dist/NameDropper-plugin.jar" basedir="dist" includes="NameDropper/**"/>
     </target>
-
     
+<!--  Delete dist and build dir so it will build cleanly  -->
+    <target description="Clean build products." name="clean">
+        <delete dir="dist"/>
+        <delete dir="build"/>
+    </target>
+        
     <!--
 
     There exist several targets which are by default empty and which can be
