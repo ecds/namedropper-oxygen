@@ -4,10 +4,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:xi="http://www.w3.org/2001/XInclude"
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
-    
+
     <!-- NOTE: if we ever want to split out, or list multiple plugins, look at using an include for each plugin -->
     <!-- <xi:include href="OxygenExtension-NameDropper.xml" /> -->
-    
+
     <xt:extension id="edu.emory.library.oxygen_plugin.NameDropper" >
         <xt:location href="https://github.com/downloads/emory-libraries-disc/name-dropper/NameDropper-0.1.0-dev.jar"/>
         <xt:version>0.1.0</xt:version>
@@ -22,12 +22,13 @@
             <body>
                 <div>
                     <p>This plugin allows you to highlight a name and look it up in VIAF (Virtual International Authority File) in order to automatically add name tags and VIAF identifiers.</p>
-                    <p>After installing the plugin it can be used by highlighting a name and then opening the editor's contextual menu and selecting <b>Plugins -> NameDropper</b>.</p>
+                    <p>After installing the plugin it can be used by highlighting a name and then opening the editor's contextual menu and selecting <b>Plugins -> NameDropper</b> or using the keyboard
+                    shortcut of <b>Control + Shift + N</b>.</p>
                 </div>
             </body>
         </html>
         </xt:description>
         <xt:license>(License TODO)</xt:license>
-    </xt:extension>    
+    </xt:extension>
 </xt:extensions>
 
