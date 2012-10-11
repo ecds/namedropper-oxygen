@@ -10,4 +10,6 @@
     </runtime>
     <extension type="selectionProcessor" 
      class="edu.emory.library.oxygen_plugin.NameDropper.NameDropperPluginExtension"/>
+    <extension type="WorkspaceAccess"
+     class="edu.emory.library.oxygen_plugin.NameDropper.NameDropperMenuPluginExtension"/> 
 </plugin>
