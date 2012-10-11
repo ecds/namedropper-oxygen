@@ -115,7 +115,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
 
             if(nameType.equals("Personal")) {tag = "persname";}
             else if(nameType.equals("Corporate")) {tag = "corpname";}
-            else if(nameType.equals("Geographic")) {tag = "geoname";}
+            else if(nameType.equals("Geographic")) {tag = "geogname";}
             else throw new Exception("Unsupported nameType: " + nameType);
 
 
