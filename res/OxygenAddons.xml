@@ -28,7 +28,7 @@
             </body>
         </html>
         </xt:description>
-        <xt:license>(License TODO)</xt:license>
+        <xt:license><xi:include href="../../APACHE-LICENSE-2.0.txt" parse="text"/></xt:license>
     </xt:extension>
 </xt:extensions>
 
