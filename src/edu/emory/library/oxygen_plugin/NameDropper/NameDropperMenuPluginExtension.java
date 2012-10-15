@@ -144,58 +144,33 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
    */
   public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
     this.pluginWorkspaceAccess = pluginWorkspaceAccess;
-    // Check In action
-    final Action checkInAction = new AbstractAction() {
+    
+    // Set EAD action
+    final Action setEADAction = new AbstractAction() {
       public void actionPerformed(ActionEvent arg0) {
-        WSEditor editorAccess = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
-        if (editorAccess != null) {
-          URL tempFileUrl = editorAccess.getEditorLocation();
-          // Get the corresponding URL
-          URL checkedOutUrl = openedCheckedOutUrls.get(tempFileUrl);
-          if (checkedOutUrl == null) {
-            pluginWorkspaceAccess.showInformationMessage("The file is not Checked Out.");
-          } else {
-            checkInFile(pluginWorkspaceAccess, editorAccess, tempFileUrl, checkedOutUrl, true);
-          }
-        }
-        // Show 'CMS Messages' view
-        pluginWorkspaceAccess.showView("SampleWorkspaceAccessID", true);
+        pluginWorkspaceAccess.showInformationMessage(pluginWorkspaceAccess.getOptionsStorage().getOption("docType","*"));  
+        pluginWorkspaceAccess.getOptionsStorage().setOption("docType", "EAD");
+        pluginWorkspaceAccess.showInformationMessage("EAD SET");
+        pluginWorkspaceAccess.showInformationMessage(pluginWorkspaceAccess.getOptionsStorage().getOption("docType","*"));
+        this.setEnabled(false);
       }
     };
 
-    // Check Out action 
-    final Action checkOutAction = new AbstractAction() {
+    // Set TEI action
+    final Action setTEIAction = new AbstractAction() {
       public void actionPerformed(ActionEvent arg0) {
-        File checkedOutFile = pluginWorkspaceAccess.chooseFile("Choose file", new String[] {"xml"}, "XML Files");
-        if (checkedOutFile != null) {
-          try {
-            // Create temporary file from the checked out file.
-            File tempFile = createTempFromCheckedOutFile(checkedOutFile);
-            URL tempUrl = new URL(pluginWorkspaceAccess.getUtilAccess().correctURL(tempFile.toURI().toString()));
-            // Add the URls pair in the internal map 
-            URL checkedoutUrl = new URL(pluginWorkspaceAccess.getUtilAccess().correctURL(checkedOutFile.toURI().toString()));
-            openedCheckedOutUrls.put(tempUrl, checkedoutUrl);
-
-            // Open the temporary file
-            pluginWorkspaceAccess.open(tempUrl);
-
-            if (cmsMessagesArea != null) {
-              String messages = cmsMessagesArea.getText() + "\n" + 
-              "Check Out " + checkedoutUrl.toString();
-              cmsMessagesArea.setText(messages);
-            }
-          } catch (Exception e) {
-            pluginWorkspaceAccess.showErrorMessage("Check Out operation failed: " + e.getMessage());
-          }
-        }
-        // Show 'CMS Messages' view
-        pluginWorkspaceAccess.showView("SampleWorkspaceAccessID", true);
+        pluginWorkspaceAccess.showInformationMessage(pluginWorkspaceAccess.getOptionsStorage().getOption("docType","*"));  
+        pluginWorkspaceAccess.getOptionsStorage().setOption("docType", "TEI");
+        pluginWorkspaceAccess.showInformationMessage("TEI SET");
+        pluginWorkspaceAccess.showInformationMessage(pluginWorkspaceAccess.getOptionsStorage().getOption("docType","*"));
+        this.setEnabled(false);
       }
     };
+    
 
     // Show Selection Source action
     final Action selectionSourceAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent actionevent) {
+      public void actionPerformed(ActionEvent actionevent) {  
         WSEditor editorAccess = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
         // The action is available only in Author mode.
         if (editorAccess != null && EditorPageConstants.PAGE_AUTHOR.equals(editorAccess.getCurrentPageID())) {
@@ -258,7 +233,7 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
       public void customizeMainMenu(JMenuBar mainMenuBar) {
 //        oxygenMenuBar = mainMenuBar;
         // CMS menu
-        JMenu menuCMS = createCMSMenu(checkInAction, checkOutAction, selectionSourceAction, surroundWith);
+        JMenu menuCMS = createCMSMenu(setEADAction, setTEIAction);
         // Add the CMS menu before the Help menu
         mainMenuBar.add(menuCMS, mainMenuBar.getMenuCount() - 1);
         
@@ -398,7 +373,7 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
                 // Customize popup menu 
                 public void customizePopUpMenu(Object popUp, AuthorAccess authorAccess) {
                   // CMS menu
-                  JMenu menuCMS = createCMSMenu(checkInAction, checkOutAction, selectionSourceAction, surroundWith);
+                  JMenu menuCMS = createCMSMenu(setEADAction, setTEIAction);
                   // Add the CMS menu 
                   ((JPopupMenu)popUp).add(menuCMS, 0);
                   // Add 'Open in external application' action
@@ -422,13 +397,13 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
           }
 
           // Check actions status
-          private void checkActionsStatus(URL editorLocation) {
+          private void checkActionsStatus(URL editorLocation) {  
             WSEditor editorAccess = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA);
             if (editorAccess != null) {
               selectionSourceAction.setEnabled(EditorPageConstants.PAGE_AUTHOR.equals(editorAccess.getCurrentPageID()));
             }
             URL checkedOutUrl = openedCheckedOutUrls.get(editorLocation);
-            checkInAction.setEnabled(checkedOutUrl != null);
+            //setEADAction.setEnabled(true);
           }
 
           @Override
@@ -482,7 +457,7 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
           }
 
           @Override
-          public void editorPageChanged(URL editorLocation) {
+          public void editorPageChanged(URL editorLocation) { 
             checkActionsStatus(editorLocation);
             customizePopupMenu();
           };
@@ -533,11 +508,11 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
           }
 
           // Check In
-          ToolbarButton checkInButton = new ToolbarButton(checkInAction, true);
+          ToolbarButton checkInButton = new ToolbarButton(setEADAction, true);
           checkInButton.setText("Check In");
 
           // Check Out
-          ToolbarButton checkOutButton = new ToolbarButton(checkOutAction, true);
+          ToolbarButton checkOutButton = new ToolbarButton(setTEIAction, true);
           checkOutButton.setText("Check Out");
 
           // Show Selection Source
@@ -567,7 +542,7 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
           List<JComponent> comps = new ArrayList<JComponent>(Arrays.asList(toolbarInfo.getComponents()));
           comps.add(new ToolbarButton(new AbstractAction("MY ACTION") {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) { 
               //You can obtain the current editor, get access to its WSAuthorPage and modify it using the API.
               System.err.println("Perform action on " + pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.MAIN_EDITING_AREA).getEditorLocation());
             }
@@ -653,40 +628,34 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
    * Create CMS menu that contains the following actions:
    * <code>Check In</code>, <code>Check Out</code> and <code>Show Selection Source<code/>, <code>Surround with</code>
    * 
-   * @param checkInAction The check in action.
-   * @param checkOutAction The check out action.
-   * @param selectionSourceAction The selection source action.
-   * @param surroundWithAction The surround action.
+   * @param setEADAction The check in action.
+   * @param setTEIAction The check out action.
+   
    * 
    * @return The CMS menu.
    */
   private JMenu createCMSMenu(
-      final Action checkInAction, 
-      final Action checkOutAction, 
-      final Action selectionSourceAction,
-      final Action surroundWithAction) {
+      final Action setEAD, 
+      final Action setTEI) {
     // CMS menu
-    Menu menuCMS = new Menu("CMS", true); 
+    Menu menuCMS = new Menu("NameDropper", true); 
     
-    // Add Check In action on the menu 
-    final JMenuItem checkInItem = new JMenuItem(checkInAction); 
-    checkInItem.setText("Check In");
-    menuCMS.add(checkInItem);
+    // Add setEAD action on the menu
+    if(pluginWorkspaceAccess.getOptionsStorage().getOption("docType","").equals("EAD")){
+        setEAD.setEnabled(false);
+    }
+    final JMenuItem setEADItem = new JMenuItem(setEAD); 
+    setEADItem.setText("Set EAD");
+    menuCMS.add(setEADItem);
 
-    // Add Check Out action on the menu
-    JMenuItem checkOutItem = new JMenuItem(checkOutAction); 
-    checkOutItem.setText("Check Out");
-    menuCMS.add(checkOutItem);
+    // Add setTEI action on the menu
+    if(pluginWorkspaceAccess.getOptionsStorage().getOption("docType","").equals("TEI")){
+        setTEI.setEnabled(false);
+    }
+    final JMenuItem setTEIItem = new JMenuItem(setTEI); 
+    setTEIItem.setText("Set TEI");
+    menuCMS.add(setTEIItem);
     
-    // Add Show Section Source action on the menu
-    JMenuItem selectionSourceItem = new JMenuItem(selectionSourceAction);
-    selectionSourceItem.setText("Show Selection Source");
-    menuCMS.add(selectionSourceItem);
-    
-    // Surround with "<important>" action
-    JMenuItem surroundWithItem = new JMenuItem(surroundWithAction);
-    surroundWithItem.setText("Surround with <important>");
-    menuCMS.add(surroundWithItem);
     
     return menuCMS;
   }
