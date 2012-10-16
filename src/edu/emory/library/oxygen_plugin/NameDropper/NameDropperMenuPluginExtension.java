@@ -53,6 +53,7 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
         
       }
     });
+
  }
   
   /**
@@ -83,7 +84,6 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
     
     return ndMenu;
   }
-
 
   //aparently required for some reason
   public boolean applicationClosing() {return true;}
