@@ -1,3 +1,21 @@
+/**
+ * file oxygen/src/edu/emory/library/oxygen_plugin/NameDropper/NameDropperPluginExtension.java
+ * 
+ * Copyright 2012 Emory University Library
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.emory.library.oxygen_plugin.NameDropper;
 
 
@@ -38,7 +56,7 @@ import java.io.StringWriter;
 
 
 
-public class NameDropperPluginExtension implements SelectionPluginExtension {
+public class NameDropperPluginExtension implements SelectionPluginExtension {    
     /**
     * Lookup name in name authority.
     *
@@ -54,8 +72,8 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         try {
             orig = context.getSelection();
             result = orig; // put back original if something goes BOOM!
-
-            result = this.queryVIAF(orig);
+            
+            result = this.queryVIAF(orig, context);
         } catch(Exception e) {
             // This section is in case you want the whole stack trace in the error message
             // Pass sw.toString() instead of e.getMessage() in the showMessageDialog function
@@ -76,11 +94,13 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
     * Query VIAF for name data
     *
     * @param  name  Name to query.
+    * @param  context  Selection context.
     * @return          String containing persname xml tag data.
     */
-    public String queryVIAF(String name) throws Exception{
+    public String queryVIAF(String name, SelectionPluginContext context) throws Exception{
         String result = name;  //This is retutned if no resulsts are found
         String queryResult = "";
+        String docType = context.getPluginWorkspace().getOptionsStorage().getOption("docType", "");
 
         // url query paramters
         HashMap  params = new HashMap();
@@ -113,18 +133,39 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             String nameType = root.getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").getValue();
             String tag = null;
 
-            if(nameType.equals("Personal")) {tag = "persname";}
-            else if(nameType.equals("Corporate")) {tag = "corpname";}
-            else if(nameType.equals("Geographic")) {tag = "geogname";}
-            else throw new Exception("Unsupported nameType: " + nameType);
+            if(docType.equals("EAD")){
+                if (nameType.equals("Personal")) {tag = "persname";}
+                else if (nameType.equals("Corporate")) {tag = "corpname";}
+                else if (nameType.equals("Geographic")) {tag = "geogname";}
+                else throw new Exception("Unsupported nameType: " + nameType);
 
-
-            //create tag with viafid if result is one of the suppoeted types
-            if (tag != null){
-              result = String.format("<%s source=\"viaf\" authfilenumber=\"%s\">%s</%s>", tag, viafid, name, tag);
+                //create tag with viafid if result is one of the suppoeted types
+                if (tag != null){
+                  result = String.format("<%s source=\"viaf\" authfilenumber=\"%s\">%s</%s>", tag, viafid, name, tag);
+                }
+                else{
+                    result = name;  //no resulsts or no supported nameTypes
+                }
+            }
+            else if (docType.equals("TEI")){
+                tag="name";
+                String type = null;
+                
+                if (nameType.equals("Personal")) {type = "person";}
+                else if (nameType.equals("Corporate")) {type = "org";}
+                else if (nameType.equals("Geographic")) {type = "place";}
+                else throw new Exception("Unsupported nameType: " + nameType);
+                
+                //create tag with viafid if result is one of the suppoeted types
+                if (type != null){
+                  result = String.format("<%s ref=\"http://viaf.org/viaf/%s\" type=\"%s\">%s</%s>", tag, viafid, type, name, tag);
+                }
+                else{
+                    result = name;  //no resulsts or no supported nameTypes
+                }
             }
             else{
-                result = name;  //no resulsts or no supported nameTypes
+                throw new Exception("No DocType selected");
             }
 
 
@@ -188,5 +229,5 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         }
          return result;
     }
-
+    
 }
