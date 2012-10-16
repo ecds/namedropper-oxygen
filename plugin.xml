@@ -8,8 +8,11 @@
     <runtime>
         <library name="NameDropper.jar"/>
     </runtime>
-    <extension type="selectionProcessor" 
-     class="edu.emory.library.oxygen_plugin.NameDropper.NameDropperPluginExtension"/>
+    i<!-- main plugin -->
+    <extension type="selectionProcessor"
+     class="edu.emory.library.oxygen_plugin.NameDropper.NameDropperPluginExtension"
+     keyboardShortcut="ctrl shift N"/>
+    <!-- menu plugin -->
     <extension type="WorkspaceAccess"
      class="edu.emory.library.oxygen_plugin.NameDropper.NameDropperMenuPluginExtension"/> 
 </plugin>
