@@ -152,7 +152,6 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
         pluginWorkspaceAccess.getOptionsStorage().setOption("docType", "EAD");
         pluginWorkspaceAccess.showInformationMessage("EAD SET");
         pluginWorkspaceAccess.showInformationMessage(pluginWorkspaceAccess.getOptionsStorage().getOption("docType","*"));
-        this.setEnabled(false);
       }
     };
 
@@ -163,7 +162,6 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
         pluginWorkspaceAccess.getOptionsStorage().setOption("docType", "TEI");
         pluginWorkspaceAccess.showInformationMessage("TEI SET");
         pluginWorkspaceAccess.showInformationMessage(pluginWorkspaceAccess.getOptionsStorage().getOption("docType","*"));
-        this.setEnabled(false);
       }
     };
     
@@ -641,17 +639,11 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
     Menu menuCMS = new Menu("NameDropper", true); 
     
     // Add setEAD action on the menu
-    if(pluginWorkspaceAccess.getOptionsStorage().getOption("docType","").equals("EAD")){
-        setEAD.setEnabled(false);
-    }
     final JMenuItem setEADItem = new JMenuItem(setEAD); 
     setEADItem.setText("Set EAD");
     menuCMS.add(setEADItem);
 
     // Add setTEI action on the menu
-    if(pluginWorkspaceAccess.getOptionsStorage().getOption("docType","").equals("TEI")){
-        setTEI.setEnabled(false);
-    }
     final JMenuItem setTEIItem = new JMenuItem(setTEI); 
     setTEIItem.setText("Set TEI");
     menuCMS.add(setTEIItem);
