@@ -24,7 +24,7 @@ Development Requirements and Setup
 
 * Ant
 * Java
-* oxygen.jar and api.zip (from http://oxygenxml.com/InstData/Editor/Plugins/OxygenPluginsDevelopmentKit.zip ,
+* oxygen.jar api.zip, jide.jar and workspaceaccess.jar (from http://oxygenxml.com/InstData/Editor/Plugins/OxygenPluginsDevelopmentKit.zip ,
   included in ``lib`` directory)
 * json-simple (from http://code.google.com/p/json-simple/ , included in ``lib``)
 * xom (from http://www.cafeconleche.org/XOM/xom-1.2.8.jar , included in ``lib``)
