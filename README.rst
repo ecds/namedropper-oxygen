@@ -32,6 +32,7 @@ Development Requirements and Setup
   included in ``lib`` directory)
 * json-simple (from http://code.google.com/p/json-simple/ , included in ``lib``)
 * xom (from http://www.cafeconleche.org/XOM/xom-1.2.8.jar , included in ``lib``)
+* junit (provided by netbeans)
 
 .. Note::
    Originally ``api.zip`` was named ``src.zip``.  In this project it has been renamed to api.zip to reduce confusion.
