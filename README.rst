@@ -1,22 +1,26 @@
-NameDropper OxygenXML  plugin
-******************************
+NameDropper OxygenXML plugin
+****************************
 
-This is a plugin or add-on for the `Oxygen XML editor`_ to simplify the process of tagging names in XML and
-associating those names with authoritative identifiers.
+This is a plugin or add-on for the `Oxygen XML editor`_  (version 14.0) to
+simplify the process of tagging names in XML and associating those names with
+authoritative identifiers (currently using `VIAF`_).
 
 .. _`Oxygen XML editor`: http://oxygenxml.com/
+.. _`VIAF`: http://viaf.org/
 
 Plugin installation via Oxygen Add-Ons
 ======================================
 
-To install the *development* version of the plugin as an Oxygen Add-On:
+To install the current released version of the plugin as an Oxygen Add-On:
 
 * Open Oxygen Preferences and select **Add-Ons**
 * Add and save a new add-on site URL:
-  https://raw.github.com/emory-libraries-disc/name-dropper/release/0.1.0/oxygen/res/OxygenAddons.xml
+  https://raw.github.com/emory-libraries-disc/name-dropper/master/oxygen/res/OxygenAddons.xml
 * Under the Oxygen Help menu, select **Manage add-ons...**
 * Select **NameDropper** and then click install.  You should be prompted to accept the
   license and then restart Oxygen.
+* As new versions are released, you should be able to update the NameDropper plugin by
+  using the **Check for add-ons updates..** menu entry.
 
 
 Development Requirements and Setup
