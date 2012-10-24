@@ -35,7 +35,7 @@ public class NameDropperTest {
     
     
     // Fixtures
-    static String autoSsuggestReturn;
+    static String autoSuggestReturn;
     static Document viafReturn;
     
     public NameDropperTest() {
@@ -62,7 +62,7 @@ public class NameDropperTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         // load fixtures
-        autoSsuggestReturn = readFile("tests/autoSuggestReturn.json");
+        autoSuggestReturn = readFile("tests/autoSuggestReturn.json");
         viafReturn = realXmlBuilder.build(new File("tests/viafReturn.xml"));
     }
 
@@ -77,7 +77,7 @@ public class NameDropperTest {
         try {
             this.mockND = mock(NameDropperPluginExtension.class);
             this.mockXmlBuilder = mock(Builder.class);
-            autoSsuggestReturn = readFile("tests/autoSuggestReturn.json");
+            autoSuggestReturn = readFile("tests/autoSuggestReturn.json");
             viafReturn = realXmlBuilder.build(new File("tests/viafReturn.xml"));
           
     }catch (Exception e){
@@ -96,7 +96,7 @@ public class NameDropperTest {
     
     
      @Test
-     public void testGoodQueryViaf() {
+     public void testQueryViaf() {
          
          String result = "";
          String docType = ""; 
@@ -107,7 +107,7 @@ public class NameDropperTest {
            h.put("query", searchTerm);
            
            // setup corret returns for the method calls
-           when(this.mockND.query("http://viaf.org/viaf/AutoSuggest", h)).thenReturn(autoSsuggestReturn);
+           when(this.mockND.query("http://viaf.org/viaf/AutoSuggest", h)).thenReturn(autoSuggestReturn);
            when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", null)).thenReturn(viafReturn.toXML());
            
            // EAD version of tags
@@ -174,8 +174,70 @@ public class NameDropperTest {
      }
      
      @Test
-     public void testBadQueryViaf() {
+     public void testQueryViafNoResults() throws Exception{
+         
+         try {
+         exception.expect(Exception.class);
+         exception.expectMessage("No Results");
+              String result = "";
+              String searchTerm = "jdfkjdfkjdfkj";
+               HashMap h = new HashMap();
+               h.put("query", searchTerm);
+           
+               // setup corret returns for the method calls
+               when(this.mockND.query("http://viaf.org/viaf/AutoSuggest", h)).thenReturn("{\"query\": \"jjfkdjkfjdk\",\"result\": null}");
+               when(this.mockND.queryVIAF(searchTerm, "EAD")).thenCallRealMethod();
+               result = this.mockND.queryVIAF(searchTerm, "EAD");
+         }catch (Exception e){
+            throw e;
+         }
+     }
      
+     @Test
+     public void testQueryViafNoDocType() throws Exception {
+         
+         try {
+         exception.expect(Exception.class);
+         exception.expectMessage("Unsupported nameType: Invalid");
+              String result = "";
+              String searchTerm = "Smth";
+               HashMap h = new HashMap();
+               h.put("query", searchTerm);
+               
+           viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").removeChild(0);
+           viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").appendChild("Invalid");
+           when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", null)).thenReturn(viafReturn.toXML());
+           
+               // setup corret returns for the method calls
+               when(this.mockND.query("http://viaf.org/viaf/AutoSuggest", h)).thenReturn(autoSuggestReturn);
+               when(this.mockND.queryVIAF(searchTerm, "EAD")).thenCallRealMethod();
+               when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", null)).thenReturn(viafReturn.toXML());
+               
+               result = this.mockND.queryVIAF(searchTerm, "EAD");
+         }catch (Exception e){
+             throw e;
+         }
+     }
      
+     @Test
+     public void testQueryViafInvalidNameType() throws Exception {
+         
+         try {
+         exception.expect(Exception.class);
+         exception.expectMessage("No DocType selected");
+              String result = "";
+              String searchTerm = "Smth";
+               HashMap h = new HashMap();
+               h.put("query", searchTerm);
+           
+               // setup corret returns for the method calls
+               when(this.mockND.query("http://viaf.org/viaf/AutoSuggest", h)).thenReturn(autoSuggestReturn);
+               when(this.mockND.queryVIAF(searchTerm, "")).thenCallRealMethod();
+               when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", null)).thenReturn(viafReturn.toXML());
+               
+               result = this.mockND.queryVIAF(searchTerm, "");
+         }catch (Exception e){
+            throw e;
+         }
      }
 }
