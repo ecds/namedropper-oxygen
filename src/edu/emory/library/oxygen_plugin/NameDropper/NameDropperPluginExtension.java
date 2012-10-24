@@ -68,12 +68,13 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         //query VIAF for name data
         String orig = "";
         String result = "";
+        String docType = context.getPluginWorkspace().getOptionsStorage().getOption("docType", "");
 
         try {
             orig = context.getSelection();
             result = orig; // put back original if something goes BOOM!
             
-            result = this.queryVIAF(orig, context);
+            result = this.queryVIAF(orig, docType);
         } catch(Exception e) {
             // This section is in case you want the whole stack trace in the error message
             // Pass sw.toString() instead of e.getMessage() in the showMessageDialog function
@@ -94,13 +95,12 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
     * Query VIAF for name data
     *
     * @param  name  Name to query.
-    * @param  context  Selection context.
+    * @param  docType  String - EAD or TEI.
     * @return          String containing persname xml tag data.
     */
-    public String queryVIAF(String name, SelectionPluginContext context) throws Exception{
+    public String queryVIAF(String name, String docType) throws Exception{
         String result = name;  //This is retutned if no resulsts are found
         String queryResult = "";
-        String docType = context.getPluginWorkspace().getOptionsStorage().getOption("docType", "");
 
         // url query paramters
         HashMap  params = new HashMap();
@@ -128,12 +128,15 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
 
             //Query by viafid and get name type
             Builder builder = new Builder();
-            doc = builder.build(String.format("http://viaf.org/viaf/%s/viaf.xml", viafid));
+            
+            //This does the query and reads the XML for you
+            String viafInfo = query(String.format("http://viaf.org/viaf/%s/viaf.xml", viafid), null);
+            doc = builder.build(viafInfo, null);
             root = doc.getRootElement();
             String nameType = root.getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").getValue();
             String tag = null;
 
-            if(docType.equals("EAD")){
+            if(docType != null && docType.equals("EAD")){
                 if (nameType.equals("Personal")) {tag = "persname";}
                 else if (nameType.equals("Corporate")) {tag = "corpname";}
                 else if (nameType.equals("Geographic")) {tag = "geogname";}
@@ -147,7 +150,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
                     result = name;  //no resulsts or no supported nameTypes
                 }
             }
-            else if (docType.equals("TEI")){
+            else if (docType != null && docType.equals("TEI")){
                 tag="name";
                 String type = null;
                 
