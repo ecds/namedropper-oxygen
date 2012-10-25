@@ -36,34 +36,56 @@ import ro.sync.exml.workspace.api.standalone.ui.Menu;
  * Plugin extension - workspace access extension.
  */
 public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExtension {
+    
+    // labels and stuff for menu actions
+    final String eadLabel = "EAD";
+    final String teiLabel = "TEI";
+    final String checkmark = " \u2713";
+    
     // Set EAD action
     final Action setEADAction = new AbstractAction() {
       public void actionPerformed(ActionEvent arg0) { 
-        pluginWorkspaceAccess.getOptionsStorage().setOption("docType", "EAD");
+        pluginWorkspaceAccess.getOptionsStorage().setOption("docType", eadLabel);
       }
     };
 
     // Set TEI action
     final Action setTEIAction = new AbstractAction() {
       public void actionPerformed(ActionEvent arg0) {  
-        pluginWorkspaceAccess.getOptionsStorage().setOption("docType", "TEI");
+        pluginWorkspaceAccess.getOptionsStorage().setOption("docType", teiLabel);
       }
     };
+    
+    final JMenuItem setEADItem = new JMenuItem();
+    final JMenuItem setTEIItem = new JMenuItem();
+    
+    /*
+     * Sets the check mark for in the menu for the currently selected mode EAD or TEI 
+     */
+    public void setMenu(){
+      String eadText = setEADItem.getText();
+      String teiText = setTEIItem.getText();
+      
+      
+      if (pluginWorkspaceAccess.getOptionsStorage().getOption("docType", "").equals(eadLabel)){
+         setEADItem.setText(eadLabel + checkmark);
+         setTEIItem.setText(teiLabel);
+      }
+      
+      if (pluginWorkspaceAccess.getOptionsStorage().getOption("docType", "").equals(teiLabel)){
+         setTEIItem.setText(teiLabel + checkmark);
+          setEADItem.setText(eadLabel);
+         
+      }
+  }
+    
+    
     
     //Option Listener - triggers when docType option changes
     WSOptionListener OL = new WSOptionListener("docType"){
         @Override
         public void  optionValueChanged(WSOptionChangedEvent e) {
-            String optVal = e.getNewValue();
-            if(optVal.equals("EAD")){
-                setEADAction.setEnabled(false);
-                setTEIAction.setEnabled(true);
-            }
-            
-            if(optVal.equals("TEI")){
-                setTEIAction.setEnabled(false);
-                setEADAction.setEnabled(true);
-            }
+            setMenu();    
         }
     };    
 
@@ -99,27 +121,24 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
     Menu ndMenu = new Menu("NameDropper", true); 
     
     // Add setEAD action on the menu
-    final JMenuItem setEADItem = new JMenuItem(setEADAction); 
-    setEADItem.setText("Set EAD");
+    setEADItem.setAction(setEADAction);
+    setEADItem.setText(eadLabel);
     ndMenu.add(setEADItem);
 
     // Add setTEI action on the menu
-    final JMenuItem setTEIItem = new JMenuItem(setTEIAction); 
-    setTEIItem.setText("Set TEI");
+    setTEIItem.setAction(setTEIAction);
+    setTEIItem.setText(teiLabel);
     ndMenu.add(setTEIItem);
     
-    if(pluginWorkspaceAccess.getOptionsStorage().getOption("docType", "").equals("EAD")) {
-        setEADAction.setEnabled(false);
-        setTEIAction.setEnabled(true);
-    }
     
-    if(pluginWorkspaceAccess.getOptionsStorage().getOption("docType", "").equals("TEI")) {
-        setTEIAction.setEnabled(false);
-        setEADAction.setEnabled(true);
-    }
+    setMenu();
     
     return ndMenu;
   }
+  
+  
+  
+  
 
   //aparently required for some reason
   public boolean applicationClosing() {return true;} 
