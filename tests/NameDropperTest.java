@@ -108,7 +108,7 @@ public class NameDropperTest {
            
            // setup corret returns for the method calls
            when(this.mockND.query("http://viaf.org/viaf/AutoSuggest", h)).thenReturn(autoSuggestReturn);
-           when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", null)).thenReturn(viafReturn.toXML());
+           when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
            
            // EAD version of tags
            docType = "EAD";
@@ -123,7 +123,7 @@ public class NameDropperTest {
            // Change value to Person 
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").removeChild(0);
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").appendChild("Personal");
-           when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", null)).thenReturn(viafReturn.toXML());
+           when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
            result = this.mockND.queryVIAF(searchTerm, docType);
            assertEquals(result, "<persname source=\"viaf\" authfilenumber=\"159021806\">Smith</persname>");
            
@@ -132,7 +132,7 @@ public class NameDropperTest {
            // Change value to Geographic 
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").removeChild(0);
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").appendChild("Geographic");
-           when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", null)).thenReturn(viafReturn.toXML());
+           when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
            
            result = this.mockND.queryVIAF(searchTerm, docType);
            assertEquals(result, "<geogname source=\"viaf\" authfilenumber=\"159021806\">Smith</geogname>");
@@ -152,7 +152,7 @@ public class NameDropperTest {
            // Change value to Person 
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").removeChild(0);
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").appendChild("Personal");
-           when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", null)).thenReturn(viafReturn.toXML());
+           when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
            
            result = this.mockND.queryVIAF(searchTerm, docType);
            assertEquals(result, "<name ref=\"http://viaf.org/viaf/159021806\" type=\"person\">Smith</name>");
@@ -162,7 +162,7 @@ public class NameDropperTest {
            // Change value to Geographic 
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").removeChild(0);
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").appendChild("Corporate");
-           when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", null)).thenReturn(viafReturn.toXML());
+           when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
            result = this.mockND.queryVIAF(searchTerm, docType);
            assertEquals(result, "<name ref=\"http://viaf.org/viaf/159021806\" type=\"org\">Smith</name>");          
 
@@ -194,7 +194,7 @@ public class NameDropperTest {
      }
      
      @Test
-     public void testQueryViafNoDocType() throws Exception {
+     public void testQueryViafInvalidNameType() throws Exception {
          
          try {
          exception.expect(Exception.class);
@@ -206,12 +206,12 @@ public class NameDropperTest {
                
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").removeChild(0);
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").appendChild("Invalid");
-           when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", null)).thenReturn(viafReturn.toXML());
+           when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
            
                // setup corret returns for the method calls
                when(this.mockND.query("http://viaf.org/viaf/AutoSuggest", h)).thenReturn(autoSuggestReturn);
                when(this.mockND.queryVIAF(searchTerm, "EAD")).thenCallRealMethod();
-               when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", null)).thenReturn(viafReturn.toXML());
+               when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
                
                result = this.mockND.queryVIAF(searchTerm, "EAD");
          }catch (Exception e){
@@ -220,7 +220,7 @@ public class NameDropperTest {
      }
      
      @Test
-     public void testQueryViafInvalidNameType() throws Exception {
+     public void testQueryViafNoDocType() throws Exception {
          
          try {
          exception.expect(Exception.class);
@@ -233,7 +233,7 @@ public class NameDropperTest {
                // setup corret returns for the method calls
                when(this.mockND.query("http://viaf.org/viaf/AutoSuggest", h)).thenReturn(autoSuggestReturn);
                when(this.mockND.queryVIAF(searchTerm, "")).thenCallRealMethod();
-               when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", null)).thenReturn(viafReturn.toXML());
+               when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
                
                result = this.mockND.queryVIAF(searchTerm, "");
          }catch (Exception e){

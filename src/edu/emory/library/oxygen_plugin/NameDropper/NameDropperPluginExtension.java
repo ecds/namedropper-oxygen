@@ -130,7 +130,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             Builder builder = new Builder();
             
             //This does the query and reads the XML for you
-            String viafInfo = query(String.format("http://viaf.org/viaf/%s/viaf.xml", viafid), null);
+            String viafInfo = query(String.format("http://viaf.org/viaf/%s/viaf.xml", viafid), new HashMap());
             doc = builder.build(viafInfo, null);
             root = doc.getRootElement();
             String nameType = root.getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").getValue();
