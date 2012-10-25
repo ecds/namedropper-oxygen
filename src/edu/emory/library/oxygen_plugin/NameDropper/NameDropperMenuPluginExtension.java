@@ -118,17 +118,20 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
    */
   private JMenu createNDMenu() {      
     // ndMenu
-    Menu ndMenu = new Menu("NameDropper", true); 
+    Menu ndMenu = new Menu("NameDropper", true);
+    Menu docTypeMenu = new Menu("Document Type", true);
     
     // Add setEAD action on the menu
     setEADItem.setAction(setEADAction);
     setEADItem.setText(eadLabel);
-    ndMenu.add(setEADItem);
+    docTypeMenu.add(setEADItem);
 
     // Add setTEI action on the menu
     setTEIItem.setAction(setTEIAction);
     setTEIItem.setText(teiLabel);
-    ndMenu.add(setTEIItem);
+    docTypeMenu.add(setTEIItem);
+    
+    ndMenu.add(docTypeMenu);
     
     
     setMenu();
