@@ -1,0 +1,789 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="alternate" type="application/rdf+xml" href="/void.rdf" title="RDF Schema (in RDF/XML)" />
+<link rel="alternate" type="text/turtle" href="/void.ttl" title="RDF Schema (in Turtle)" />
+<link rel="shortcut icon" href="/sites/default/files/favicon_0.png" type="image/x-icon" />
+    <title>Vocabulary of Interlinked Datasets (VoID) | DERI Vocabularies</title>
+    <link type="text/css" rel="stylesheet" media="all" href="/sites/default/files/css/css_61bcfb7e703d15d77552f2b54a023caa.css" />
+<link type="text/css" rel="stylesheet" media="print" href="/sites/default/files/css/css_4a6fafdb89aa39ca74e664db986a4db0.css" />
+    <script type="text/javascript" src="/sites/default/files/js/js_e008b9f6222c2ba6268e730c3b4fcb66.js"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+jQuery.extend(Drupal.settings, { "basePath": "/", "googleanalytics": { "trackOutgoing": 1, "trackMailto": 1, "trackDownload": 1, "trackDownloadExtensions": "7z|aac|arc|arj|asf|asx|avi|bin|csv|doc|exe|flv|gif|gz|gzip|hqx|jar|jpe?g|js|mp(2|3|4|e?g)|mov(ie)?|msi|msp|pdf|phps|png|ppt|qtm?|ra(m|r)?|sea|sit|tar|tgz|torrent|txt|wav|wma|wmv|wpd|xls|xml|z|zip" }, "neologism": { "voc_id": "3", "voc_title": "void", "json_url": "http://vocab.deri.ie/neologism/json/classestree", "property_json_url": "http://vocab.deri.ie/neologism/json/objectpropertytree" } });
+//--><!]]>
+</script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+Ext.BLANK_IMAGE_URL='http://vocab.deri.ie/sites/all/modules/ext/ext/resources/images/default/s.gif';
+//--><!]]>
+</script>
+    <!--[if lt IE 7]>
+      <link type="text/css" rel="stylesheet" media="all" href="/themes/garland/fix-ie.css" />    <![endif]-->
+  </head>
+  <body class="sidebar-right">
+
+<!-- Layout -->
+  <div id="header-region" class="clear-block"></div>
+
+    <div id="wrapper">
+    <div id="container" class="clear-block">
+
+      <div id="header">
+        <div id="logo-floater">
+        <h1><a href="/" title="DERI Vocabularies"><img src="/sites/default/files/logo.png" alt="DERI Vocabularies" id="logo" /><span>DERI Vocabularies</span></a></h1>        </div>
+
+                  <ul class="links primary-links"><li class="menu-199 first last"><a href="/about" title="About vocab.deri.ie">About</a></li>
+</ul>                                  
+      </div> <!-- /header -->
+
+      
+      <div id="center"><div id="squeeze"><div class="right-corner"><div class="left-corner">
+          <div class="breadcrumb"><a href="/">Home</a></div>                              <h2>Vocabulary of Interlinked Datasets (VoID)</h2>                                                  <div class="clear-block">
+            <div class="vocabulary-view"><div id="icons"><a href="/void.rdf" class="icon"><img src="/sites/all/modules/neologism/images/icons/rdf-xml-40.png" alt="RDF/XML version of this vocabulary." title="RDF/XML version of this vocabulary." width="40" height="40" /></a>&nbsp;<a href="/void.ttl" class="icon"><img src="/sites/all/modules/neologism/images/icons/turtle-40.png" alt="Turtle version of this vocabulary." title="Turtle version of this vocabulary." width="40" height="40" /></a></div><div id="authors" ><h3>Authors:</h3><div id="author-value"><a href="http://richard.cyganiak.de/">Richard Cyganiak</a> (<a href="http://www.deri.ie/">Digital Enterprise Research Institute, NUI Galway</a>) <i>(<a href="mailto:richard.cyganiak@deri.org">Email</a>)</i></div><div id="author-value"><a href="http://users.ox.ac.uk/~zool0770/">Jun Zhao</a> (<a href="http://www.zoo.ox.ac.uk/">Department of Zoology, University of Oxford</a>) <i>(<a href="mailto:jun.zhao@zoo.ox.ac.uk">Email</a>)</i></div><div id="author-value"><a href="http://kwijibo.talis.com/">Keith Alexander</a> (<a href="http://www.talis.com/">Talis</a>) <i>(<a href="mailto:Keith.Alexander@talis.com">Email</a>)</i></div><div id="author-value"><a href="http://sw-app.org/about.html">Michael Hausenblas</a> (<a href="http://linkeddata.deri.ie/">LiDRC</a>) <i>(<a href="mailto:michael.hausenblas@deri.org">Email</a>)</i></div></div><div id="last-update" ><h3>Last update:</h3><div id="last-update-value">06 March 2011</div></div><div id="namespace"><h3>Namespace URI:</h3> <div id="namespace-value">http://rdfs.org/ns/void#</div></div><div id="abstract" class="neologism field"><div class="block title"><h3>Abstract</h3></div> The Vocabulary of Interlinked Datasets (VoID) is an RDF Schema vocabulary for expressing metadata about RDF datasets. It is intended as a bridge between the publishers and users of RDF data, with applications ranging from data discovery to cataloging and archiving of datasets. This document provides a formal definition of the new RDF classes and properties introduced for VoID. It is a companion to the main specification document for VoID, <em><a href="http://www.w3.org/TR/void/">Describing Linked Datasets with the VoID Vocabulary</a></em>. </div><h2 id="sec_glance" class="neologism">All terms at a glance</h2><div id="atglance"><p><strong>Classes:</strong> <a href="#Dataset" title="class Vocabulary of Interlinked Datasets (VoID):Dataset">Dataset</a> | <a href="#DatasetDescription" title="class Vocabulary of Interlinked Datasets (VoID):DatasetDescription">DatasetDescription</a> | <a href="#Linkset" title="class Vocabulary of Interlinked Datasets (VoID):Linkset">Linkset</a> | <a href="#TechnicalFeature" title="class Vocabulary of Interlinked Datasets (VoID):TechnicalFeature">TechnicalFeature</a></p><br/><p><strong>Properties:</strong> <a href="#class" title="property Vocabulary of Interlinked Datasets (VoID):class">class</a> | <a href="#classPartition" title="property Vocabulary of Interlinked Datasets (VoID):classPartition">classPartition</a> | <a href="#classes" title="property Vocabulary of Interlinked Datasets (VoID):classes">classes</a> | <a href="#dataDump" title="property Vocabulary of Interlinked Datasets (VoID):dataDump">dataDump</a> | <a href="#distinctObjects" title="property Vocabulary of Interlinked Datasets (VoID):distinctObjects">distinctObjects</a> | <a href="#distinctSubjects" title="property Vocabulary of Interlinked Datasets (VoID):distinctSubjects">distinctSubjects</a> | <a href="#documents" title="property Vocabulary of Interlinked Datasets (VoID):documents">documents</a> | <a href="#entities" title="property Vocabulary of Interlinked Datasets (VoID):entities">entities</a> | <a href="#exampleResource" title="property Vocabulary of Interlinked Datasets (VoID):exampleResource">exampleResource</a> | <a href="#feature" title="property Vocabulary of Interlinked Datasets (VoID):feature">feature</a> | <a href="#inDataset" title="property Vocabulary of Interlinked Datasets (VoID):inDataset">inDataset</a> | <a href="#linkPredicate" title="property Vocabulary of Interlinked Datasets (VoID):linkPredicate">linkPredicate</a> | <a href="#objectsTarget" title="property Vocabulary of Interlinked Datasets (VoID):objectsTarget">objectsTarget</a> | <a href="#openSearchDescription" title="property Vocabulary of Interlinked Datasets (VoID):openSearchDescription">openSearchDescription</a> | <a href="#properties" title="property Vocabulary of Interlinked Datasets (VoID):properties">properties</a> | <a href="#property" title="property Vocabulary of Interlinked Datasets (VoID):property">property</a> | <a href="#propertyPartition" title="property Vocabulary of Interlinked Datasets (VoID):propertyPartition">propertyPartition</a> | <a href="#rootResource" title="property Vocabulary of Interlinked Datasets (VoID):rootResource">rootResource</a> | <a href="#sparqlEndpoint" title="property Vocabulary of Interlinked Datasets (VoID):sparqlEndpoint">sparqlEndpoint</a> | <a href="#subjectsTarget" title="property Vocabulary of Interlinked Datasets (VoID):subjectsTarget">subjectsTarget</a> | <a href="#subset" title="property Vocabulary of Interlinked Datasets (VoID):subset">subset</a> | <a href="#target" title="property Vocabulary of Interlinked Datasets (VoID):target">target</a> | <a href="#triples" title="property Vocabulary of Interlinked Datasets (VoID):triples">triples</a> | <a href="#uriLookupEndpoint" title="property Vocabulary of Interlinked Datasets (VoID):uriLookupEndpoint">uriLookupEndpoint</a> | <a href="#uriRegexPattern" title="property Vocabulary of Interlinked Datasets (VoID):uriRegexPattern">uriRegexPattern</a> | <a href="#uriSpace" title="property Vocabulary of Interlinked Datasets (VoID):uriSpace">uriSpace</a> | <a href="#vocabulary" title="property Vocabulary of Interlinked Datasets (VoID):vocabulary">vocabulary</a></p></div><div id="treeview-panel" class="clearfix"><div id="class-tree" class="treepanel-halfwidth"></div><div id="object-property-tree" class="treepanel-halfwidth"></div></div>
+      <div id="diagram-panel">
+      <h2>Overview diagram</h2>
+      <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+          id="Diagram" width="100%" height="600px"
+          codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
+              <param name="movie" value="/sites/all/modules/neologism/includes/Diagram.swf" />
+              <param name="quality" value="high" />
+              <param name="bgcolor" value="#ffffff" />
+              <param name="flashVars" value="editMode=&vocabulary=/void&token=df5d42a1042fcd9fe016c336db87de28" />
+              <param name="allowScriptAccess" value="sameDomain" />
+              <embed src="/sites/all/modules/neologism/includes/Diagram.swf" quality="high" bgcolor="#ffffff"
+                  width="100%"
+                  height="600px"
+                  name="Diagram"
+                  align="middle"
+                  play="true"
+                  loop="false"
+                  quality="high"
+                  allowScriptAccess="sameDomain"
+                  type="application/x-shockwave-flash"
+                  pluginspage="http://www.adobe.com/go/getflashplayer"
+                  flashVars="editMode=&vocabulary=/void&token=df5d42a1042fcd9fe016c336db87de28" />
+      </object>
+    </div><div id="description"></div><div class="reference"><h2 id="sec_classes">Classes</h2><div id="node-4" class="term-node node teaser">
+      <h3 id="Dataset">Class: void:Dataset</h3>
+    <p class="summary">
+    <span class="term-label"><em>dataset</em></span>
+          – <span class="term-comment">A set of RDF triples that are published, maintained or aggregated by a single provider.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#Dataset">http://rdfs.org/ns/void#Dataset</a></dd>
+    
+          <dt>Properties include:</dt>
+      <dd><a href="http://rdfs.org/ns/void#feature">void:feature</a>, <a href="http://rdfs.org/ns/void#subset">void:subset</a>, <a href="http://rdfs.org/ns/void#sparqlEndpoint">void:sparqlEndpoint</a>, <a href="http://rdfs.org/ns/void#exampleResource">void:exampleResource</a>, <a href="http://rdfs.org/ns/void#vocabulary">void:vocabulary</a>, <a href="http://rdfs.org/ns/void#dataDump">void:dataDump</a>, <a href="http://rdfs.org/ns/void#uriLookupEndpoint">void:uriLookupEndpoint</a>, <a href="http://rdfs.org/ns/void#uriRegexPattern">void:uriRegexPattern</a>, <a href="http://rdfs.org/ns/void#class">void:class</a>, <a href="http://rdfs.org/ns/void#classes">void:classes</a>, <a href="http://rdfs.org/ns/void#classPartition">void:classPartition</a>, <a href="http://rdfs.org/ns/void#distinctObjects">void:distinctObjects</a>, <a href="http://rdfs.org/ns/void#distinctSubjects">void:distinctSubjects</a>, <a href="http://rdfs.org/ns/void#documents">void:documents</a>, <a href="http://rdfs.org/ns/void#entities">void:entities</a>, <a href="http://rdfs.org/ns/void#openSearchDescription">void:openSearchDescription</a>, <a href="http://rdfs.org/ns/void#properties">void:properties</a>, <a href="http://rdfs.org/ns/void#property">void:property</a>, <a href="http://rdfs.org/ns/void#propertyPartition">void:propertyPartition</a>, <a href="http://rdfs.org/ns/void#rootResource">void:rootResource</a>, <a href="http://rdfs.org/ns/void#triples">void:triples</a>, <a href="http://rdfs.org/ns/void#uriSpace">void:uriSpace</a></dd>
+              <dt>Used with:</dt>
+      <dd><a href="http://rdfs.org/ns/void#subset">void:subset</a>, <a href="http://rdfs.org/ns/void#target">void:target</a>, <a href="http://rdfs.org/ns/void#subjectsTarget">void:subjectsTarget</a>, <a href="http://rdfs.org/ns/void#objectsTarget">void:objectsTarget</a>, <a href="http://rdfs.org/ns/void#classPartition">void:classPartition</a>, <a href="http://rdfs.org/ns/void#inDataset">void:inDataset</a>, <a href="http://rdfs.org/ns/void#propertyPartition">void:propertyPartition</a></dd>
+                                      <dt>Superclass:</dt>
+      <dd><a href="http://purl.org/dc/dcmitype/Dataset">dctype:Dataset</a></dd>
+              <dt>Subclass:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Linkset">void:Linkset</a></dd>
+          </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-1158" class="term-node node teaser">
+      <h3 id="DatasetDescription">Class: void:DatasetDescription</h3>
+    <p class="summary">
+    <span class="term-label"><em>dataset description</em></span>
+          – <span class="term-comment">A web resource whose foaf:primaryTopic or foaf:topics include void:Datasets.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#DatasetDescription">http://rdfs.org/ns/void#DatasetDescription</a></dd>
+    
+                                          <dt>Superclass:</dt>
+      <dd><a href="http://xmlns.com/foaf/0.1/Document">foaf:Document</a></dd>
+              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-5" class="term-node node teaser">
+      <h3 id="Linkset">Class: void:Linkset</h3>
+    <p class="summary">
+    <span class="term-label"><em>linkset</em></span>
+          – <span class="term-comment">A collection of RDF links between two void:Datasets.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#Linkset">http://rdfs.org/ns/void#Linkset</a></dd>
+    
+          <dt>Properties include:</dt>
+      <dd><a href="http://rdfs.org/ns/void#target">void:target</a>, <a href="http://rdfs.org/ns/void#linkPredicate">void:linkPredicate</a>, <a href="http://rdfs.org/ns/void#subjectsTarget">void:subjectsTarget</a>, <a href="http://rdfs.org/ns/void#objectsTarget">void:objectsTarget</a></dd>
+                                          <dt>Superclass:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-6" class="term-node node teaser">
+      <h3 id="TechnicalFeature">Class: void:TechnicalFeature</h3>
+    <p class="summary">
+    <span class="term-label"><em>technical feature</em></span>
+          – <span class="term-comment">A technical feature of a void:Dataset, such as a supported RDF serialization format.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#TechnicalFeature">http://rdfs.org/ns/void#TechnicalFeature</a></dd>
+    
+              <dt>Used with:</dt>
+      <dd><a href="http://rdfs.org/ns/void#feature">void:feature</a></dd>
+                                          </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<h2 id="sec_properties">Properties</h2><div id="node-1160" class="term-node node teaser">
+      <h3 id="class">Property: void:class</h3>
+    <p class="summary">
+    <span class="term-label"><em>class</em></span>
+          – <span class="term-comment">The rdfs:Class that is the rdf:type of all entities in a class-based partition.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#class">http://rdfs.org/ns/void#class</a></dd>
+    
+                  <dt>Type:</dt>
+      <dd><a href="http://www.w3.org/2002/07/owl#FunctionalProperty">owl:FunctionalProperty</a></dd>
+              <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://www.w3.org/2000/01/rdf-schema#Class">rdfs:Class</a></dd>
+                              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-1170" class="term-node node teaser">
+      <h3 id="classPartition">Property: void:classPartition</h3>
+    <p class="summary">
+    <span class="term-label"><em>class partition</em></span>
+          – <span class="term-comment">A subset of a void:Dataset that contains only the entities of a certain rdfs:Class.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#classPartition">http://rdfs.org/ns/void#classPartition</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Superproperty:</dt>
+      <dd><a href="http://rdfs.org/ns/void#subset">void:subset</a></dd>
+                          </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-1162" class="term-node node teaser">
+      <h3 id="classes">Property: void:classes</h3>
+    <p class="summary">
+    <span class="term-label"><em>classes</em></span>
+          – <span class="term-comment">The total number of distinct classes in a void:Dataset. In other words, the number of distinct resources occuring as objects of rdf:type triples in the dataset.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#classes">http://rdfs.org/ns/void#classes</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a></dd>
+                              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-17" class="term-node node teaser">
+      <h3 id="dataDump">Property: void:dataDump</h3>
+    <p class="summary">
+    <span class="term-label"><em>Data Dump</em></span>
+          – <span class="term-comment">An RDF dump, partial or complete, of a void:Dataset.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#dataDump">http://rdfs.org/ns/void#dataDump</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://www.w3.org/2000/01/rdf-schema#Resource">rdfs:Resource</a></dd>
+                              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-1172" class="term-node node teaser">
+      <h3 id="distinctObjects">Property: void:distinctObjects</h3>
+    <p class="summary">
+    <span class="term-label"><em>distinct objects</em></span>
+          – <span class="term-comment">The total number of distinct objects in a void:Dataset. In other words, the number of distinct resources that occur in the object position of triples in the dataset. Literals are included in this count.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#distinctObjects">http://rdfs.org/ns/void#distinctObjects</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a></dd>
+                              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-1174" class="term-node node teaser">
+      <h3 id="distinctSubjects">Property: void:distinctSubjects</h3>
+    <p class="summary">
+    <span class="term-label"><em>distinct subjects</em></span>
+          – <span class="term-comment">The total number of distinct subjects in a void:Dataset. In other words, the number of distinct resources that occur in the subject position of triples in the dataset.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#distinctSubjects">http://rdfs.org/ns/void#distinctSubjects</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a></dd>
+                              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-1176" class="term-node node teaser">
+      <h3 id="documents">Property: void:documents</h3>
+    <p class="summary">
+    <span class="term-label"><em>number of documents</em></span>
+          – <span class="term-comment">The total number of documents, for datasets that are published as a set of individual documents, such as RDF/XML documents or RDFa-annotated web pages. Non-RDF documents, such as web pages in HTML or images, are usually not included in this count. This property is intended for datasets where the total number of triples or entities is hard to determine. void:triples or void:entities should be preferred where practical.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#documents">http://rdfs.org/ns/void#documents</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a></dd>
+                              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-1178" class="term-node node teaser">
+      <h3 id="entities">Property: void:entities</h3>
+    <p class="summary">
+    <span class="term-label"><em>number of entities</em></span>
+          – <span class="term-comment">The total number of entities that are described in a void:Dataset.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#entities">http://rdfs.org/ns/void#entities</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a></dd>
+                              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-13" class="term-node node teaser">
+      <h3 id="exampleResource">Property: void:exampleResource</h3>
+    <p class="summary">
+    <span class="term-label"><em>example resource of dataset</em></span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#exampleResource">http://rdfs.org/ns/void#exampleResource</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://www.w3.org/2000/01/rdf-schema#Resource">rdfs:Resource</a></dd>
+                              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-8" class="term-node node teaser">
+      <h3 id="feature">Property: void:feature</h3>
+    <p class="summary">
+    <span class="term-label"><em>feature</em></span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#feature">http://rdfs.org/ns/void#feature</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://rdfs.org/ns/void#TechnicalFeature">void:TechnicalFeature</a></dd>
+                              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-1180" class="term-node node teaser">
+      <h3 id="inDataset">Property: void:inDataset</h3>
+    <p class="summary">
+    <span class="term-label"><em>in dataset</em></span>
+          – <span class="term-comment">Points to the void:Dataset that a document is a part of.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#inDataset">http://rdfs.org/ns/void#inDataset</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://xmlns.com/foaf/0.1/Document">foaf:Document</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Superproperty:</dt>
+      <dd><a href="http://purl.org/dc/terms/isPartOf">dct:isPartOf</a></dd>
+                          </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-12" class="term-node node teaser">
+      <h3 id="linkPredicate">Property: void:linkPredicate</h3>
+    <p class="summary">
+    <span class="term-label"><em>a link predicate</em></span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#linkPredicate">http://rdfs.org/ns/void#linkPredicate</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Linkset">void:Linkset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property">rdf:Property</a></dd>
+                              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-16" class="term-node node teaser">
+      <h3 id="objectsTarget">Property: void:objectsTarget</h3>
+    <p class="summary">
+    <span class="term-label"><em>Objects Target</em></span>
+          – <span class="term-comment">The dataset describing the objects of the triples contained in the Linkset.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#objectsTarget">http://rdfs.org/ns/void#objectsTarget</a></dd>
+    
+                  <dt>Type:</dt>
+      <dd><a href="http://www.w3.org/2002/07/owl#FunctionalProperty">owl:FunctionalProperty</a></dd>
+              <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Linkset">void:Linkset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Superproperty:</dt>
+      <dd><a href="http://rdfs.org/ns/void#target">void:target</a></dd>
+                          </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-1182" class="term-node node teaser">
+      <h3 id="openSearchDescription">Property: void:openSearchDescription</h3>
+    <p class="summary">
+    <span class="term-label"><em>open search description</em></span>
+          – <span class="term-comment">An OpenSearch description document for a free-text search service over a void:Dataset.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#openSearchDescription">http://rdfs.org/ns/void#openSearchDescription</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://xmlns.com/foaf/0.1/Document">foaf:Document</a></dd>
+                              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-1184" class="term-node node teaser">
+      <h3 id="properties">Property: void:properties</h3>
+    <p class="summary">
+    <span class="term-label"><em>number of properties</em></span>
+          – <span class="term-comment">The total number of distinct properties in a void:Dataset. In other words, the number of distinct resources that occur in the predicate position of triples in the dataset.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#properties">http://rdfs.org/ns/void#properties</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a></dd>
+                              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-1186" class="term-node node teaser">
+      <h3 id="property">Property: void:property</h3>
+    <p class="summary">
+    <span class="term-label"><em>property</em></span>
+          – <span class="term-comment">The rdf:Property that is the predicate of all triples in a property-based partition.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#property">http://rdfs.org/ns/void#property</a></dd>
+    
+                  <dt>Type:</dt>
+      <dd><a href="http://www.w3.org/2002/07/owl#FunctionalProperty">owl:FunctionalProperty</a></dd>
+              <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property">rdf:Property</a></dd>
+                              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-1188" class="term-node node teaser">
+      <h3 id="propertyPartition">Property: void:propertyPartition</h3>
+    <p class="summary">
+    <span class="term-label"><em>property partition</em></span>
+          – <span class="term-comment">A subset of a void:Dataset that contains only the triples of a certain rdf:Property.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#propertyPartition">http://rdfs.org/ns/void#propertyPartition</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Superproperty:</dt>
+      <dd><a href="http://rdfs.org/ns/void#subset">void:subset</a></dd>
+                          </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-1190" class="term-node node teaser">
+      <h3 id="rootResource">Property: void:rootResource</h3>
+    <p class="summary">
+    <span class="term-label"><em>root resource</em></span>
+          – <span class="term-comment">A top concept or entry point for a void:Dataset that is structured in a tree-like fashion. All resources in a dataset can be reached by following links from its root resources in a small number of steps.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#rootResource">http://rdfs.org/ns/void#rootResource</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+                                  </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-11" class="term-node node teaser">
+      <h3 id="sparqlEndpoint">Property: void:sparqlEndpoint</h3>
+    <p class="summary">
+    <span class="term-label"><em>has a SPARQL endpoint at</em></span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#sparqlEndpoint">http://rdfs.org/ns/void#sparqlEndpoint</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+                                  </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-15" class="term-node node teaser">
+      <h3 id="subjectsTarget">Property: void:subjectsTarget</h3>
+    <p class="summary">
+    <span class="term-label"><em>Subjects Target</em></span>
+          – <span class="term-comment">The dataset describing the subjects of triples contained in the Linkset.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#subjectsTarget">http://rdfs.org/ns/void#subjectsTarget</a></dd>
+    
+                  <dt>Type:</dt>
+      <dd><a href="http://www.w3.org/2002/07/owl#FunctionalProperty">owl:FunctionalProperty</a></dd>
+              <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Linkset">void:Linkset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Superproperty:</dt>
+      <dd><a href="http://rdfs.org/ns/void#target">void:target</a></dd>
+                          </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-9" class="term-node node teaser">
+      <h3 id="subset">Property: void:subset</h3>
+    <p class="summary">
+    <span class="term-label"><em>has subset</em></span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#subset">http://rdfs.org/ns/void#subset</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+                  <dt>Subproperties:</dt>
+      <dd><a href="http://rdfs.org/ns/void#classPartition">void:classPartition</a>, <a href="http://rdfs.org/ns/void#propertyPartition">void:propertyPartition</a></dd>
+                      </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-10" class="term-node node teaser">
+      <h3 id="target">Property: void:target</h3>
+    <p class="summary">
+    <span class="term-label"><em>Target</em></span>
+          – <span class="term-comment">One of the two datasets linked by the Linkset.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#target">http://rdfs.org/ns/void#target</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Linkset">void:Linkset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+                  <dt>Subproperties:</dt>
+      <dd><a href="http://rdfs.org/ns/void#subjectsTarget">void:subjectsTarget</a>, <a href="http://rdfs.org/ns/void#objectsTarget">void:objectsTarget</a></dd>
+                      </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-1192" class="term-node node teaser">
+      <h3 id="triples">Property: void:triples</h3>
+    <p class="summary">
+    <span class="term-label"><em>number of triples</em></span>
+          – <span class="term-comment">The total number of triples contained in a void:Dataset.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#triples">http://rdfs.org/ns/void#triples</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://www.w3.org/2001/XMLSchema#integer">xsd:integer</a></dd>
+                              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-18" class="term-node node teaser">
+      <h3 id="uriLookupEndpoint">Property: void:uriLookupEndpoint</h3>
+    <p class="summary">
+    <span class="term-label"><em>has an URI look-up endpoint at</em></span>
+          – <span class="term-comment">Defines a simple URI look-up protocol for accessing a dataset.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#uriLookupEndpoint">http://rdfs.org/ns/void#uriLookupEndpoint</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+                                  </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-19" class="term-node node teaser">
+      <h3 id="uriRegexPattern">Property: void:uriRegexPattern</h3>
+    <p class="summary">
+    <span class="term-label"><em>has URI regular expression pattern</em></span>
+          – <span class="term-comment">Defines a regular expression pattern matching URIs in the dataset.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#uriRegexPattern">http://rdfs.org/ns/void#uriRegexPattern</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+                                  </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-1194" class="term-node node teaser">
+      <h3 id="uriSpace">Property: void:uriSpace</h3>
+    <p class="summary">
+    <span class="term-label"><em>URI space</em></span>
+          – <span class="term-comment">A URI that is a common string prefix of all the entity URIs in a void:Dataset.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#uriSpace">http://rdfs.org/ns/void#uriSpace</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+              <dt>Range:</dt>
+      <dd><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a></dd>
+                              </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+<div id="node-14" class="term-node node teaser">
+      <h3 id="vocabulary">Property: void:vocabulary</h3>
+    <p class="summary">
+    <span class="term-label"><em>vocabulary</em></span>
+          – <span class="term-comment">A vocabulary that is used in the dataset.</span>
+      </p>
+  <dl class="term-details">
+    <dt>URI:</dt>
+    <dd><a href="http://rdfs.org/ns/void#vocabulary">http://rdfs.org/ns/void#vocabulary</a></dd>
+    
+                      <dt>Domain:</dt>
+      <dd><a href="http://rdfs.org/ns/void#Dataset">void:Dataset</a></dd>
+                                  </dl>
+  <div class="description"></div>
+  <div class="clear-block neologism_terms_links">
+          <div class="linkontop">[<a href="#sec_glance">back to top</a>]</div>
+        <div class="meta">
+                </div>
+  </div>
+</div>
+</div></div>          </div>
+                    <div id="footer"><div id="block-block-1" class="clear-block block block-block">
+
+
+  <div class="content"><p>Powered by <a href="http://neologism.deri.ie/"><img src="/sites/all/modules/neologism/images/neologism-logo-80x16.png" alt="Neologism" width="80" height="16" class="poweredby-logo" /></a> | <a href="/user" title="User Login form or User Account">Login</a></p>
+</div>
+</div>
+</div>
+      </div></div></div></div> <!-- /.left-corner, /.right-corner, /#squeeze, /#center -->
+
+              <div id="sidebar-right" class="sidebar">
+                    <div id="block-user-1" class="clear-block block block-user">
+
+  <h2>Navigation</h2>
+
+  <div class="content"><ul class="menu"><li class="leaf first last"><a href="/neologism/adms" title="Export neologism vocabularies in RDF using the ADMS vocabulary.">Export neologism vocabularies index</a></li>
+</ul></div>
+</div>
+        </div>
+      
+    </div> <!-- /container -->
+  </div>
+<!-- /layout -->
+
+  <script type="text/javascript">
+<!--//--><![CDATA[//><!--
+var _gaq = _gaq || [];_gaq.push(["_setAccount", "UA-12554587-2"]);_gaq.push(["_trackPageview"]);(function() {var ga = document.createElement("script");ga.type = "text/javascript";ga.async = true;ga.src = ("https:" == document.location.protocol ? "https://ssl" : "http://www") + ".google-analytics.com/ga.js";var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(ga, s);})();
+//--><!]]>
+</script>
+  </body>
+</html>

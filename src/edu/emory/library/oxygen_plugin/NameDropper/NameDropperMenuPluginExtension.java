@@ -56,17 +56,16 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
       }
     };
     
-    final JMenuItem setEADItem = new JMenuItem();
-    final JMenuItem setTEIItem = new JMenuItem();
+    public final JMenuItem setEADItem = new JMenuItem();
+    public final JMenuItem setTEIItem = new JMenuItem();
     
     /*
      * Sets the check mark for in the menu for the currently selected mode EAD or TEI 
      */
     public void setMenu(){
-      String eadText = setEADItem.getText();
-      String teiText = setTEIItem.getText();
-      
-      
+        System.out.println("HERE");
+
+            
       if (pluginWorkspaceAccess.getOptionsStorage().getOption("docType", "").equals(eadLabel)){
          setEADItem.setText(eadLabel + checkmark);
          setTEIItem.setText(teiLabel);

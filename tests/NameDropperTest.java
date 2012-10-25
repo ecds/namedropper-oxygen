@@ -1,8 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
+import org.junit.*;
+import org.junit.rules.ExpectedException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -21,8 +18,7 @@ import java.io.File;
 
 import nu.xom.Builder;
 import nu.xom.Document;
-import org.junit.*;
-import org.junit.rules.ExpectedException;
+
 
 
 public class NameDropperTest {
@@ -77,7 +73,6 @@ public class NameDropperTest {
         try {
             this.mockND = mock(NameDropperPluginExtension.class);
             this.mockXmlBuilder = mock(Builder.class);
-            autoSuggestReturn = readFile("tests/autoSuggestReturn.json");
             viafReturn = realXmlBuilder.build(new File("tests/viafReturn.xml"));
           
     }catch (Exception e){
