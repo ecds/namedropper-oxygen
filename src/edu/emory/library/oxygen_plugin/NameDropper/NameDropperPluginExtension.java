@@ -56,7 +56,7 @@ import java.io.StringWriter;
 
 
 
-public class NameDropperPluginExtension implements SelectionPluginExtension {    
+public class NameDropperPluginExtension implements SelectionPluginExtension {  
     /**
     * Lookup name in name authority.
     *
@@ -69,7 +69,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         String orig = "";
         String result = "";
         String docType = context.getPluginWorkspace().getOptionsStorage().getOption("docType", "");
-
+        
         try {
             orig = context.getSelection();
             result = orig; // put back original if something goes BOOM!
@@ -90,6 +90,43 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
 
         return new SelectionPluginResultImpl(result);
     }
+    
+    
+    /**
+     * Determine what XML tag name to use for the specified document type.
+     * 
+     * @param docType
+     * @return String or null
+     */
+    public String getTagName(String docType) {
+        return this.getTagName(docType, null);
+    }
+    
+    /**
+     * Determine what XML tag name to use for the specified document type 
+     * and type of name.
+     * 
+     * @param docType (e.g., EAD or TEI)
+     * @param nameType (Personal, Corporate, or Geographic)
+     * @return String or null
+     */
+    public String getTagName(String docType, String nameType) {
+        String tag = null;
+        if (docType != null) {
+            if (docType.equals("TEI")) {
+                tag = "name";
+            } else if (docType.equals("EAD") && nameType != null) {
+                if (nameType.equals("Personal")) {
+                    tag = "persname";
+                } else if (nameType.equals("Corporate")) {
+                    tag = "corpname";
+                } else if (nameType.equals("Geographic")) {
+                    tag = "geogname";
+                }
+            }
+        }
+        return tag;
+    }
 
     /**
     * Query VIAF for name data
@@ -98,7 +135,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
     * @param  docType  String - EAD or TEI.
     * @return          String containing persname xml tag data.
     */
-    public String queryVIAF(String name, String docType) throws Exception{
+    public String queryVIAF(String name, String docType) throws Exception {
         String result = name;  //This is retutned if no resulsts are found
         String queryResult = "";
 
@@ -106,9 +143,15 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         HashMap  params = new HashMap();
         Document doc = null;
         Element root = null;
-
+        
+        // if document type is not set, don't bother to query VIAF
+        // since we won't be able to add a tag
+        if (docType == null || docType.equals("")) {
+            throw new Exception("No DocType selected");
+        }
+        
         try {
-
+            
             params.put("query", name);
 
             // get the result of the query
@@ -135,23 +178,20 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             root = doc.getRootElement();
             String nameType = root.getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").getValue();
             String tag = null;
-
-            if(docType != null && docType.equals("EAD")){
-                if (nameType.equals("Personal")) {tag = "persname";}
-                else if (nameType.equals("Corporate")) {tag = "corpname";}
-                else if (nameType.equals("Geographic")) {tag = "geogname";}
-                else throw new Exception("Unsupported nameType: " + nameType);
-
-                //create tag with viafid if result is one of the suppoeted types
-                if (tag != null){
-                  result = String.format("<%s source=\"viaf\" authfilenumber=\"%s\">%s</%s>", tag, viafid, name, tag);
-                }
-                else{
-                    result = name;  //no resulsts or no supported nameTypes
-                }
+            
+         
+            tag = this.getTagName(docType, nameType);
+            if (tag == null) {
+                throw new Exception("Unsupported nameType: " + nameType);
             }
-            else if (docType != null && docType.equals("TEI")){
-                tag="name";
+            if (docType.equals("EAD")) {
+                //create tag with viafid if result is one of the suppoeted types
+                if (tag != null) {
+                  result = String.format("<%s source=\"viaf\" authfilenumber=\"%s\">%s</%s>", tag, viafid, name, tag);
+                } else {
+                    result = name;  //no results or no supported nameTypes
+                }
+            } else if (docType.equals("TEI")){
                 String type = null;
                 
                 if (nameType.equals("Personal")) {type = "person";}
@@ -164,13 +204,9 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
                   result = String.format("<%s ref=\"http://viaf.org/viaf/%s\" type=\"%s\">%s</%s>", tag, viafid, type, name, tag);
                 }
                 else{
-                    result = name;  //no resulsts or no supported nameTypes
+                    result = name;  //no results or no supported nameType
                 }
             }
-            else{
-                throw new Exception("No DocType selected");
-            }
-
 
         } catch(Exception e) {
             throw e; //Throw up

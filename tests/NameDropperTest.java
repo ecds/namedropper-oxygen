@@ -108,6 +108,7 @@ public class NameDropperTest {
            // EAD version of tags
            docType = "EAD";
            when(this.mockND.queryVIAF(searchTerm, docType)).thenCallRealMethod();
+           when(this.mockND.getTagName(docType, "Corporate")).thenReturn("corpname");
            
            // Corp
            result = this.mockND.queryVIAF(searchTerm, docType);
@@ -119,6 +120,7 @@ public class NameDropperTest {
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").removeChild(0);
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").appendChild("Personal");
            when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
+           when(this.mockND.getTagName(docType, "Personal")).thenReturn("persname");
            result = this.mockND.queryVIAF(searchTerm, docType);
            assertEquals(result, "<persname source=\"viaf\" authfilenumber=\"159021806\">Smith</persname>");
            
@@ -128,6 +130,7 @@ public class NameDropperTest {
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").removeChild(0);
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").appendChild("Geographic");
            when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
+           when(this.mockND.getTagName(docType, "Geographic")).thenReturn("geogname");
            
            result = this.mockND.queryVIAF(searchTerm, docType);
            assertEquals(result, "<geogname source=\"viaf\" authfilenumber=\"159021806\">Smith</geogname>");
@@ -137,6 +140,7 @@ public class NameDropperTest {
            // TEI version of tags
            docType = "TEI";
            when(this.mockND.queryVIAF(searchTerm, docType)).thenCallRealMethod();
+           when(this.mockND.getTagName(docType, "Geographic")).thenReturn("name");
            
            // Place
            result = this.mockND.queryVIAF(searchTerm, docType);
@@ -148,6 +152,7 @@ public class NameDropperTest {
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").removeChild(0);
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").appendChild("Personal");
            when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
+           when(this.mockND.getTagName(docType, "Personal")).thenReturn("name");
            
            result = this.mockND.queryVIAF(searchTerm, docType);
            assertEquals(result, "<name ref=\"http://viaf.org/viaf/159021806\" type=\"person\">Smith</name>");
@@ -158,6 +163,8 @@ public class NameDropperTest {
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").removeChild(0);
            viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").appendChild("Corporate");
            when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
+           when(this.mockND.getTagName(docType, "Corporate")).thenReturn("name");
+           
            result = this.mockND.queryVIAF(searchTerm, docType);
            assertEquals(result, "<name ref=\"http://viaf.org/viaf/159021806\" type=\"org\">Smith</name>");          
 
@@ -205,6 +212,7 @@ public class NameDropperTest {
            
                // setup corret returns for the method calls
                when(this.mockND.query("http://viaf.org/viaf/AutoSuggest", h)).thenReturn(autoSuggestReturn);
+               when(this.mockND.getTagName("EAD", "Invalid")).thenReturn(null);
                when(this.mockND.queryVIAF(searchTerm, "EAD")).thenCallRealMethod();
                when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
                
@@ -226,13 +234,51 @@ public class NameDropperTest {
                h.put("query", searchTerm);
            
                // setup corret returns for the method calls
-               when(this.mockND.query("http://viaf.org/viaf/AutoSuggest", h)).thenReturn(autoSuggestReturn);
+               //when(this.mockND.query("http://viaf.org/viaf/AutoSuggest", h)).thenReturn(autoSuggestReturn);
                when(this.mockND.queryVIAF(searchTerm, "")).thenCallRealMethod();
-               when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
+               //when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
                
                result = this.mockND.queryVIAF(searchTerm, "");
-         }catch (Exception e){
+         } catch (Exception e){
             throw e;
+            
          }
+     }
+     
+     @Test
+     public void testGetTagName() {
+         
+         NameDropperPluginExtension nd = new NameDropperPluginExtension();
+         String result = "";
+         String docType = ""; 
+         
+         // no docType set
+         result = nd.getTagName(docType);
+         assertEquals(null, result);
+         
+         // TEI document
+         docType = "TEI";
+         result = nd.getTagName(docType);
+         assertEquals("name", result);
+         
+         // EAD document, no name type
+         docType = "EAD";
+         result = nd.getTagName(docType);
+         assertEquals(null, result);
+         
+         // EAD with name type
+         String nameType = "Personal";
+         result = nd.getTagName(docType, nameType);
+         assertEquals("persname", result);
+         nameType = "Corporate";
+         result = nd.getTagName(docType, nameType);
+         assertEquals("corpname", result);
+         nameType = "Geographic";
+         result = nd.getTagName(docType, nameType);
+         assertEquals("geogname", result);
+         nameType = "Bogus Type";
+         result = nd.getTagName(docType, nameType);
+         assertEquals(null, result);
+         
      }
 }
