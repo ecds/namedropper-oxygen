@@ -53,6 +53,7 @@ import nu.xom.Element;
 //Used when getting full stack trace
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 
 
 
@@ -75,6 +76,8 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             result = orig; // put back original if something goes BOOM!
             
             result = this.queryVIAF(orig, docType);
+            
+            if(result == null) {result = orig;}
         } catch(Exception e) {
             // This section is in case you want the whole stack trace in the error message
             // Pass sw.toString() instead of e.getMessage() in the showMessageDialog function
@@ -106,6 +109,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         HashMap  params = new HashMap();
         Document doc = null;
         Element root = null;
+        String viafid = null;
 
         try {
 
@@ -123,13 +127,37 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
                 throw new Exception("No Results");
             }
             
-            JSONObject obj = (JSONObject) jsonArray.get(0);
-            String viafid = (String)obj.get("viafid");
+            // get First 15 choices
+            ArrayList choicesList = new ArrayList();
+            
+            for(int i=0; i < jsonArray.size() && i < 15; i++){
+                JSONObject obj = (JSONObject) jsonArray.get(i);
+                ResultChoice choice = new ResultChoice((String)obj.get("viafid"), (String)obj.get("term"));
+                choicesList.add(choice);
+            }
+            
+            Object[] choices = choicesList.toArray();
+            
+            // TEST----------
+            
+             ResultChoice selectedChoice = (ResultChoice) JOptionPane.showInputDialog(null, 
+                     "Names", "Search Results", 
+                     JOptionPane.PLAIN_MESSAGE, null, 
+                     choices, choices[0]);
+             
+             if(selectedChoice == null) {
+                 return null;
+             }
+             else {
+                 viafid = selectedChoice.getViafid();
+             }
+            // TEST----------
+            
 
             //Query by viafid and get name type
             Builder builder = new Builder();
             
-            //This does the query and reads the XML for you
+            // Query and read the XML
             String viafInfo = query(String.format("http://viaf.org/viaf/%s/viaf.xml", viafid), new HashMap());
             doc = builder.build(viafInfo, null);
             root = doc.getRootElement();
@@ -233,4 +261,31 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
          return result;
     }
     
+}
+
+class ResultChoice {
+    private String term;
+    private String viafid;
+    
+    // Default constructor
+    ResultChoice(){}
+    
+    /*
+     * @param    String viafid
+     * @param  String term
+     */
+    ResultChoice(String viafid, String term){
+        this.term = term;
+        this.viafid = viafid;
+    }
+    
+    // Access functions
+    public String getViafid(){return this.viafid;}
+    public String getTerm(){return this.term;}
+    
+    public void settViafid(String viafid){this.viafid = viafid;}
+    public void setTerm(String term){this.term = term;}
+    
+    // String Rep.
+    public String toString() {return this.term;}
 }

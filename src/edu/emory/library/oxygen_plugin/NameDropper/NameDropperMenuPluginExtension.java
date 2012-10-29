@@ -63,7 +63,6 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
      * Sets the check mark for in the menu for the currently selected mode EAD or TEI 
      */
     public void setMenu(){
-        System.out.println("HERE");
 
             
       if (pluginWorkspaceAccess.getOptionsStorage().getOption("docType", "").equals(eadLabel)){
