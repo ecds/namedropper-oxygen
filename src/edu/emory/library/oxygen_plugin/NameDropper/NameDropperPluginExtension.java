@@ -24,7 +24,13 @@ import ro.sync.exml.plugin.selection.SelectionPluginContext;
 import ro.sync.exml.plugin.selection.SelectionPluginExtension;
 import ro.sync.exml.plugin.selection.SelectionPluginResult;
 import ro.sync.exml.plugin.selection.SelectionPluginResultImpl;
-
+import ro.sync.exml.workspace.api.editor.WSEditor;
+import ro.sync.exml.workspace.api.editor.page.WSEditorPage;
+import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
+import ro.sync.exml.workspace.api.editor.page.text.xml.WSXMLTextEditorPage;
+import ro.sync.exml.workspace.api.editor.page.text.WSTextXMLSchemaManager;
+import ro.sync.contentcompletion.xml.WhatElementsCanGoHereContext;
+import ro.sync.contentcompletion.xml.CIElement;
 
 // Http Requests
 import java.net.URL;
@@ -53,6 +59,7 @@ import nu.xom.Element;
 //Used when getting full stack trace
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 
 
@@ -72,7 +79,13 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         
         try {
             orig = context.getSelection();
-            result = orig; // put back original if something goes BOOM!
+            result = orig; // put back original text if anything goes wrong
+            
+            if (this.tagAllowed(docType, context) == false) {
+                // if the tag is not allowed, throw an exception to be displayed
+                // as a warning message to the user
+                throw new Exception("Tag is not allowed in the current context");
+            }
             
             result = this.queryVIAF(orig, docType);
         } catch(Exception e) {
@@ -127,7 +140,62 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         }
         return tag;
     }
-
+    
+    /**
+     * Attempt to determine if the tag that will be added for this document type
+     * is allowed in the current context based on the XML Schema, if available.
+     * Returns true or false when a schema is available to determine definitively
+     * if the tag is allowed or not.  Otherwise returns null.
+     * 
+     * @param docType
+     * @param context
+     * @return Boolean 
+     */
+    public Boolean tagAllowed(String docType, SelectionPluginContext context) {
+        String tag = this.getTagName(docType);
+        Boolean tagAllowed = null;
+        // determine what tag (roughly) we will be adding
+        if (tag == null && docType.equals("EAD")) {
+            // use as generic stand-in for EAD, since all name tags 
+            // follow basically the same rules
+            tag = "persname";   
+        }
+        // use workspace context to get schema
+        int workspaceId = StandalonePluginWorkspace.MAIN_EDITING_AREA;
+        WSEditor ed = context.getPluginWorkspace().getCurrentEditorAccess(workspaceId);
+        
+        if (ed != null) {  // editor could be null if no workspace is initialized
+            WSEditorPage page = ed.getCurrentPage();
+            // cast as an xml text editor page if possible, for access to schema
+            if (page != null && page instanceof WSXMLTextEditorPage) {
+                System.out.println("found xml text editor page");
+                WSTextEditorPage textpage = (WSXMLTextEditorPage) page;
+                WSTextXMLSchemaManager schema = textpage.getXMLSchemaManager();
+                int selectionOffset = textpage.getSelectionStart();
+                try {
+                    // use the schema to get a context-based list of allowable elements
+                    WhatElementsCanGoHereContext elContext = schema.createWhatElementsCanGoHereContext(selectionOffset);
+                    java.util.List<CIElement> elements;
+                    elements = schema.whatElementsCanGoHere(elContext);
+                    tagAllowed = false;
+                    // loop through the list to see if the tag we want to add
+                    // matches a name on any of the allowed elements
+                    for (int i=0; i < elements.size(); i++) {
+                        ro.sync.contentcompletion.xml.CIElement el = elements.get(i);
+                        if (el.getName().equals(tag)) {
+                            tagAllowed = true;
+                            break;
+                        }                        
+                    }
+                } catch (javax.swing.text.BadLocationException e) {
+                    tagAllowed = null;
+                }
+            }
+        }
+            
+       return tagAllowed;
+    } 
+   
     /**
     * Query VIAF for name data
     *

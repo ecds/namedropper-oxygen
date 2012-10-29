@@ -9,6 +9,8 @@ import static org.junit.Assert.*;
 
 import static org.mockito.Mockito.*;
 
+import ro.sync.exml.plugin.selection.SelectionPluginContext;
+
 import edu.emory.library.oxygen_plugin.NameDropper.NameDropperPluginExtension;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -18,12 +20,21 @@ import java.io.File;
 
 import nu.xom.Builder;
 import nu.xom.Document;
+import ro.sync.contentcompletion.xml.WhatElementsCanGoHereContext;
+import ro.sync.exml.workspace.api.editor.WSEditor;
+import ro.sync.exml.workspace.api.editor.page.WSEditorPage;
+import ro.sync.exml.workspace.api.editor.page.text.WSTextXMLSchemaManager;
+import ro.sync.exml.workspace.api.editor.page.text.xml.WSXMLTextEditorPage;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.contentcompletion.xml.CIElement;
 
 
 
 public class NameDropperTest {
     // Mock plugin
     NameDropperPluginExtension mockND;
+    
+    SelectionPluginContext mockContext;
     
     // Mock xml builder
     static Builder realXmlBuilder = new Builder();
@@ -72,6 +83,7 @@ public class NameDropperTest {
         
         try {
             this.mockND = mock(NameDropperPluginExtension.class);
+            this.mockContext = mock(SelectionPluginContext.class);
             this.mockXmlBuilder = mock(Builder.class);
             viafReturn = realXmlBuilder.build(new File("tests/viafReturn.xml"));
           
@@ -280,5 +292,37 @@ public class NameDropperTest {
          result = nd.getTagName(docType, nameType);
          assertEquals(null, result);
          
+     }
+     
+     @Test
+     public void testTagAllowed() {
+         
+         int wsId = StandalonePluginWorkspace.MAIN_EDITING_AREA;
+         StandalonePluginWorkspace mockWS = mock(StandalonePluginWorkspace.class);
+         
+         // simulate editor unavailable
+         when(this.mockContext.getPluginWorkspace()).thenReturn(mockWS);
+         when(mockWS.getCurrentEditorAccess(wsId)).thenReturn(null);
+         when(this.mockND.tagAllowed("EAD", this.mockContext)).thenCallRealMethod();
+         assertEquals(null, this.mockND.tagAllowed("EAD", this.mockContext));
+         
+         // simulate no page available
+         WSEditor mockEd = mock(WSEditor.class);
+         when(mockWS.getCurrentEditorAccess(wsId)).thenReturn(null);
+         when(mockEd.getCurrentPage()).thenReturn(null);
+         assertEquals(null, this.mockND.tagAllowed("EAD", this.mockContext));
+                 
+         // simulate full schema access; no elements allowed 
+         WSXMLTextEditorPage mockPage = mock(WSXMLTextEditorPage.class);
+         WSTextXMLSchemaManager mockSchema = mock(WSTextXMLSchemaManager.class);
+         when(mockEd.getCurrentPage()).thenReturn(mockPage);
+         when(mockPage.getXMLSchemaManager()).thenReturn(mockSchema);
+         int offset = 1;
+         when(mockPage.getSelectionStart()).thenReturn(offset);
+         WhatElementsCanGoHereContext mockContext = mock(WhatElementsCanGoHereContext.class);
+         //when(mockSchema.createWhatElementsCanGoHereContext(offset)).thenReturn(mockContext);
+         java.util.List<CIElement> elements = new java.util.ArrayList<CIElement>();
+         when(mockSchema.whatElementsCanGoHere(mockContext)).thenReturn(elements);
+         assertEquals(false, this.mockND.tagAllowed("EAD", this.mockContext));
      }
 }
