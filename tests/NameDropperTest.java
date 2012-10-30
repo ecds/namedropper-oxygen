@@ -295,34 +295,43 @@ public class NameDropperTest {
      }
      
      @Test
-     public void testTagAllowed() {
+     public void testTagAllowed() throws Exception {
          
-         int wsId = StandalonePluginWorkspace.MAIN_EDITING_AREA;
-         StandalonePluginWorkspace mockWS = mock(StandalonePluginWorkspace.class);
-         
-         // simulate editor unavailable
-         when(this.mockContext.getPluginWorkspace()).thenReturn(mockWS);
-         when(mockWS.getCurrentEditorAccess(wsId)).thenReturn(null);
-         when(this.mockND.tagAllowed("EAD", this.mockContext)).thenCallRealMethod();
-         assertEquals(null, this.mockND.tagAllowed("EAD", this.mockContext));
-         
-         // simulate no page available
-         WSEditor mockEd = mock(WSEditor.class);
-         when(mockWS.getCurrentEditorAccess(wsId)).thenReturn(null);
-         when(mockEd.getCurrentPage()).thenReturn(null);
-         assertEquals(null, this.mockND.tagAllowed("EAD", this.mockContext));
-                 
-         // simulate full schema access; no elements allowed 
-         WSXMLTextEditorPage mockPage = mock(WSXMLTextEditorPage.class);
-         WSTextXMLSchemaManager mockSchema = mock(WSTextXMLSchemaManager.class);
-         when(mockEd.getCurrentPage()).thenReturn(mockPage);
-         when(mockPage.getXMLSchemaManager()).thenReturn(mockSchema);
-         int offset = 1;
-         when(mockPage.getSelectionStart()).thenReturn(offset);
-         WhatElementsCanGoHereContext mockContext = mock(WhatElementsCanGoHereContext.class);
-         //when(mockSchema.createWhatElementsCanGoHereContext(offset)).thenReturn(mockContext);
-         java.util.List<CIElement> elements = new java.util.ArrayList<CIElement>();
-         when(mockSchema.whatElementsCanGoHere(mockContext)).thenReturn(elements);
-         assertEquals(false, this.mockND.tagAllowed("EAD", this.mockContext));
+        int wsId = StandalonePluginWorkspace.MAIN_EDITING_AREA;
+        StandalonePluginWorkspace mockWS = mock(StandalonePluginWorkspace.class);
+
+        // simulate editor unavailable - should be null
+        when(this.mockContext.getPluginWorkspace()).thenReturn(mockWS);
+        when(mockWS.getCurrentEditorAccess(wsId)).thenReturn(null);
+        when(this.mockND.tagAllowed("EAD", this.mockContext)).thenCallRealMethod();
+        assertEquals(null, this.mockND.tagAllowed("EAD", this.mockContext));
+
+        // simulate editor but no page available - should be null
+        WSEditor mockEd = mock(WSEditor.class);
+        when(mockWS.getCurrentEditorAccess(wsId)).thenReturn(mockEd);
+        when(mockEd.getCurrentPage()).thenReturn(null);
+        assertEquals(null, this.mockND.tagAllowed("EAD", this.mockContext));
+
+        // simulate full schema access, no elements allowed; should be false 
+        WSXMLTextEditorPage mockPage = mock(WSXMLTextEditorPage.class);
+        WSTextXMLSchemaManager mockSchema = mock(WSTextXMLSchemaManager.class);
+        when(mockEd.getCurrentPage()).thenReturn(mockPage);
+        when(mockPage.getXMLSchemaManager()).thenReturn(mockSchema);
+        int offset = 1;
+        when(mockPage.getSelectionStart()).thenReturn(offset);
+        // getSelectionStart could throw a javax.swing.text.BadLocationException
+        WhatElementsCanGoHereContext mockContext;
+        mockContext = mock(WhatElementsCanGoHereContext.class);
+        when(mockSchema.createWhatElementsCanGoHereContext(offset)).thenReturn(mockContext);
+        java.util.List<CIElement> elements = new java.util.ArrayList<CIElement>();
+        when(mockSchema.whatElementsCanGoHere(mockContext)).thenReturn(elements);
+        assertEquals(false, this.mockND.tagAllowed("EAD", this.mockContext));
+        
+        // schema access and tag matches an allowed element; should be true 
+        CIElement el = mock(CIElement.class);
+        when(el.getName()).thenReturn("persname");
+        elements.add(el);
+        assertEquals(true, this.mockND.tagAllowed("EAD", this.mockContext));
+        
      }
 }

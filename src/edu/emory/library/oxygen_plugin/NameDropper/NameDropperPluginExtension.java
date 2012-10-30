@@ -168,7 +168,6 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             WSEditorPage page = ed.getCurrentPage();
             // cast as an xml text editor page if possible, for access to schema
             if (page != null && page instanceof WSXMLTextEditorPage) {
-                System.out.println("found xml text editor page");
                 WSTextEditorPage textpage = (WSXMLTextEditorPage) page;
                 WSTextXMLSchemaManager schema = textpage.getXMLSchemaManager();
                 int selectionOffset = textpage.getSelectionStart();
