@@ -104,11 +104,11 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
     public String queryVIAF(String name, String docType) throws Exception{
         String result = name;  //This is retutned if no resulsts are found
         String queryResult = "";
+        Builder builder = new Builder();
+        Document doc = null;
 
         // url query paramters
         HashMap  params = new HashMap();
-        Document doc = null;
-        Element root = null;
         String viafid = null;
 
         try {
@@ -118,88 +118,30 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             // get the result of the query
             queryResult = this.query("http://viaf.org/viaf/AutoSuggest", params);
 
-            // parse the JSON and return resut in the correct format
-            JSONObject json = (JSONObject)new JSONParser().parse(queryResult);
-            JSONArray jsonArray = (JSONArray)json.get("result");
             
-            //No results from query
-            if (jsonArray == null){
-                throw new Exception("No Results");
-            }
+            // get choices from JSON
+            Object[] choices = this.makeChoices(queryResult);
             
-            // get First 15 choices
-            ArrayList choicesList = new ArrayList();
-            
-            for(int i=0; i < jsonArray.size() && i < 15; i++){
-                JSONObject obj = (JSONObject) jsonArray.get(i);
-                ResultChoice choice = new ResultChoice((String)obj.get("viafid"), (String)obj.get("term"));
-                choicesList.add(choice);
-            }
-            
-            Object[] choices = choicesList.toArray();
-            
-            // TEST----------
-            
-             ResultChoice selectedChoice = (ResultChoice) JOptionPane.showInputDialog(null, 
+            // display pop-up box 
+            ResultChoice selectedChoice = (ResultChoice) JOptionPane.showInputDialog(null, 
                      "Names", "Search Results", 
                      JOptionPane.PLAIN_MESSAGE, null, 
                      choices, choices[0]);
              
-             if(selectedChoice == null) {
+            // return null if cancel button is clicked 
+            if(selectedChoice == null) {
                  return null;
              }
              else {
                  viafid = selectedChoice.getViafid();
+                 
+                 // Query and parse xml based on viafid 
+                 String viafInfo = query(String.format("http://viaf.org/viaf/%s/viaf.xml", viafid), new HashMap());
+                 doc = builder.build(viafInfo, null); // Build doc from retrun string
+                 String nameType = doc.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").getValue();
+                 
+                 result = this.makeTag(viafid, name, nameType, docType);
              }
-            // TEST----------
-            
-
-            //Query by viafid and get name type
-            Builder builder = new Builder();
-            
-            // Query and read the XML
-            String viafInfo = query(String.format("http://viaf.org/viaf/%s/viaf.xml", viafid), new HashMap());
-            doc = builder.build(viafInfo, null);
-            root = doc.getRootElement();
-            String nameType = root.getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").getValue();
-            String tag = null;
-
-            if(docType != null && docType.equals("EAD")){
-                if (nameType.equals("Personal")) {tag = "persname";}
-                else if (nameType.equals("Corporate")) {tag = "corpname";}
-                else if (nameType.equals("Geographic")) {tag = "geogname";}
-                else throw new Exception("Unsupported nameType: " + nameType);
-
-                //create tag with viafid if result is one of the suppoeted types
-                if (tag != null){
-                  result = String.format("<%s source=\"viaf\" authfilenumber=\"%s\">%s</%s>", tag, viafid, name, tag);
-                }
-                else{
-                    result = name;  //no resulsts or no supported nameTypes
-                }
-            }
-            else if (docType != null && docType.equals("TEI")){
-                tag="name";
-                String type = null;
-                
-                if (nameType.equals("Personal")) {type = "person";}
-                else if (nameType.equals("Corporate")) {type = "org";}
-                else if (nameType.equals("Geographic")) {type = "place";}
-                else throw new Exception("Unsupported nameType: " + nameType);
-                
-                //create tag with viafid if result is one of the suppoeted types
-                if (type != null){
-                  result = String.format("<%s ref=\"http://viaf.org/viaf/%s\" type=\"%s\">%s</%s>", tag, viafid, type, name, tag);
-                }
-                else{
-                    result = name;  //no resulsts or no supported nameTypes
-                }
-            }
-            else{
-                throw new Exception("No DocType selected");
-            }
-
-
         } catch(Exception e) {
             throw e; //Throw up
         }
@@ -261,6 +203,82 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
          return result;
     }
     
+    public Object[] makeChoices(String jsonStr) throws Exception {
+        
+        try{
+            // parse the JSON and return resut in the correct format
+                JSONObject json = (JSONObject)new JSONParser().parse(jsonStr);
+                JSONArray jsonArray = (JSONArray)json.get("result");
+            
+                //No results from query
+                if (jsonArray == null){
+                    throw new Exception("No Results");
+                }
+            
+                // get First 15 choices
+                ArrayList choicesList = new ArrayList();
+            
+                for(int i=0; i < jsonArray.size() && i < 15; i++){
+                    JSONObject obj = (JSONObject) jsonArray.get(i);
+                    ResultChoice choice = new ResultChoice((String)obj.get("viafid"), (String)obj.get("term"));
+                    choicesList.add(choice);
+                }
+            
+                return choicesList.toArray();
+        } catch (Exception e) {
+           throw e; 
+        }
+        
+    }
+    
+    
+    public String makeTag(String viafid, String name, String nameType, String docType) throws Exception {
+        String result = null;;
+        
+       // used to determine ead tag
+        HashMap eadTag = new HashMap();
+        eadTag.put("Personal", "persname");
+        eadTag.put("Corporate", "corpname");
+        eadTag.put("Geographic", "geogname");
+        
+        // used to determine tei type attribute
+        HashMap teiType = new HashMap();
+        teiType.put("Personal", "person");
+        teiType.put("Corporate", "org");
+        teiType.put("Geographic", "place");
+        
+        try{
+            String tag = null;
+            String type = null;
+
+            
+            // docType must be set
+            if(!docType.equals("EAD") && !docType.equals("TEI")) {throw new Exception("No DocType selected");}
+            
+            if(docType.equals("EAD")){
+                tag = (String)eadTag.get(nameType);
+                if (tag == null) {throw new Exception("Unsupported nameType: " + nameType);}
+                
+                result = String.format("<%s source=\"viaf\" authfilenumber=\"%s\">%s</%s>", tag, viafid, name, tag);
+            }
+
+            else if (docType.equals("TEI")){
+                tag="name";
+                type = (String)teiType.get(nameType);
+                
+                if (type == null) {throw new Exception("Unsupported nameType: " + nameType);}
+                
+                //create tag with viafid if result is one of the suppoeted types
+                  result = String.format("<%s ref=\"http://viaf.org/viaf/%s\" type=\"%s\">%s</%s>", tag, viafid, type, name, tag);
+
+            }    
+        } catch (Exception e) {
+            throw e;
+    }
+   
+        return result;
+  }
+    
 }
 
 class ResultChoice {
@@ -271,6 +289,7 @@ class ResultChoice {
     ResultChoice(){}
     
     /*
+     * Constructor that creates ResultChoice object and populates viafid and term
      * @param    String viafid
      * @param  String term
      */
