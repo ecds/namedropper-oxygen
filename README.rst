@@ -73,6 +73,16 @@ Setup without NetBeans
 .. Note::
    To build the project run 'ant' in the base directory.
 
+Oxygen developer documentation
+------------------------------
+
+Developers may find it useful to refer to the `Oxygen XML Editor documentation`_,
+particularly the section on `extending Oxygen with plugins`_, as well as the
+`Oxygen API documents`_.
+
+.. _`Oxygen XML Editor documentation`: http://oxygenxml.com/doc/ug-editor/index.html
+.. _`extending Oxygen with plugins`: http://oxygenxml.com/doc/ug-editor/index.html#topics/extend-oxygen-with-plugins.html
+.. _`Oxygen API documents`: http://www.oxygenxml.com/InstData/Editor/Plugins/javadoc/
 
 Manually install the Compiled Plugin in Oxygen
 ----------------------------------------------
