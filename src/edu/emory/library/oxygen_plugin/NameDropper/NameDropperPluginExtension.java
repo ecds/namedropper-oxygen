@@ -24,7 +24,14 @@ import ro.sync.exml.plugin.selection.SelectionPluginContext;
 import ro.sync.exml.plugin.selection.SelectionPluginExtension;
 import ro.sync.exml.plugin.selection.SelectionPluginResult;
 import ro.sync.exml.plugin.selection.SelectionPluginResultImpl;
-
+import ro.sync.exml.workspace.api.editor.WSEditor;
+import ro.sync.exml.workspace.api.editor.page.WSEditorPage;
+import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
+import ro.sync.exml.workspace.api.editor.page.text.xml.WSXMLTextEditorPage;
+import ro.sync.exml.workspace.api.editor.page.text.WSTextXMLSchemaManager;
+import ro.sync.contentcompletion.xml.WhatElementsCanGoHereContext;
+import ro.sync.contentcompletion.xml.CIElement;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 // Http Requests
 import java.net.URL;
@@ -34,6 +41,7 @@ import java.net.URLEncoder;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 
 // Pop Up Message when errors
@@ -47,17 +55,17 @@ import org.json.simple.JSONArray;
 //XML Parsing
 import nu.xom.Builder;
 import nu.xom.Document;
-import nu.xom.Element;
 
 
 //Used when getting full stack trace
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 
 
+import edu.emory.library.oxygen_plugin.NameDropper.ResultChoice;
 
-public class NameDropperPluginExtension implements SelectionPluginExtension {    
+
+public class NameDropperPluginExtension implements SelectionPluginExtension {  
     /**
     * Lookup name in name authority.
     *
@@ -70,10 +78,16 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         String orig = "";
         String result = "";
         String docType = context.getPluginWorkspace().getOptionsStorage().getOption("docType", "");
-
+        
         try {
             orig = context.getSelection();
-            result = orig; // put back original if something goes BOOM!
+            result = orig; // put back original text if anything goes wrong
+            
+            if (this.tagAllowed(docType, context) == false) {
+                // if the tag is not allowed, throw an exception to be displayed
+                // as a warning message to the user
+                throw new Exception("Tag is not allowed in the current context");
+            }
             
             result = this.queryVIAF(orig, docType);
             
@@ -84,6 +98,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
+            e.printStackTrace();
 
 
             
@@ -93,7 +108,98 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
 
         return new SelectionPluginResultImpl(result);
     }
-
+    
+    
+    /**
+     * Determine what XML tag name to use for the specified document type.
+     * 
+     * @param docType
+     * @return String or null
+     */
+    public String getTagName(String docType) {
+        return this.getTagName(docType, null);
+    }
+    
+    /**
+     * Determine what XML tag name to use for the specified document type 
+     * and type of name.
+     * 
+     * @param docType (e.g., EAD or TEI)
+     * @param nameType (Personal, Corporate, or Geographic)
+     * @return String or null
+     */
+    public String getTagName(String docType, String nameType) {
+        String tag = null;
+        if (docType != null) {
+            if (docType.equals("TEI")) {
+                tag = "name";
+            } else if (docType.equals("EAD") && nameType != null) {
+                if (nameType.equals("Personal")) {
+                    tag = "persname";
+                } else if (nameType.equals("Corporate")) {
+                    tag = "corpname";
+                } else if (nameType.equals("Geographic")) {
+                    tag = "geogname";
+                }
+            }
+        }
+        return tag;
+    }
+    
+    /**
+     * Attempt to determine if the tag that will be added for this document type
+     * is allowed in the current context based on the XML Schema, if available.
+     * Returns true or false when a schema is available to determine definitively
+     * if the tag is allowed or not.  Otherwise returns null.
+     * 
+     * @param docType
+     * @param context
+     * @return Boolean 
+     */
+    public Boolean tagAllowed(String docType, SelectionPluginContext context) {
+        String tag = this.getTagName(docType);
+        Boolean tagAllowed = null;
+        // determine what tag (roughly) we will be adding
+        if (tag == null && docType.equals("EAD")) {
+            // use as generic stand-in for EAD, since all name tags 
+            // follow basically the same rules
+            tag = "persname";   
+        }
+        // use workspace context to get schema
+        int workspaceId = StandalonePluginWorkspace.MAIN_EDITING_AREA;
+        WSEditor ed = context.getPluginWorkspace().getCurrentEditorAccess(workspaceId);
+        
+        if (ed != null) {  // editor could be null if no workspace is initialized
+            WSEditorPage page = ed.getCurrentPage();
+            // cast as an xml text editor page if possible, for access to schema
+            if (page != null && page instanceof WSXMLTextEditorPage) {
+                WSTextEditorPage textpage = (WSXMLTextEditorPage) page;
+                WSTextXMLSchemaManager schema = textpage.getXMLSchemaManager();
+                int selectionOffset = textpage.getSelectionStart();
+                try {
+                    // use the schema to get a context-based list of allowable elements
+                    WhatElementsCanGoHereContext elContext = schema.createWhatElementsCanGoHereContext(selectionOffset);
+                    java.util.List<CIElement> elements;
+                    elements = schema.whatElementsCanGoHere(elContext);
+                    tagAllowed = false;
+                    // loop through the list to see if the tag we want to add
+                    // matches a name on any of the allowed elements
+                    for (int i=0; elements != null && i < elements.size(); i++) {
+                        ro.sync.contentcompletion.xml.CIElement el = elements.get(i);
+                        if (el.getName().equals(tag)) {
+                            tagAllowed = true;
+                            break;
+                        }                        
+                    }
+                } catch (javax.swing.text.BadLocationException e) {
+                    tagAllowed = null;
+                }
+            }
+        }
+            
+       return tagAllowed;
+    } 
+   
     /**
     * Query VIAF for name data
     *
@@ -101,18 +207,24 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
     * @param  docType  String - EAD or TEI.
     * @return          String containing persname xml tag data.
     */
-    public String queryVIAF(String name, String docType) throws Exception{
+    public String queryVIAF(String name, String docType) throws Exception {
         String result = name;  //This is retutned if no resulsts are found
         String queryResult = "";
         Builder builder = new Builder();
         Document doc = null;
+        String viafid = null;
 
         // url query paramters
         HashMap  params = new HashMap();
-        String viafid = null;
 
+        // if document type is not set, don't bother to query VIAF
+        // since we won't be able to add a tag
+        if (docType == null || docType.equals("")) {
+            throw new Exception("No DocType selected");
+        }
+        
         try {
-
+            
             params.put("query", name);
 
             // get the result of the query
@@ -252,9 +364,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             String type = null;
 
             
-            // docType must be set
-            if(!docType.equals("EAD") && !docType.equals("TEI")) {throw new Exception("No DocType selected");}
-            
+            // docType must be set   
             if(docType.equals("EAD")){
                 tag = (String)eadTag.get(nameType);
                 if (tag == null) {throw new Exception("Unsupported nameType: " + nameType);}
@@ -279,32 +389,4 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         return result;
   }
     
-}
-
-class ResultChoice {
-    private String term;
-    private String viafid;
-    
-    // Default constructor
-    ResultChoice(){}
-    
-    /*
-     * Constructor that creates ResultChoice object and populates viafid and term
-     * @param    String viafid
-     * @param  String term
-     */
-    ResultChoice(String viafid, String term){
-        this.term = term;
-        this.viafid = viafid;
-    }
-    
-    // Access functions
-    public String getViafid(){return this.viafid;}
-    public String getTerm(){return this.term;}
-    
-    public void settViafid(String viafid){this.viafid = viafid;}
-    public void setTerm(String term){this.term = term;}
-    
-    // String Rep.
-    public String toString() {return this.term;}
 }
