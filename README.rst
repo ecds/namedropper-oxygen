@@ -95,4 +95,4 @@ Manually install the Compiled Plugin in Oxygen
 See `HOWTO-RELEASE`_ for instructions on releasing or updating the user-
 installable Oxygen add-on.
 
-.. _HOWTO-RELEASE: HOWTO-RELEASE.rst
+.. _HOWTO-RELEASE: ./HOWTO-RELEASE.rst
