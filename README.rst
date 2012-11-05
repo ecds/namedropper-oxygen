@@ -92,7 +92,5 @@ Manually install the Compiled Plugin in Oxygen
   inside the ``oxygen/plugins`` directory.
 
 
-See `HOWTO-RELEASE`_ for instructions on releasing or updating the user-
+See **HOWTO-RELEASE** for instructions on releasing or updating the user-
 installable Oxygen add-on.
-
-.. _HOWTO-RELEASE: ./HOWTO-RELEASE.rst
