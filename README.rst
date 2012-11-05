@@ -92,13 +92,5 @@ Manually install the Compiled Plugin in Oxygen
   inside the ``oxygen/plugins`` directory.
 
 
-Update the user-installable Oxygen add-on
------------------------------------------
-
-There are a few manual steps required to update the version of this plugin that can be installed using the add-ons interface within Oxygen.
-
-* Run ``ant`` to generate the plugin version of the jar file.
-* Rename the plugin jar file (``dist/NameDropper-plugin.jar``) to something reflecting the version you are building, e.g. ``NameDropper-0.1.0-dev.jar``
-* Upload the file to the project on GitHub using the **Downloads** file management tools.
-* Update the download location in the add-on xml file ``res/OxygenAddons.xml`` with the full URL to the download file you just uploaded (commit and push to github).
-
+See :doc:`HOWTO-RELEASE` for instructions on releasing or updating the user-
+installable Oxygen add-on.
