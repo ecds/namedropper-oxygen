@@ -10,8 +10,8 @@
 
     <xt:extension id="edu.emory.library.oxygen_plugin.NameDropper" >
         <xt:location href="https://github.com/downloads/emory-libraries-disc/name-dropper/NameDropper-0.1.0.jar"/>
-        <xt:version>0.1.0</xt:version>
-        <xt:oxy_version>14.0</xt:oxy_version>
+        <xt:version>0.1.1</xt:version>
+        <xt:oxy_version>14.0+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Emory University Library</xt:author>
         <xt:name>NameDropper</xt:name>
