@@ -1,5 +1,3 @@
-package edu.emory.library.oxygen_plugin.NameDropper;
-
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.After;
