@@ -66,6 +66,10 @@ import edu.emory.library.oxygen_plugin.NameDropper.ResultChoice;
 
 
 public class NameDropperPluginExtension implements SelectionPluginExtension {  
+
+    public static String eadLabel = "EAD";
+    public static String teiLabel = "TEI";
+    
     /**
     * Lookup name in name authority.
     *
@@ -131,9 +135,9 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
     public String getTagName(String docType, String nameType) {
         String tag = null;
         if (docType != null) {
-            if (docType.equals("TEI")) {
+            if (docType.equals(this.teiLabel)) {
                 tag = "name";
-            } else if (docType.equals("EAD") && nameType != null) {
+            } else if (docType.equals(this.eadLabel) && nameType != null) {
                 if (nameType.equals("Personal")) {
                     tag = "persname";
                 } else if (nameType.equals("Corporate")) {
@@ -160,7 +164,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         String tag = this.getTagName(docType);
         Boolean tagAllowed = null;
         // determine what tag (roughly) we will be adding
-        if (tag == null && docType.equals("EAD")) {
+        if (tag == null && docType.equals(this.eadLabel)) {
             // use as generic stand-in for EAD, since all name tags 
             // follow basically the same rules
             tag = "persname";   
@@ -365,14 +369,14 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
 
             
             // docType must be set   
-            if(docType.equals("EAD")){
+            if(docType.equals(this.eadLabel)){
                 tag = (String)eadTag.get(nameType);
                 if (tag == null) {throw new Exception("Unsupported nameType: " + nameType);}
                 
                 result = String.format("<%s source=\"viaf\" authfilenumber=\"%s\">%s</%s>", tag, viafid, name, tag);
             }
 
-            else if (docType.equals("TEI")){
+            else if (docType.equals(this.teiLabel)){
                 tag="name";
                 type = (String)teiType.get(nameType);
                 
