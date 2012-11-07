@@ -67,8 +67,34 @@ import edu.emory.library.oxygen_plugin.NameDropper.ResultChoice;
 
 public class NameDropperPluginExtension implements SelectionPluginExtension {  
 
-    public static String eadLabel = "EAD";
-    public static String teiLabel = "TEI";
+    public static String eadLabel;
+    public static String teiLabel;
+    
+    // used to determine ead tag
+    public static HashMap eadTag = new HashMap();
+    
+    // used to determine tei type attribute
+    public static HashMap teiType = new HashMap();
+    
+
+    /*
+     * Constructor
+     */
+    
+    public NameDropperPluginExtension() {
+        this.eadLabel = "EAD";
+        this.teiLabel = "TEI";
+        
+        
+        this.eadTag.put("Personal", "persname");
+        this.eadTag.put("Corporate", "corpname");
+        this.eadTag.put("Geographic", "geogname");
+        
+        
+        this.teiType.put("Personal", "person");
+        this.teiType.put("Corporate", "org");
+        this.teiType.put("Geographic", "place");
+    }
     
     /**
     * Lookup name in name authority.
@@ -138,13 +164,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             if (docType.equals(this.teiLabel)) {
                 tag = "name";
             } else if (docType.equals(this.eadLabel) && nameType != null) {
-                if (nameType.equals("Personal")) {
-                    tag = "persname";
-                } else if (nameType.equals("Corporate")) {
-                    tag = "corpname";
-                } else if (nameType.equals("Geographic")) {
-                    tag = "geogname";
-                }
+                tag = (String) this.eadTag.get(nameType);
             }
         }
         return tag;
@@ -351,18 +371,6 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
     public String makeTag(String viafid, String name, String nameType, String docType) throws Exception {
         String result = null;;
         
-       // used to determine ead tag
-        HashMap eadTag = new HashMap();
-        eadTag.put("Personal", "persname");
-        eadTag.put("Corporate", "corpname");
-        eadTag.put("Geographic", "geogname");
-        
-        // used to determine tei type attribute
-        HashMap teiType = new HashMap();
-        teiType.put("Personal", "person");
-        teiType.put("Corporate", "org");
-        teiType.put("Geographic", "place");
-        
         try{
             String tag = null;
             String type = null;
@@ -370,15 +378,15 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             
             // docType must be set   
             if(docType.equals(this.eadLabel)){
-                tag = (String)eadTag.get(nameType);
+                tag = this.getTagName(docType);
                 if (tag == null) {throw new Exception("Unsupported nameType: " + nameType);}
                 
                 result = String.format("<%s source=\"viaf\" authfilenumber=\"%s\">%s</%s>", tag, viafid, name, tag);
             }
 
             else if (docType.equals(this.teiLabel)){
-                tag="name";
-                type = (String)teiType.get(nameType);
+                tag = this.getTagName(docType);
+                type = (String) this.teiType.get(nameType);
                 
                 if (type == null) {throw new Exception("Unsupported nameType: " + nameType);}
                 
