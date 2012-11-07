@@ -1,0 +1,29 @@
+{
+
+    "query": "smith",
+    "result": [
+        {
+            "term": "Smithsonian Institution. Bureau of American Ethnology",
+            "viafid": "159021806",
+            "ptbnp": "139916",
+            "nla": "000036139468",
+            "nkc": "kn20101102001",
+            "bne": "xx100979",
+            "bnf": "12350018",
+            "bav": "adv12087800",
+            "dnb": "00036715x",
+            "lc": "n79066275"
+        },
+        {
+            "term": "Smithsonian American art museum Washington, D.C",
+            "viafid": "146976922",
+            "nla": "000036217051",
+            "nlilat": "000098302",
+            "bnf": "15062905",
+            "bav": "adv10235834",
+            "dnb": "004412583",
+            "lc": "n81062959"
+        },
+    ]
+
+}
