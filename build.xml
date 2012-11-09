@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project basedir="." default="dist" name="NameDropper">
+  <description>NameDropper extension for oXygen XML.</description>
+
+  <!-- properties -->
+  <property name="src" location="src" />
+  <property name="lib" location="lib" />
+  <property name="build" location="build" />
+  <property name="dist" location="dist" />
+
+  <!-- setup classpat -->
+  <path id="project.class.path">
+    <fileset dir="${lib}/" includes="*.jar" />
+  </path>
+
+  <!-- pre compile tasks should be added here -->
+  <target name="init">
+    <tstamp />
+    <mkdir dir="${build}" />
+  </target>
+
+  <target name="compile" depends="init" description="compile the source">
+    <javac source="1.6" target="1.6" srcdir="${src}" destdir="${build}" classpathref="project.class.path" debug="true" debuglevel="lines,vars,source" includeantruntime="false" />
+  </target>
+
+  <!--
+    Distribution Target
+    builds a jar and places it in dist/UpperCase-oxygen
+  -->
+  <target name="dist" depends="compile" description="generate the distribution">
+    <mkdir dir="${dist}" />
+
+    <jar jarfile="${dist}/${ant.project.name}/${ant.project.name}.jar" basedir="${build}" />
+
+    <copy todir="${dist}/${ant.project.name}">
+      <fileset dir="${lib}">
+        <exclude name="CopyLibs/" />
+        <exclude name="junit/" />
+        <exclude name="junit*/" />
+        <exclude name="nblibraries*" />
+        <exclude name="oxygen*" />
+      </fileset>
+    </copy>
+    
+    <copy file="plugin.xml" todir="${dist}/${ant.project.name}" />
+  </target>
+
+  <!--
+    Clean Target
+    removes build and dist dirs
+  -->
+  <target name="clean" description="clean up">
+    <delete dir="${build}" />
+    <delete dir="${dist}" />
+  </target>
+</project>
