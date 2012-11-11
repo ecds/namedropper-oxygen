@@ -6,11 +6,26 @@
   <property name="src" location="src" />
   <property name="lib" location="lib" />
   <property name="build" location="build" />
+  <property name="build.tests" location="${build}/tests" />
   <property name="dist" location="dist" />
+  <property name="tests" location="tests" />
 
-  <!-- setup classpat -->
+  <!-- setup classpath -->
   <path id="project.class.path">
     <fileset dir="${lib}/" includes="*.jar" />
+  </path>
+
+  <path id="project.test.class.path">
+    <!-- <pathelement path="${project.class.path}" /> -->
+    <!-- <fileset dir="${dist}/${ant.project.name}" includes="${ant.project.name}.jar" /> -->
+    <!-- <fileset dir="${lib}/" includes="oxygen.jar,mockito-all-1.9.5.jar,xom-1.2.8.jar,junit.jar" /> -->
+    <pathelement location="${build.tests}" />
+    <!-- <pathelement path="${project.test.class.path}" />
+    <pathelement path="${project.class.path}" /> -->
+    <fileset dir="${dist}/${ant.project.name}" includes="${ant.project.name}.jar" />
+    <fileset dir="${lib}" includes="**/*.jar" />
+    <fileset dir="${lib}/junit_4" includes="junit-4.10.jar" />
+    <pathelement location="${tests}"/>
   </path>
 
   <!-- pre compile tasks should be added here -->
@@ -43,6 +58,34 @@
     </copy>
     
     <copy file="plugin.xml" todir="${dist}/${ant.project.name}" />
+  </target>
+
+  <!--
+    Compile Test Target
+  -->
+  <target name="compile-test" depends="compile,dist" description="Compile the tests">
+    <mkdir dir="${build}/tests" />
+
+    <javac source="1.6" target="1.6" srcdir="${tests}" destdir="${build.tests}" classpathref="project.test.class.path" includeantruntime="false" />
+  </target>
+
+  <!--
+    Test Target
+  -->
+  <target name="test" depends="compile-test" description="Run the unit tests">
+    <echo message="Running tests." />
+    <junit printsummary="yes" haltonfailure="yes" haltonerror="yes">
+
+      <!-- reference the path defined at the top of the file-->
+      <classpath refid="project.test.class.path" />
+
+      <!-- run the tests and output results in plaintext as well as xml -->
+      <test name="NameDropperTest" haltonfailure="no" outfile="result">
+        <formatter type="plain"/>
+        <formatter type="xml"/>
+      </test>
+    </junit>
+
   </target>
 
   <!--
