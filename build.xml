@@ -10,11 +10,12 @@
   <property name="dist" location="dist" />
   <property name="tests" location="tests" />
 
-  <!-- setup classpath -->
+  <!-- setup classpath for compilation -->
   <path id="project.class.path">
     <fileset dir="${lib}/" includes="**/*.jar" />
   </path>
 
+  <!-- the classpath to be used for the JUnit tests -->
   <path id="project.test.class.path">
     <!-- include the project classpath so we don't have to readd jars -->
     <path refid="project.class.path" />
@@ -29,6 +30,17 @@
     <!-- TODO: refactor tests into main source so test resources can be there -->
     <pathelement location="${tests}"/>
   </path>
+
+  <!-- the classpath to be used in the manifest for hte jar file -->
+  <pathconvert property="manifest.class.path" pathsep=" ">
+    <path refid="project.class.path"/>
+    <mapper>
+      <chainedmapper>
+         <flattenmapper/>
+         <globmapper from="*.jar" to="lib/*.jar"/>
+      </chainedmapper>
+    </mapper>
+  </pathconvert>
 
   <!-- pre compile tasks should be added here -->
   <target name="init">
@@ -47,7 +59,13 @@
   <target name="dist" depends="compile" description="generate the distribution">
     <mkdir dir="${dist}" />
 
-    <jar jarfile="${dist}/${ant.project.name}/${ant.project.name}.jar" basedir="${build}" />
+    <!-- setup jar properties and manifest so it works correctly -->
+    <jar jarfile="${dist}/${ant.project.name}/${ant.project.name}.jar">
+      <fileset dir="${build}" />
+      <manifest>
+        <attribute name="Class-Path" value="${manifest.class.path}"/>
+      </manifest>
+    </jar>
 
     <copy todir="${dist}/${ant.project.name}/lib">
       <fileset dir="${lib}">
@@ -55,7 +73,7 @@
         <exclude name="junit/" />
         <exclude name="junit*/" />
         <exclude name="nblibraries*" />
-        <exclude name="oxygen*" />
+        <!-- <exclude name="oxygen*" /> -->
       </fileset>
     </copy>
     
