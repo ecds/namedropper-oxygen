@@ -12,19 +12,21 @@
 
   <!-- setup classpath -->
   <path id="project.class.path">
-    <fileset dir="${lib}/" includes="*.jar" />
+    <fileset dir="${lib}/" includes="**/*.jar" />
   </path>
 
   <path id="project.test.class.path">
-    <!-- <pathelement path="${project.class.path}" /> -->
-    <!-- <fileset dir="${dist}/${ant.project.name}" includes="${ant.project.name}.jar" /> -->
-    <!-- <fileset dir="${lib}/" includes="oxygen.jar,mockito-all-1.9.5.jar,xom-1.2.8.jar,junit.jar" /> -->
+    <!-- include the project classpath so we don't have to readd jars -->
+    <path refid="project.class.path" />
+
+    <!-- include build/tests so we can get access to the test class on the cp -->
     <pathelement location="${build.tests}" />
-    <!-- <pathelement path="${project.test.class.path}" />
-    <pathelement path="${project.class.path}" /> -->
+
+    <!-- Use the distribution build of NameDropper to have a consistent test -->
     <fileset dir="${dist}/${ant.project.name}" includes="${ant.project.name}.jar" />
-    <fileset dir="${lib}" includes="**/*.jar" />
-    <fileset dir="${lib}/junit_4" includes="junit-4.10.jar" />
+
+    <!-- This is only here because the tests resources are here -->
+    <!-- TODO: refactor tests into main source so test resources can be there -->
     <pathelement location="${tests}"/>
   </path>
 
@@ -40,14 +42,14 @@
 
   <!--
     Distribution Target
-    builds a jar and places it in dist/UpperCase-oxygen
+    builds a jar and places it in dist/NameDropper
   -->
   <target name="dist" depends="compile" description="generate the distribution">
     <mkdir dir="${dist}" />
 
     <jar jarfile="${dist}/${ant.project.name}/${ant.project.name}.jar" basedir="${build}" />
 
-    <copy todir="${dist}/${ant.project.name}">
+    <copy todir="${dist}/${ant.project.name}/lib">
       <fileset dir="${lib}">
         <exclude name="CopyLibs/" />
         <exclude name="junit/" />
