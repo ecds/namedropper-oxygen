@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project basedir="." default="dist" name="NameDropper">
+<project basedir="." default="default" name="NameDropper">
   <description>NameDropper extension for oXygen XML.</description>
 
+  <property name="version" value="0.2.0rc"/>
   <!-- properties -->
   <property name="src" location="src" />
   <property name="lib" location="lib" />
   <property name="build" location="build" />
-  <!-- <property name="build.tests" location="${build}/tests" /> -->
   <property name="dist" location="dist" />
-  <!-- <property name="tests" location="tests" /> -->
+  <property name="res" location="res" />
 
   <!-- setup classpath for compilation -->
   <path id="project.class.path">
@@ -19,7 +19,6 @@
   <path id="project.test.class.path">
     <!-- include the project classpath so we don't have to readd jars -->
     <path refid="project.class.path" />
-
     <!-- Use the distribution build of NameDropper to have a consistent test -->
     <fileset dir="${dist}/${ant.project.name}" includes="${ant.project.name}.jar" />
   </path>
@@ -42,7 +41,12 @@
   </target>
 
   <target name="compile" depends="init" description="compile the source">
-    <javac source="1.6" target="1.6" srcdir="${src}" destdir="${build}" classpathref="project.class.path" debug="true" debuglevel="lines,vars,source" includeantruntime="false" />
+    <javac source="1.6" target="1.6" srcdir="${src}" destdir="${build}" classpathref="project.class.path" debug="true" debuglevel="lines,vars,source" includeantruntime="false"/>
+
+    <!-- Copy test files to build directory so we have them on classpath when running tests from jar -->
+    <copy todir="${build}">
+      <fileset dir="${src}" includes="**/*.json,**/*.xml" />
+    </copy>
   </target>
 
   <!--
@@ -71,7 +75,8 @@
 
     <copy file="plugin.xml" todir="${dist}/${ant.project.name}" />
 
-    <jar jarfile="${dist}/${ant.project.name}.jar">
+    <buildnumber/>
+    <jar jarfile="${dist}/${ant.project.name}-${version}.jar">
       <fileset dir="${dist}/${ant.project.name}" />
     </jar>
   </target>
@@ -88,8 +93,7 @@
 
       <!-- run the tests and output results in plaintext as well as xml -->
       <test name="edu.emory.library.oxygen_plugin.tests.NameDropperTest" haltonfailure="no" outfile="result">
-        <formatter type="plain"/>
-        <formatter type="xml"/>
+        <formatter type="plain" usefile="false"/>
       </test>
     </junit>
 
@@ -103,4 +107,6 @@
     <delete dir="${build}" />
     <delete dir="${dist}" />
   </target>
+
+  <target name="default" depends="dist,test" description="Compile, Build Distribution and Test the NameDropper Oxygen plugin" />
 </project>
