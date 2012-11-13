@@ -1,3 +1,5 @@
+package edu.emory.library.oxygen_plugin.tests;
+
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.After;

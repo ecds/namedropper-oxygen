@@ -6,9 +6,9 @@
   <property name="src" location="src" />
   <property name="lib" location="lib" />
   <property name="build" location="build" />
-  <property name="build.tests" location="${build}/tests" />
+  <!-- <property name="build.tests" location="${build}/tests" /> -->
   <property name="dist" location="dist" />
-  <property name="tests" location="tests" />
+  <!-- <property name="tests" location="tests" /> -->
 
   <!-- setup classpath for compilation -->
   <path id="project.class.path">
@@ -20,15 +20,8 @@
     <!-- include the project classpath so we don't have to readd jars -->
     <path refid="project.class.path" />
 
-    <!-- include build/tests so we can get access to the test class on the cp -->
-    <pathelement location="${build.tests}" />
-
     <!-- Use the distribution build of NameDropper to have a consistent test -->
     <fileset dir="${dist}/${ant.project.name}" includes="${ant.project.name}.jar" />
-
-    <!-- This is only here because the tests resources are here -->
-    <!-- TODO: refactor tests into main source so test resources can be there -->
-    <pathelement location="${tests}"/>
   </path>
 
   <!-- the classpath to be used in the manifest for hte jar file -->
@@ -73,26 +66,20 @@
         <exclude name="junit/" />
         <exclude name="junit*/" />
         <exclude name="nblibraries*" />
-        <!-- <exclude name="oxygen*" /> -->
       </fileset>
     </copy>
-    
+
     <copy file="plugin.xml" todir="${dist}/${ant.project.name}" />
-  </target>
 
-  <!--
-    Compile Test Target
-  -->
-  <target name="compile-test" depends="compile,dist" description="Compile the tests">
-    <mkdir dir="${build}/tests" />
-
-    <javac source="1.6" target="1.6" srcdir="${tests}" destdir="${build.tests}" classpathref="project.test.class.path" includeantruntime="false" />
+    <jar jarfile="${dist}/${ant.project.name}.jar">
+      <fileset dir="${dist}/${ant.project.name}" />
+    </jar>
   </target>
 
   <!--
     Test Target
   -->
-  <target name="test" depends="compile-test" description="Run the unit tests">
+  <target name="test" depends="compile,dist" description="Run the unit tests">
     <echo message="Running tests." />
     <junit printsummary="yes" haltonfailure="yes" haltonerror="yes">
 
@@ -100,7 +87,7 @@
       <classpath refid="project.test.class.path" />
 
       <!-- run the tests and output results in plaintext as well as xml -->
-      <test name="NameDropperTest" haltonfailure="no" outfile="result">
+      <test name="edu.emory.library.oxygen_plugin.tests.NameDropperTest" haltonfailure="no" outfile="result">
         <formatter type="plain"/>
         <formatter type="xml"/>
       </test>
