@@ -58,20 +58,34 @@ Development Requirements and Setup
 
 Setup with NetBeans
 -------------------
-You can ignore the ``netbeansproject.dist`` and ``build.xml.dist`` folder and files. Good versions will be created for you.
+Clone the name-dropper repository from Github
+
+    git clone http://github.com/emory-libraries-disc/name-dropper
 
 * Create a new project "From Existing Source"
 * Set the source directory to the base directory (where this file is)
 * Edit the project properties > Libraries and add lib/oxygen.jar  lib/api.zip, json-simple-1.1.1.jar, lib/xom-1.2.8.jar
 
 
-Setup without NetBeans
-----------------------
-* Copy build.xml.dist to build.xml
-* Copy nbproject.dist to nbproject
+Setup with Eclipse
+------------------
+Clone the name-dropper repository from Github
 
-.. Note::
-   To build the project run 'ant' in the base directory.
+    git clone http://github.com/emory-libraries-disc/name-dropper
+    
+In Eclipse, File > Import > General > Existing Projects into Workspace > Next. Make sure to uncheck ``Copy projects into workspace`` so that the project is created inside the name-dropper repository.
+
+To build any changes just right click on ``build.xml`` and Run As > Ant Build.
+
+
+Setup without an IDE
+--------------------
+Clone the name-dropper repository from Github
+
+    git clone http://github.com/emory-libraries-disc/name-dropper
+
+Run ``ant`` from name-dropper/oxygen to build the distribution and run the tests.
+
 
 Oxygen developer documentation
 ------------------------------
