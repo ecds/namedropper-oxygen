@@ -1,3 +1,5 @@
+package edu.emory.library.oxygen_plugin.tests;
+
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.After;
@@ -14,6 +16,8 @@ import ro.sync.exml.plugin.selection.SelectionPluginContext;
 import edu.emory.library.oxygen_plugin.NameDropper.NameDropperPluginExtension;
 import edu.emory.library.oxygen_plugin.NameDropper.ResultChoice;
 import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -50,17 +54,19 @@ public class NameDropperTest {
     
     //Read file into string used to get fixtures
     public static String readFile( String file ) throws IOException {
-       BufferedReader reader = new BufferedReader( new FileReader (file));
-       String         line = null;
-       StringBuilder  stringBuilder = new StringBuilder();
-       String         ls = System.getProperty("line.separator");
+        // changed to getResourceAsStream to read from classpath inside jar
+        InputStream is = NameDropperTest.class.getResourceAsStream(file);
+        BufferedReader reader = new BufferedReader( new InputStreamReader(is));
+        String         line = null;
+        StringBuilder  stringBuilder = new StringBuilder();
+        String         ls = System.getProperty("line.separator");
 
-       while( ( line = reader.readLine() ) != null ) {
-          stringBuilder.append( line );
-          stringBuilder.append( ls );
-       }
+        while( ( line = reader.readLine() ) != null ) {
+            stringBuilder.append( line );
+            stringBuilder.append( ls );
+        }
 
-       return stringBuilder.toString();
+        return stringBuilder.toString();
     }
 
     
@@ -69,8 +75,8 @@ public class NameDropperTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         // load fixtures
-        autoSuggestReturn = readFile("tests/autoSuggestReturn.json");
-        viafReturn = realXmlBuilder.build(new File("tests/viafReturn.xml"));
+        autoSuggestReturn = readFile("autoSuggestReturn.json");
+        viafReturn = realXmlBuilder.build(NameDropperTest.class.getResourceAsStream("viafReturn.xml"));
     }
 
     @AfterClass
@@ -85,7 +91,7 @@ public class NameDropperTest {
             this.mockND = mock(NameDropperPluginExtension.class);
             this.mockContext = mock(SelectionPluginContext.class);
             this.mockXmlBuilder = mock(Builder.class);
-            viafReturn = realXmlBuilder.build(new File("tests/viafReturn.xml"));
+            viafReturn = realXmlBuilder.build(NameDropperTest.class.getResourceAsStream("viafReturn.xml"));
           
     }catch (Exception e){}
     }
