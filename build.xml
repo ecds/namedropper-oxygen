@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project basedir="." default="default" name="NameDropper">
+  <description>NameDropper extension for oXygen XML.</description>
+
+  <property name="version" value="0.2.0rc"/>
+  <!-- properties -->
+  <property name="src" location="src" />
+  <property name="lib" location="lib" />
+  <property name="build" location="build" />
+  <property name="dist" location="dist" />
+  <property name="res" location="res" />
+
+  <!-- setup classpath for compilation -->
+  <path id="project.class.path">
+    <fileset dir="${lib}/" includes="**/*.jar" />
+  </path>
+
+  <!-- the classpath to be used for the JUnit tests -->
+  <path id="project.test.class.path">
+    <!-- include the project classpath so we don't have to readd jars -->
+    <path refid="project.class.path" />
+    <!-- Use the distribution build of NameDropper to have a consistent test -->
+    <fileset dir="${dist}/${ant.project.name}" includes="${ant.project.name}.jar" />
+  </path>
+
+  <!-- the classpath to be used in the manifest for hte jar file -->
+  <pathconvert property="manifest.class.path" pathsep=" ">
+    <path refid="project.class.path"/>
+    <mapper>
+      <chainedmapper>
+         <flattenmapper/>
+         <globmapper from="*.jar" to="lib/*.jar"/>
+      </chainedmapper>
+    </mapper>
+  </pathconvert>
+
+  <!-- pre compile tasks should be added here -->
+  <target name="init">
+    <tstamp />
+    <mkdir dir="${build}" />
+  </target>
+
+  <target name="compile" depends="init" description="compile the source">
+    <javac source="1.6" target="1.6" srcdir="${src}" destdir="${build}" classpathref="project.class.path" debug="true" debuglevel="lines,vars,source" includeantruntime="false"/>
+
+    <!-- Copy test files to build directory so we have them on classpath when running tests from jar -->
+    <copy todir="${build}">
+      <fileset dir="${src}" includes="**/*.json,**/*.xml" />
+    </copy>
+  </target>
+
+  <!--
+    Distribution Target
+    builds a jar and places it in dist/NameDropper
+  -->
+  <target name="dist" depends="compile" description="generate the distribution">
+    <mkdir dir="${dist}" />
+
+    <!-- setup jar properties and manifest so it works correctly -->
+    <jar jarfile="${dist}/${ant.project.name}/${ant.project.name}.jar">
+      <fileset dir="${build}" />
+      <manifest>
+        <attribute name="Class-Path" value="${manifest.class.path}"/>
+      </manifest>
+    </jar>
+
+    <copy todir="${dist}/${ant.project.name}/lib">
+      <fileset dir="${lib}">
+        <exclude name="CopyLibs/" />
+        <exclude name="junit/" />
+        <exclude name="junit*/" />
+        <exclude name="nblibraries*" />
+      </fileset>
+    </copy>
+
+    <copy file="plugin.xml" todir="${dist}/${ant.project.name}" />
+
+    <buildnumber/>
+    <jar jarfile="${dist}/${ant.project.name}-${version}.jar">
+      <fileset dir="${dist}/${ant.project.name}" />
+    </jar>
+  </target>
+
+  <!--
+    Test Target
+  -->
+  <target name="test" depends="compile,dist" description="Run the unit tests">
+    <echo message="Running tests." />
+    <junit printsummary="yes" haltonfailure="yes" haltonerror="yes">
+
+      <!-- reference the path defined at the top of the file-->
+      <classpath refid="project.test.class.path" />
+
+      <!-- run the tests and output results in plaintext as well as xml -->
+      <test name="edu.emory.library.oxygen_plugin.tests.NameDropperTest" haltonfailure="no" outfile="result">
+        <formatter type="plain" usefile="false"/>
+      </test>
+    </junit>
+
+  </target>
+
+  <!--
+    Clean Target
+    removes build and dist dirs
+  -->
+  <target name="clean" description="clean up">
+    <delete dir="${build}" />
+    <delete dir="${dist}" />
+  </target>
+
+  <target name="default" depends="dist,test" description="Compile, Build Distribution and Test the NameDropper Oxygen plugin" />
+</project>
