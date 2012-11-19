@@ -3,7 +3,12 @@ NameDropper OxygenXML plugin
 
 This is a plugin or add-on for the `Oxygen XML editor`_  (version 14.0) to
 simplify the process of tagging names in XML and associating those names with
-authoritative identifiers (currently using `VIAF`_).
+authoritative identifiers (currently using `VIAF`_).  See the top-level
+`namedropper`_ repository for more information.
+
+.. image:: https://travis-ci.org/emory-libraries-disc/namedropper-oxygen.png?branch=develop
+  :alt: current build status for namedropper-py
+  :target: https://travis-ci.org/emory-libraries-disc/namedropper-oxygen
 
 .. _`Oxygen XML editor`: http://oxygenxml.com/
 .. _`VIAF`: http://viaf.org/
@@ -39,6 +44,11 @@ type of record found) with a VIAF id for for the first VIAF match found.  You sh
 see a warning message if no match is found for the highlighted text, or if a name
 tag is not valid in the current context.
 
+License
+=======
+NameDropper Python scripts and Oxygen plugin are distributed under the
+`Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0>`_.
+
 Development Requirements and Setup
 ==================================
 
@@ -72,7 +82,7 @@ Setup with Eclipse
 Clone the name-dropper repository from Github
 
     git clone http://github.com/emory-libraries-disc/name-dropper
-    
+
 In Eclipse, File > Import > General > Existing Projects into Workspace > Next. Make sure to uncheck ``Copy projects into workspace`` so that the project is created inside the name-dropper repository.
 
 To build any changes just right click on ``build.xml`` and Run As > Ant Build.
