@@ -46,7 +46,7 @@ tag is not valid in the current context.
 
 License
 =======
-NameDropper Python scripts and Oxygen plugin are distributed under the
+NameDropper Oxygen plugin is distributed under the
 `Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0>`_.
 
 Development Requirements and Setup
