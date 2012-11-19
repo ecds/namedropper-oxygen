@@ -9,6 +9,7 @@
   <property name="build" location="build" />
   <property name="dist" location="dist" />
   <property name="res" location="res" />
+  <property environment="env"/>
 
   <!-- setup classpath for compilation -->
   <path id="project.class.path">
@@ -107,6 +108,15 @@
     <delete dir="${build}" />
     <delete dir="${dist}" />
   </target>
+
+<!-- convenience task to install built version to a local oxygen instance -->
+  <target description="Copy built plugin to local Oxygen installation" name="install" depends="default">
+      <fail unless="env.OXYGEN_HOME" message="Install requires OXYGEN_HOME environment variable."/>
+      <copy todir="${env.OXYGEN_HOME}/plugins/${ant.project.name}">
+        <fileset dir="${dist}/${ant.project.name}"/>
+      </copy>
+  </target>
+
 
   <target name="default" depends="dist,test" description="Compile, Build Distribution and Test the NameDropper Oxygen plugin" />
 </project>
