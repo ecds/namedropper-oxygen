@@ -378,7 +378,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
 
             // docType must be set
             if(docType.equals(this.eadLabel)){
-                tag = this.getTagName(docType);
+                tag = this.getTagName(docType, nameType);
                 if (tag == null) {throw new Exception("Unsupported nameType: " + nameType);}
 
                 result = String.format("<%s source=\"viaf\" authfilenumber=\"%s\">%s</%s>", tag, viafid, name, tag);
