@@ -10,8 +10,9 @@ authoritative identifiers (currently using `VIAF`_).  See the top-level
   :alt: current build status for namedropper-py
   :target: https://travis-ci.org/emory-libraries-disc/namedropper-oxygen
 
-.. _`Oxygen XML editor`: http://oxygenxml.com/
-.. _`VIAF`: http://viaf.org/
+.. _Oxygen XML editor: http://oxygenxml.com/
+.. _VIAF: http://viaf.org/
+.. _namedropper: https://github.com/emory-libraries-disc/name-dropper
 
 Plugin installation via Oxygen Add-Ons
 ======================================
