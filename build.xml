@@ -93,7 +93,7 @@
       <classpath refid="project.test.class.path" />
 
       <!-- run the tests and output results in plaintext as well as xml -->
-      <test name="edu.emory.library.oxygen_plugin.tests.NameDropperTest" haltonfailure="no" outfile="result">
+      <test name="edu.emory.library.namedropper.tests.NameDropperTest" haltonfailure="no" outfile="result">
         <formatter type="plain" usefile="false"/>
       </test>
     </junit>

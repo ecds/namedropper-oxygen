@@ -1,14 +1,14 @@
 /**
- * file oxygen/src/edu/emory/library/oxygen_plugin/NameDropper/NameDropperPluginExtension.java
- * 
+ * file src/edu/emory/library/namedropper/plugins/NameDropperPluginExtension.java
+ *
  * Copyright 2012 Emory University Library
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package edu.emory.library.oxygen_plugin.NameDropper;
+package edu.emory.library.namedropper.plugins;
 
 
 //Oxygen stuff
@@ -62,40 +62,40 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 
-import edu.emory.library.oxygen_plugin.NameDropper.ResultChoice;
+import edu.emory.library.namedropper.plugins.ResultChoice;
 
 
-public class NameDropperPluginExtension implements SelectionPluginExtension {  
+public class NameDropperPluginExtension implements SelectionPluginExtension {
 
     public static String eadLabel;
     public static String teiLabel;
-    
+
     // used to determine ead tag
     public static HashMap eadTag = new HashMap();
-    
+
     // used to determine tei type attribute
     public static HashMap teiType = new HashMap();
-    
+
 
     /*
      * Constructor
      */
-    
+
     public NameDropperPluginExtension() {
         this.eadLabel = "EAD";
         this.teiLabel = "TEI";
-        
-        
+
+
         this.eadTag.put("Personal", "persname");
         this.eadTag.put("Corporate", "corpname");
         this.eadTag.put("Geographic", "geogname");
-        
-        
+
+
         this.teiType.put("Personal", "person");
         this.teiType.put("Corporate", "org");
         this.teiType.put("Geographic", "place");
     }
-    
+
     /**
     * Lookup name in name authority.
     *
@@ -108,19 +108,19 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         String orig = "";
         String result = "";
         String docType = context.getPluginWorkspace().getOptionsStorage().getOption("docType", "");
-        
+
         try {
             orig = context.getSelection();
             result = orig; // put back original text if anything goes wrong
-            
+
             if (this.tagAllowed(docType, context) == false) {
                 // if the tag is not allowed, throw an exception to be displayed
                 // as a warning message to the user
                 throw new Exception("Tag is not allowed in the current context");
             }
-            
+
             result = this.queryVIAF(orig, docType);
-            
+
             if(result == null) {result = orig;}
         } catch(Exception e) {
             // This section is in case you want the whole stack trace in the error message
@@ -131,29 +131,29 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             e.printStackTrace();
 
 
-            
+
             JOptionPane.showMessageDialog(context.getFrame(), e.getMessage(), "Warning",
                     JOptionPane.ERROR_MESSAGE);
         }
 
         return new SelectionPluginResultImpl(result);
     }
-    
-    
+
+
     /**
      * Determine what XML tag name to use for the specified document type.
-     * 
+     *
      * @param docType
      * @return String or null
      */
     public String getTagName(String docType) {
         return this.getTagName(docType, null);
     }
-    
+
     /**
-     * Determine what XML tag name to use for the specified document type 
+     * Determine what XML tag name to use for the specified document type
      * and type of name.
-     * 
+     *
      * @param docType (e.g., EAD or TEI)
      * @param nameType (Personal, Corporate, or Geographic)
      * @return String or null
@@ -169,30 +169,30 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         }
         return tag;
     }
-    
+
     /**
      * Attempt to determine if the tag that will be added for this document type
      * is allowed in the current context based on the XML Schema, if available.
      * Returns true or false when a schema is available to determine definitively
      * if the tag is allowed or not.  Otherwise returns null.
-     * 
+     *
      * @param docType
      * @param context
-     * @return Boolean 
+     * @return Boolean
      */
     public Boolean tagAllowed(String docType, SelectionPluginContext context) {
         String tag = this.getTagName(docType);
         Boolean tagAllowed = null;
         // determine what tag (roughly) we will be adding
         if (tag == null && docType.equals(this.eadLabel)) {
-            // use as generic stand-in for EAD, since all name tags 
+            // use as generic stand-in for EAD, since all name tags
             // follow basically the same rules
-            tag = "persname";   
+            tag = "persname";
         }
         // use workspace context to get schema
         int workspaceId = StandalonePluginWorkspace.MAIN_EDITING_AREA;
         WSEditor ed = context.getPluginWorkspace().getCurrentEditorAccess(workspaceId);
-        
+
         if (ed != null) {  // editor could be null if no workspace is initialized
             WSEditorPage page = ed.getCurrentPage();
             // cast as an xml text editor page if possible, for access to schema
@@ -213,17 +213,17 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
                         if (el.getName().equals(tag)) {
                             tagAllowed = true;
                             break;
-                        }                        
+                        }
                     }
                 } catch (javax.swing.text.BadLocationException e) {
                     tagAllowed = null;
                 }
             }
         }
-            
+
        return tagAllowed;
-    } 
-   
+    }
+
     /**
     * Query VIAF for name data
     *
@@ -246,36 +246,36 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         if (docType == null || docType.equals("")) {
             throw new Exception("No DocType selected");
         }
-        
+
         try {
-            
+
             params.put("query", name);
 
             // get the result of the query
             queryResult = this.query("http://viaf.org/viaf/AutoSuggest", params);
 
-            
+
             // get choices from JSON
             Object[] choices = this.makeChoices(queryResult);
-            
-            // display pop-up box 
-            ResultChoice selectedChoice = (ResultChoice) JOptionPane.showInputDialog(null, 
-                     "Names", "Search Results", 
-                     JOptionPane.PLAIN_MESSAGE, null, 
+
+            // display pop-up box
+            ResultChoice selectedChoice = (ResultChoice) JOptionPane.showInputDialog(null,
+                     "Names", "Search Results",
+                     JOptionPane.PLAIN_MESSAGE, null,
                      choices, choices[0]);
-             
-            // return null if cancel button is clicked 
+
+            // return null if cancel button is clicked
             if(selectedChoice == null) {
                  return null;
              }
              else {
                  viafid = selectedChoice.getViafid();
-                 
-                 // Query and parse xml based on viafid 
+
+                 // Query and parse xml based on viafid
                  String viafInfo = query(String.format("http://viaf.org/viaf/%s/viaf.xml", viafid), new HashMap());
                  doc = builder.build(viafInfo, null); // Build doc from retrun string
                  String nameType = doc.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").getValue();
-                 
+
                  result = this.makeTag(viafid, name, nameType, docType);
              }
         } catch(Exception e) {
@@ -338,67 +338,67 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         }
          return result;
     }
-    
+
     public Object[] makeChoices(String jsonStr) throws Exception {
-        
+
         try{
             // parse the JSON and return resut in the correct format
                 JSONObject json = (JSONObject)new JSONParser().parse(jsonStr);
                 JSONArray jsonArray = (JSONArray)json.get("result");
-            
+
                 //No results from query
                 if (jsonArray == null){
                     throw new Exception("No Results");
                 }
-            
+
                 // get First 15 choices
                 ArrayList choicesList = new ArrayList();
-            
+
                 for(int i=0; i < jsonArray.size() && i < 15; i++){
                     JSONObject obj = (JSONObject) jsonArray.get(i);
                     ResultChoice choice = new ResultChoice((String)obj.get("viafid"), (String)obj.get("term"));
                     choicesList.add(choice);
                 }
-            
+
                 return choicesList.toArray();
         } catch (Exception e) {
-           throw e; 
+           throw e;
         }
-        
+
     }
-    
-    
+
+
     public String makeTag(String viafid, String name, String nameType, String docType) throws Exception {
         String result = null;;
-        
+
         try{
             String tag = null;
             String type = null;
 
-            
-            // docType must be set   
+
+            // docType must be set
             if(docType.equals(this.eadLabel)){
                 tag = this.getTagName(docType);
                 if (tag == null) {throw new Exception("Unsupported nameType: " + nameType);}
-                
+
                 result = String.format("<%s source=\"viaf\" authfilenumber=\"%s\">%s</%s>", tag, viafid, name, tag);
             }
 
             else if (docType.equals(this.teiLabel)){
                 tag = this.getTagName(docType);
                 type = (String) this.teiType.get(nameType);
-                
+
                 if (type == null) {throw new Exception("Unsupported nameType: " + nameType);}
-                
+
                 //create tag with viafid if result is one of the suppoeted types
                   result = String.format("<%s ref=\"http://viaf.org/viaf/%s\" type=\"%s\">%s</%s>", tag, viafid, type, name, tag);
 
-            }    
+            }
         } catch (Exception e) {
             throw e;
     }
-   
+
         return result;
   }
-    
+
 }
