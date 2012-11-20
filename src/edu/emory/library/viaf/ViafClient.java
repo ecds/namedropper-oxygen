@@ -29,35 +29,39 @@ import java.net.URLEncoder;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-//JSON Parsing
+// JSON Parsing
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONArray;
 
 import edu.emory.library.viaf.ViafResource;
 
+/**
+ * Client object for accessing VIAF (Virtual International Authority File,
+ * http://viaf.org ) webservices.
+ *
+ * For more information about VIAF APIs, see
+ * http://www.oclc.org/developer/documentation/virtual-international-authority-file-viaf/using-api
+ *
+ */
 public class ViafClient {
 
     public static String baseUrl = "http://viaf.org/viaf";
 
+    /**
+     * Query the VIAF AutoSuggest API to get suggestions matches for
+     * a user-specified search term.  Returns an empty list if
+     * no matches were found or if there was an error either making
+     * the request or parsing the response.
+     *
+     * @param String search term
+     * @return list of ViafResource
+     */
     public List<ViafResource> suggest(String term) throws Exception {
+
         String uri = String.format("%s/AutoSuggest?query=%s", this.baseUrl,
             URLEncoder.encode(term, "UTF-8"));
-
-        // Do the acual query
-        URL urlObj = new URL(uri);
-        HttpURLConnection connection = null;
-        connection = (HttpURLConnection) urlObj.openConnection();
-        connection.setDoOutput(true);
-        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = br.readLine()) != null) {
-            sb.append(line+"\n");
-        }
-        br.close();
-        String result = "";
-        result = sb.toString();
+        String result = this.readUrlContents(uri);
 
         List<ViafResource> resources = new ArrayList<ViafResource>();
 
@@ -74,9 +78,7 @@ public class ViafClient {
                 // results may also include the following identifiers:
                 //   lc, dnb, bnf, bne, nkc, nlilat, nla
                 ViafResource vr = new ViafResource((String)obj.get("viafid"), (String)obj.get("term"));
-                System.out.println(vr.toString());
                 resources.add(vr);
-
             }
 
         } catch (Exception e) {
@@ -86,6 +88,25 @@ public class ViafClient {
 //        System.out.println("generated list with " + resources.size() + " length");
 
         return resources;
+    }
+
+    // utility method to get the contents of a URL into a string
+    // TODO: look for a better way to handle this / optiosn for more reusable code
+    public String readUrlContents(String url) throws Exception {
+        URL urlObj = new URL(url);
+        HttpURLConnection connection = null;
+        connection = (HttpURLConnection) urlObj.openConnection();
+        connection.setDoOutput(true);
+        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) {
+            sb.append(line+"\n");
+        }
+        br.close();
+        String result = "";
+        result = sb.toString();
+        return result;
     }
 
 

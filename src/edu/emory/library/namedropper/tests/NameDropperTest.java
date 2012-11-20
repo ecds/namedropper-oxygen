@@ -30,10 +30,9 @@ import static org.junit.Assert.*;
 
 import static org.mockito.Mockito.*;
 
-import ro.sync.exml.plugin.selection.SelectionPluginContext;
+import java.util.List;
+import java.util.ArrayList;
 
-import edu.emory.library.namedropper.plugins.NameDropperPluginExtension;
-import edu.emory.library.namedropper.plugins.ResultChoice;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.InputStream;
@@ -43,8 +42,7 @@ import java.util.HashMap;
 import java.io.File;
 import javax.swing.JOptionPane;
 
-import nu.xom.Builder;
-import nu.xom.Document;
+import ro.sync.exml.plugin.selection.SelectionPluginContext;
 import ro.sync.contentcompletion.xml.WhatElementsCanGoHereContext;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextXMLSchemaManager;
@@ -52,185 +50,85 @@ import ro.sync.exml.workspace.api.editor.page.text.xml.WSXMLTextEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.contentcompletion.xml.CIElement;
 
-
+import edu.emory.library.namedropper.plugins.NameDropperPluginExtension;
+import edu.emory.library.viaf.ViafClient;
+import edu.emory.library.viaf.ViafResource;
 
 public class NameDropperTest {
-    // Mock plugin
+    // Mock objects
     NameDropperPluginExtension mockND;
-
     SelectionPluginContext mockContext;
-    // Mock xml builder
-    static Builder realXmlBuilder = new Builder();
-    Builder mockXmlBuilder;
-
-
-    // Fixtures
-    static String autoSuggestReturn;
-    static Document viafReturn;
-
-    public NameDropperTest() {
-    }
-
-    //Read file into string used to get fixtures
-    public static String readFile( String file ) throws IOException {
-        // changed to getResourceAsStream to read from classpath inside jar
-        InputStream is = NameDropperTest.class.getResourceAsStream(file);
-        BufferedReader reader = new BufferedReader( new InputStreamReader(is));
-        String         line = null;
-        StringBuilder  stringBuilder = new StringBuilder();
-        String         ls = System.getProperty("line.separator");
-
-        while( ( line = reader.readLine() ) != null ) {
-            stringBuilder.append( line );
-            stringBuilder.append( ls );
-        }
-
-        return stringBuilder.toString();
-    }
-
-
-
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        // load fixtures
-        autoSuggestReturn = readFile("autoSuggestReturn.json");
-        viafReturn = realXmlBuilder.build(NameDropperTest.class.getResourceAsStream("viafReturn.xml"));
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
 
     @Before
     public void setUp() {
-        // create mocks
-
-        try {
-            this.mockND = mock(NameDropperPluginExtension.class);
-            this.mockContext = mock(SelectionPluginContext.class);
-            this.mockXmlBuilder = mock(Builder.class);
-            viafReturn = realXmlBuilder.build(NameDropperTest.class.getResourceAsStream("viafReturn.xml"));
-
-    }catch (Exception e){}
+        // initialize mocks
+        this.mockND = mock(NameDropperPluginExtension.class);
+        this.mockContext = mock(SelectionPluginContext.class);
+        this.mockND.viaf = mock(ViafClient.class);
     }
 
     @After
     public void tearDown() {
         this.mockND = null;
-        this.mockXmlBuilder = null;
+        this.mockContext = null;
     }
 
-     @Rule
-     public ExpectedException exception = ExpectedException.none();
-
-
-     // TODO: shift or split up to test refactored code
-     // @Test
-     // public void testQueryViaf() {
-
-     //     String result = "";
-     //     String docType = "";
-
-     //     try {
-     //      String searchTerm = "Smith";
-     //       HashMap h = new HashMap();
-     //       h.put("query", searchTerm);
-
-     //       // setup corret returns for the method calls
-     //       when(this.mockND.query("http://viaf.org/viaf/AutoSuggest", h)).thenReturn(autoSuggestReturn);
-     //       when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
-
-     //       // EAD version of tags
-     //       docType = "EAD";
-     //       when(this.mockND.queryVIAF(searchTerm, docType)).thenCallRealMethod();
-     //       when(this.mockND.getTagName(docType, "Corporate")).thenReturn("corpname");
-
-     //       // Corp
-     //       result = this.mockND.queryVIAF(searchTerm, docType);
-     //       assertEquals(result, "<corpname source=\"viaf\" authfilenumber=\"159021806\">Smith</corpname>");
-
-     //       // Person
-
-     //       // Change value to Person
-     //       viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").removeChild(0);
-     //       viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").appendChild("Personal");
-     //       when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
-     //       when(this.mockND.getTagName(docType, "Personal")).thenReturn("persname");
-     //       result = this.mockND.queryVIAF(searchTerm, docType);
-     //       assertEquals(result, "<persname source=\"viaf\" authfilenumber=\"159021806\">Smith</persname>");
-
-     //       // Geo
-
-     //       // Change value to Geographic
-     //       viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").removeChild(0);
-     //       viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").appendChild("Geographic");
-     //       when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
-     //       when(this.mockND.getTagName(docType, "Geographic")).thenReturn("geogname");
-
-     //       result = this.mockND.queryVIAF(searchTerm, docType);
-     //       assertEquals(result, "<geogname source=\"viaf\" authfilenumber=\"159021806\">Smith</geogname>");
-
-
-
-     //       // TEI version of tags
-     //       docType = "TEI";
-     //       when(this.mockND.queryVIAF(searchTerm, docType)).thenCallRealMethod();
-     //       when(this.mockND.getTagName(docType, "Geographic")).thenReturn("name");
-
-     //       // Place
-     //       result = this.mockND.queryVIAF(searchTerm, docType);
-     //       assertEquals(result, "<name ref=\"http://viaf.org/viaf/159021806\" type=\"place\">Smith</name>");
-
-     //       // Person
-
-     //       // Change value to Person
-     //       viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").removeChild(0);
-     //       viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").appendChild("Personal");
-     //       when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
-     //       when(this.mockND.getTagName(docType, "Personal")).thenReturn("name");
-
-     //       result = this.mockND.queryVIAF(searchTerm, docType);
-     //       assertEquals(result, "<name ref=\"http://viaf.org/viaf/159021806\" type=\"person\">Smith</name>");
-
-     //       // Org
-
-     //       // Change value to Geographic
-     //       viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").removeChild(0);
-     //       viafReturn.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").appendChild("Corporate");
-     //       when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
-     //       when(this.mockND.getTagName(docType, "Corporate")).thenReturn("name");
-
-     //       result = this.mockND.queryVIAF(searchTerm, docType);
-     //       assertEquals(result, "<name ref=\"http://viaf.org/viaf/159021806\" type=\"org\">Smith</name>");
-
-     //     } catch (Exception e){}
-
-
-     // }
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
      @Test
      public void testQueryViafNoDocType() throws Exception {
 
-         try {
-              exception.expect(Exception.class);
-              exception.expectMessage("No DocType selected");
-              String result = "";
-              String searchTerm = "Smth";
-              HashMap h = new HashMap();
-              h.put("query", searchTerm);
+        exception.expect(Exception.class);
+        exception.expectMessage("No DocType selected");
 
-               // setup corret returns for the method calls
-               when(this.mockND.query("http://viaf.org/viaf/AutoSuggest", h)).thenReturn(autoSuggestReturn);
-               when(this.mockND.queryVIAF(searchTerm, "")).thenCallRealMethod();
-               when(this.mockND.query("http://viaf.org/viaf/159021806/viaf.xml", new HashMap())).thenReturn(viafReturn.toXML());
-
-               result = this.mockND.queryVIAF(searchTerm, "");
-         } catch (Exception e){
-            throw e;
-
-         }
+        String searchTerm = "Smth";
+        when(this.mockND.queryVIAF(searchTerm, "")).thenCallRealMethod();
+        this.mockND.queryVIAF(searchTerm, "");
      }
+
+     @Test
+     public void testQueryViafNoResults() throws Exception {
+
+        exception.expect(Exception.class);
+        exception.expectMessage("No Results");
+
+        String term = "Smth";
+        String docType = "EAD";
+        List<ViafResource> suggestions = new ArrayList<ViafResource>();
+        when(this.mockND.queryVIAF(term, docType)).thenCallRealMethod();
+        when(this.mockND.viaf.suggest(term)).thenReturn(suggestions);
+
+        this.mockND.queryVIAF(term, docType);
+     }
+
+    @Test
+    public void testQueryViaf() throws Exception {
+
+        String result;
+        String docType = "EAD";
+        String searchTerm = "Smith";
+
+        // mock suggestions to be returned by mock ViafClient
+        ViafResource mockvr = mock(ViafResource.class);
+        List<ViafResource> suggestions = new ArrayList<ViafResource>();
+        suggestions.add(mockvr);
+        when(this.mockND.viaf.suggest(searchTerm)).thenReturn(suggestions);
+
+        // simulate user clicking cancel
+        when(this.mockND.getUserSelection(suggestions)).thenReturn(null);
+        result = this.mockND.queryVIAF(searchTerm, docType);
+        assertEquals(null, result);
+
+        // user selects first (only) option
+        when(this.mockND.queryVIAF(searchTerm, docType)).thenCallRealMethod();
+        when(this.mockND.getUserSelection(suggestions)).thenReturn(mockvr);
+
+        // makeTag functionality is tested separately; here, just verify it was called
+        // with the correct arguments
+        this.mockND.queryVIAF(searchTerm, docType);
+        verify(this.mockND).makeTag(searchTerm, mockvr, docType);
+    }
 
      @Test
      public void testGetTagName() {
@@ -310,98 +208,48 @@ public class NameDropperTest {
 
      }
 
-     // @Test
-     // public void testMakeChoice() {
-     //     try{
-     //         when(this.mockND.makeChoices(autoSuggestReturn)).thenCallRealMethod();
-     //         Object[] choices = this.mockND.makeChoices(autoSuggestReturn);
-     //         ResultChoice choice1 = (ResultChoice)choices[0];
-     //         ResultChoice choice2 = (ResultChoice)choices[1];
-     //         assertEquals("Smithsonian Institution. Bureau of American Ethnology", choice1.getTerm());
-     //         assertEquals("159021806", choice1.getViafid());
-     //         assertEquals("Smithsonian American art museum Washington, D.C", choice2.getTerm());
-     //         assertEquals("146976922", choice2.getViafid());
-     //     } catch (Exception e) {}
-
-     // }
-
-     // @Test
-     // public void testMakeChoiceNoResults() throws Exception {
-     //     try{
-     //         exception.expect(Exception.class);
-     //         exception.expectMessage("No Results");
-
-     //         String noResultStr = "{\"query\": \"jjfkdjkfjdk\",\"result\": null}";
-
-     //         when(this.mockND.makeChoices(noResultStr)).thenCallRealMethod();
-     //         Object[] choices = this.mockND.makeChoices(noResultStr);
-     //     } catch (Exception e){
-     //         throw e;
-     //     }
-
-     // }
-
      @Test
-     public void testMakeTag() {
-         try{
-             String tag = null;
+     public void testMakeTag() throws Exception {
 
-             when(this.mockND.makeTag("12345", "someName", "Personal", "EAD")).thenCallRealMethod();
-             when(this.mockND.makeTag("12345", "someName", "Corporate", "EAD")).thenCallRealMethod();
-             when(this.mockND.makeTag("12345", "someName", "Geographic", "EAD")).thenCallRealMethod();
-             when(this.mockND.makeTag("12345", "someName", "Personal", "TEI")).thenCallRealMethod();
-             when(this.mockND.makeTag("12345", "someName", "Corporate", "TEI")).thenCallRealMethod();
-             when(this.mockND.makeTag("12345", "someName", "Geographic", "TEI")).thenCallRealMethod();
+        NameDropperPluginExtension nd = new NameDropperPluginExtension();
 
+        // build a mock ViafResource to test with
+        ViafResource mockvr = mock(ViafResource.class);
+        when(mockvr.getViafId()).thenReturn("12345");
+        when(mockvr.getUri()).thenReturn("http://viaf.org/viaf/12345");
 
-             tag = this.mockND.makeTag("12345", "someName", "Personal", "EAD");
-             assertEquals(tag, "<persname source=\"viaf\" authfilenumber=\"12345\">someName</persname>");
-             tag = this.mockND.makeTag("12345", "someName", "Corporate", "EAD");
-             assertEquals(tag, "<corpname source=\"viaf\" authfilenumber=\"12345\">someName</corpname>");
-             tag = this.mockND.makeTag("12345", "someName", "Geographic", "EAD");
-             assertEquals(tag, "<geogname source=\"viaf\" authfilenumber=\"12345\">someName</geogname>");
-             tag = this.mockND.makeTag("12345", "someName", "Personal", "TEI");
-             assertEquals(tag, "<name ref=\"http://viaf.org/viaf/12345\" type=\"person\">someName</name>");
-             tag = this.mockND.makeTag("12345", "someName", "Corporate", "TEI");
-             assertEquals(tag, "<name ref=\"http://viaf.org/viaf/12345\" type=\"org\">someName</name>");
-             tag = this.mockND.makeTag("12345", "someName", "Geographic", "TEI");
-             assertEquals(tag, "<name ref=\"http://viaf.org/viaf/12345\" type=\"place\">someName</name>");
+        // person result
+        when(mockvr.getType()).thenReturn("Personal");
+        assertEquals("<persname source=\"viaf\" authfilenumber=\"12345\">someName</persname>",
+          nd.makeTag("someName", mockvr, "EAD"));
+        assertEquals("<name ref=\"http://viaf.org/viaf/12345\" type=\"person\">someName</name>",
+          nd.makeTag("someName", mockvr, "TEI"));
 
+        // corporate
+        when(mockvr.getType()).thenReturn("Corporate");
+        assertEquals("<corpname source=\"viaf\" authfilenumber=\"12345\">someName</corpname>",
+           nd.makeTag("someName", mockvr, "EAD"));
+        assertEquals("<name ref=\"http://viaf.org/viaf/12345\" type=\"org\">someName</name>",
+          nd.makeTag("someName", mockvr, "TEI"));
 
-
-         } catch (Exception e) {}
-
+        // place
+        when(mockvr.getType()).thenReturn("Geographic");
+        assertEquals("<geogname source=\"viaf\" authfilenumber=\"12345\">someName</geogname>",
+           nd.makeTag("someName", mockvr, "EAD"));
+        assertEquals("<name ref=\"http://viaf.org/viaf/12345\" type=\"place\">someName</name>",
+          nd.makeTag("someName", mockvr, "TEI"));
      }
 
      @Test
      public void testMakeTagNoResults() throws Exception {
-         try{
-             exception.expect(Exception.class);
-             exception.expectMessage("Unsupported nameType: BadNameType");
+        exception.expect(Exception.class);
+        exception.expectMessage("Unsupported nameType: BadNameType");
+        ViafResource mockvr = mock(ViafResource.class);
+        when(mockvr.getType()).thenReturn("BadNameType");
 
-             when(this.mockND.makeTag("12345", "someName", "BadNameType", "EAD")).thenCallRealMethod();
-             this.mockND.makeTag("12345", "someName", "BadNameType", "EAD");
-         } catch (Exception e){
-             throw e;
-         }
-
+        when(this.mockND.makeTag("someName", mockvr, "EAD")).thenCallRealMethod();
+        this.mockND.makeTag("someName", mockvr, "EAD");
      }
 
-     @Test
-     public void testResultChoice(){
-     ResultChoice rc1 = new ResultChoice();
 
-     assertTrue(rc1.getTerm() == null);
-     assertTrue(rc1.getViafid() == null);
-
-     rc1.settViafid("viaf1");
-     rc1.setTerm("term1");
-     assertEquals("viaf1", rc1.getViafid());
-     assertEquals("term1", rc1.getTerm());
-
-     ResultChoice rc2 = new ResultChoice("v2", "t2");
-     assertEquals("v2", rc2.getViafid());
-     assertEquals("t2", rc2.getTerm());
-
-     }
 }

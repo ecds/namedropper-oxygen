@@ -19,7 +19,7 @@
 package edu.emory.library.namedropper.plugins;
 
 
-//Oxygen stuff
+// Oxygen components
 import ro.sync.exml.plugin.selection.SelectionPluginContext;
 import ro.sync.exml.plugin.selection.SelectionPluginExtension;
 import ro.sync.exml.plugin.selection.SelectionPluginResult;
@@ -33,18 +33,11 @@ import ro.sync.contentcompletion.xml.WhatElementsCanGoHereContext;
 import ro.sync.contentcompletion.xml.CIElement;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
-// Http Requests
-import java.net.URL;
-import java.net.HttpURLConnection;
-import java.lang.StringBuffer;
-import java.net.URLEncoder;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 
-// Pop Up Message when errors
+// Pop-Up Message for errors, selection dialog
 import javax.swing.JOptionPane;
 
 // JSON Parsing
@@ -61,7 +54,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 // local dependencies
-//import edu.emory.library.namedropper.plugins.ResultChoice;
 import edu.emory.library.viaf.ViafClient;
 import edu.emory.library.viaf.ViafResource;
 
@@ -77,6 +69,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
     // used to determine tei type attribute
     public static HashMap teiType = new HashMap();
 
+    public ViafClient viaf = new ViafClient();
 
     /*
      * Constructor
@@ -231,6 +224,8 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
     * @return          String containing persname xml tag data.
     */
     public String queryVIAF(String name, String docType) throws Exception {
+        // FIXME: may want to rename this method to be a little more descriptive
+
         String result = null;  // returned if no results are found
 
         // if document type is not set, don't bother to query VIAF
@@ -239,151 +234,77 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             throw new Exception("No DocType selected");
         }
 
-        try {
-
-            ViafClient vc = new ViafClient();
-            List<ViafResource> suggestions = vc.suggest(name);
-            if (suggestions.size() == 0) {
-                throw new Exception("No Results");
-            }
-            Object[] choices = suggestions.toArray();
-
-            // display pop-up box
-            ViafResource selection = (ViafResource) JOptionPane.showInputDialog(null, // parent component (?)
-                     "Names", "Search Results",    // message/label
-                     JOptionPane.PLAIN_MESSAGE, null,   // type of message / ?
-                     choices, choices[0]);
-            // FIXME: seems to be a unicode issue here; accented characters come through
-            // fine in json response and as ViafResource label, but don't display correctly in the dialog
-
-            // returns null if cancel button is clicked
-            if (selection != null) {
-                result = this.makeTag(name, selection, docType);
-             }
-
-        } catch (Exception e) {
-            throw e; //Throw up
+        List<ViafResource> suggestions = this.viaf.suggest(name);
+        if (suggestions.size() == 0) {
+            throw new Exception("No Results");
         }
+        ViafResource selection = this.getUserSelection(suggestions);
+
+        // returns null if cancel button is clicked
+        if (selection != null) {
+            result = this.makeTag(name, selection, docType);
+         }
 
         return result;
     }
 
     /**
-    * performs a query against the provided url using the provided query parms.
-    *
-    * @param  url  Base url to query.
-    * @param  params   key value pairs of query parameters.
-    * @return          Results of query.
-    */
-    public String query(String url, HashMap params) throws Exception {
-        String result = "";
-        StringBuffer urlBuf = new StringBuffer();
-
-        try {
-            result = (String)params.get("query");  //Used if there are no results
-            urlBuf = new StringBuffer();
-            urlBuf.append(url);
-
-            //Build query string
-            for (int i=0; i < params.size(); i++) {
-                String key = (String)params.keySet().toArray()[i];
-                String val = (String)params.values().toArray()[i];
-
-                //put the ?  if params exits
-                if(i==0 && !url.endsWith("?")){
-                    urlBuf.append("?");
-                }
-
-                //Append the key, value pairs
-                urlBuf.append(key + "=" + URLEncoder.encode(val, "UTF-8"));
-
-                if(i != params.size());{
-                    urlBuf.append("&");
-                }
-            }
-
-            // Do the acual query
-            URL urlObj = new URL(urlBuf.toString());
-            HttpURLConnection connection = null;
-            connection = (HttpURLConnection)urlObj.openConnection();
-            connection.setDoOutput(true);
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line+"\n");
-            }
-            br.close();
-            result = sb.toString();
-
-
-        } catch(Exception e){
-            throw e; //Throw up
-        }
-         return result;
+     * Given a list of ViafResource objects, prompt the user to choose one
+     * and return the selected resource, or null for no selection.
+     */
+    public ViafResource getUserSelection(List<ViafResource> suggestions) {
+        Object[] choices = suggestions.toArray();
+        // display pop-up box and return whatever value the user selects
+        return (ViafResource) JOptionPane.showInputDialog(null, // parent component (?)
+                 "Names", "Search Results",    // message/label
+                 JOptionPane.PLAIN_MESSAGE, null,   // type of message / ?
+                 choices, choices[0]);
+        // FIXME: seems to be a unicode issue here; accented characters come through
+        // fine in json response and as ViafResource label, but don't display correctly in the dialog
     }
 
-    // public Object[] makeChoices(String jsonStr) throws Exception {
+    /**
+     * Generate an xml tag based on a name, a resource, and the type of document.  Uses
+     * ViafResource type and viafid or URI to generate the appropriate tag and attributes.
+     *
+     * @param String name text of the name, which will be used as the content of the tag
+     * @param ViafResource resource
+     * @param String docType - type of document (EAD or TEI), to determine type of tag
+     *     to insert
+     *
+     * @return String of the generated tag or null
+     * @raises Exception if a resource has an unsupported name type
+     */
+    public String makeTag(String name, ViafResource resource, String docType) throws Exception {
 
-    //     try{
-    //         // parse the JSON and return resut in the correct format
-    //             JSONObject json = (JSONObject)new JSONParser().parse(jsonStr);
-    //             JSONArray jsonArray = (JSONArray)json.get("result");
-
-    //             //No results from query
-    //              if (jsonArray == null){
-    //                 throw new Exception("No Results");
-    //             }
-
-    //             // get First 15 choices
-    //             ArrayList choicesList = new ArrayList();
-
-    //             for(int i=0; i < jsonArray.size() && i < 15; i++){
-    //                 JSONObject obj = (JSONObject) jsonArray.get(i);
-    //                 ResultChoice choice = new ResultChoice((String)obj.get("viafid"), (String)obj.get("term"));
-    //                 choicesList.add(choice);
-    //             }
-
-    //             return choicesList.toArray();
-    //     } catch (Exception e) {
-    //        throw e;
-    //     }
-
-    // }
-
-    public String makeTag(String name, ViafResource res, String docType) throws Exception {
-        return this.makeTag(name, res.getViafId(), res.getType(), docType);
-    }
-
-    public String makeTag(String name, String viafid, String nameType, String docType) throws Exception {
         String result = null;
+        String tag = null;
+        String type = null;
 
-        try{
-            String tag = null;
-            String type = null;
+        String nameType = resource.getType();
 
-
-            // docType must be set
-            if(docType.equals(this.eadLabel)){
-                tag = this.getTagName(docType, nameType);
-                if (tag == null) {throw new Exception("Unsupported nameType: " + nameType);}
-
-                result = String.format("<%s source=\"viaf\" authfilenumber=\"%s\">%s</%s>", tag, viafid, name, tag);
+        // docType must be set
+        if (docType.equals(this.eadLabel)){
+            tag = this.getTagName(docType, nameType);
+            if (tag == null) {
+                throw new Exception("Unsupported nameType: " + nameType);
             }
 
-            else if (docType.equals(this.teiLabel)){
-                tag = this.getTagName(docType);
-                type = (String) this.teiType.get(nameType);
+            result = String.format("<%s source=\"viaf\" authfilenumber=\"%s\">%s</%s>", tag,
+                resource.getViafId(), name, tag);
 
-                if (type == null) {throw new Exception("Unsupported nameType: " + nameType);}
+        } else if (docType.equals(this.teiLabel)) {
+            tag = this.getTagName(docType);
+            type = (String) this.teiType.get(nameType);
 
-                //create tag with viafid if result is one of the suppoeted types
-                  result = String.format("<%s ref=\"http://viaf.org/viaf/%s\" type=\"%s\">%s</%s>", tag, viafid, type, name, tag);
-
+            if (type == null) {
+                throw new Exception("Unsupported nameType: " + nameType);
             }
-        } catch (Exception e) {
-            throw e;
-    }
+
+            // create tag with viafid if result is one of the supported types
+            result = String.format("<%s ref=\"%s\" type=\"%s\">%s</%s>", tag,
+                resource.getUri(), type, name, tag);
+        }
 
         return result;
   }
