@@ -42,27 +42,28 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.ArrayList;
-
+import java.util.List;
 
 // Pop Up Message when errors
 import javax.swing.JOptionPane;
 
-//JSON Parsing
+// JSON Parsing
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONArray;
 
-//XML Parsing
+// XML Parsing
 import nu.xom.Builder;
 import nu.xom.Document;
 
-
-//Used when getting full stack trace
+// Used when getting full stack trace
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-
-import edu.emory.library.namedropper.plugins.ResultChoice;
+// local dependencies
+//import edu.emory.library.namedropper.plugins.ResultChoice;
+import edu.emory.library.viaf.ViafClient;
+import edu.emory.library.viaf.ViafResource;
 
 
 public class NameDropperPluginExtension implements SelectionPluginExtension {
@@ -122,15 +123,13 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             result = this.queryVIAF(orig, docType);
 
             if(result == null) {result = orig;}
-        } catch(Exception e) {
+        } catch (Exception e) {
             // This section is in case you want the whole stack trace in the error message
             // Pass sw.toString() instead of e.getMessage() in the showMessageDialog function
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
             e.printStackTrace();
-
-
 
             JOptionPane.showMessageDialog(context.getFrame(), e.getMessage(), "Warning",
                     JOptionPane.ERROR_MESSAGE);
@@ -232,14 +231,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
     * @return          String containing persname xml tag data.
     */
     public String queryVIAF(String name, String docType) throws Exception {
-        String result = name;  //This is retutned if no resulsts are found
-        String queryResult = "";
-        Builder builder = new Builder();
-        Document doc = null;
-        String viafid = null;
-
-        // url query paramters
-        HashMap  params = new HashMap();
+        String result = null;  // returned if no results are found
 
         // if document type is not set, don't bother to query VIAF
         // since we won't be able to add a tag
@@ -249,38 +241,30 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
 
         try {
 
-            params.put("query", name);
-
-            // get the result of the query
-            queryResult = this.query("http://viaf.org/viaf/AutoSuggest", params);
-
-
-            // get choices from JSON
-            Object[] choices = this.makeChoices(queryResult);
+            ViafClient vc = new ViafClient();
+            List<ViafResource> suggestions = vc.suggest(name);
+            if (suggestions.size() == 0) {
+                throw new Exception("No Results");
+            }
+            Object[] choices = suggestions.toArray();
 
             // display pop-up box
-            ResultChoice selectedChoice = (ResultChoice) JOptionPane.showInputDialog(null,
-                     "Names", "Search Results",
-                     JOptionPane.PLAIN_MESSAGE, null,
+            ViafResource selection = (ViafResource) JOptionPane.showInputDialog(null, // parent component (?)
+                     "Names", "Search Results",    // message/label
+                     JOptionPane.PLAIN_MESSAGE, null,   // type of message / ?
                      choices, choices[0]);
+            // FIXME: seems to be a unicode issue here; accented characters come through
+            // fine in json response and as ViafResource label, but don't display correctly in the dialog
 
-            // return null if cancel button is clicked
-            if(selectedChoice == null) {
-                 return null;
+            // returns null if cancel button is clicked
+            if (selection != null) {
+                result = this.makeTag(name, selection, docType);
              }
-             else {
-                 viafid = selectedChoice.getViafid();
 
-                 // Query and parse xml based on viafid
-                 String viafInfo = query(String.format("http://viaf.org/viaf/%s/viaf.xml", viafid), new HashMap());
-                 doc = builder.build(viafInfo, null); // Build doc from retrun string
-                 String nameType = doc.getRootElement().getFirstChildElement("nameType", "http://viaf.org/viaf/terms#").getValue();
-
-                 result = this.makeTag(viafid, name, nameType, docType);
-             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw e; //Throw up
         }
+
         return result;
     }
 
@@ -339,37 +323,40 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
          return result;
     }
 
-    public Object[] makeChoices(String jsonStr) throws Exception {
+    // public Object[] makeChoices(String jsonStr) throws Exception {
 
-        try{
-            // parse the JSON and return resut in the correct format
-                JSONObject json = (JSONObject)new JSONParser().parse(jsonStr);
-                JSONArray jsonArray = (JSONArray)json.get("result");
+    //     try{
+    //         // parse the JSON and return resut in the correct format
+    //             JSONObject json = (JSONObject)new JSONParser().parse(jsonStr);
+    //             JSONArray jsonArray = (JSONArray)json.get("result");
 
-                //No results from query
-                if (jsonArray == null){
-                    throw new Exception("No Results");
-                }
+    //             //No results from query
+    //              if (jsonArray == null){
+    //                 throw new Exception("No Results");
+    //             }
 
-                // get First 15 choices
-                ArrayList choicesList = new ArrayList();
+    //             // get First 15 choices
+    //             ArrayList choicesList = new ArrayList();
 
-                for(int i=0; i < jsonArray.size() && i < 15; i++){
-                    JSONObject obj = (JSONObject) jsonArray.get(i);
-                    ResultChoice choice = new ResultChoice((String)obj.get("viafid"), (String)obj.get("term"));
-                    choicesList.add(choice);
-                }
+    //             for(int i=0; i < jsonArray.size() && i < 15; i++){
+    //                 JSONObject obj = (JSONObject) jsonArray.get(i);
+    //                 ResultChoice choice = new ResultChoice((String)obj.get("viafid"), (String)obj.get("term"));
+    //                 choicesList.add(choice);
+    //             }
 
-                return choicesList.toArray();
-        } catch (Exception e) {
-           throw e;
-        }
+    //             return choicesList.toArray();
+    //     } catch (Exception e) {
+    //        throw e;
+    //     }
 
+    // }
+
+    public String makeTag(String name, ViafResource res, String docType) throws Exception {
+        return this.makeTag(name, res.getViafId(), res.getType(), docType);
     }
 
-
-    public String makeTag(String viafid, String name, String nameType, String docType) throws Exception {
-        String result = null;;
+    public String makeTag(String name, String viafid, String nameType, String docType) throws Exception {
+        String result = null;
 
         try{
             String tag = null;
