@@ -29,6 +29,7 @@ import java.io.InputStreamReader;
 // XML Parsing
 import nu.xom.Builder;
 import nu.xom.Document;
+import nu.xom.Element;
 
 public class ViafResource {
 
@@ -57,41 +58,33 @@ public class ViafResource {
     }
 
     public String getUri() {
+        // NOTE: would be nice if VIAF base url could be set somewhere common
+        // and shared with ViafClient
         return String.format("http://viaf.org/viaf/%s/", this.viafid);
     }
 
-    protected String getXmlUri() {
+    public String getXmlUri() {
         return this.getUri() + "viaf.xml";
     }
 
-    protected Document getXmlDetails() {
+    public Document getXmlDetails() {
         // TODO: consider using RDF for viaf details instead of XML
         if (this.details == null) {
             // FIXME: can we do content-negotiation here instead?
             String result = "";
             try {
-                // could throw java.net.MalformedURLException
-                URL urlObj = new URL(this.getXmlUri());
+                result = this.readUrlContents(this.getXmlUri());
                 // FIXME: it should be possible to use the base URI with content negotiation
                 //  - should use an HTTP_ACCEPT header of application/xml or text/xml
+                // something like this:
                 // URL urlObj = new URL(this.getUri());
-                HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
-                //connection.addRequestProperty("Accept", "application/xml");
-                connection.setDoOutput(true);
+                // connection.addRequestProperty("Accept", "application/xml");
 
-                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line + "\n");
-                }
-                br.close();
-                result = sb.toString();
             } catch (Exception e) {
                 // could be java.io.IOException or java.net.MalformedURLException
-
             }
 
+            // FIXME: test that result is non-empty? (expected behavior ?)
             try {
                 Builder xmlbuilder = new Builder();
                 // Build doc from xml content returned by the http call
@@ -105,9 +98,40 @@ public class ViafResource {
     }
 
     public String getType() {
-        return this.getXmlDetails().getRootElement().getFirstChildElement("nameType",
-            this.viafNamespace).getValue();
-
+        String type = null;
+        Document details = this.getXmlDetails();
+        if (details != null) {
+            // FIXME: this may be rather dependent on current document structure;
+            // it might be better to use an XPath or similar here.
+            Element nameType = this.getXmlDetails().getRootElement().getFirstChildElement("nameType",
+                this.viafNamespace);
+            if (nameType != null) {
+                type = nameType.getValue();
+            }
+        }
+        return type;
     }
+
+    // utility method to get the contents of a URL into a string
+    // TODO: look for a better way to handle this / optiosn for more reusable code
+    // FIXME: duplicated from ViafClient!
+    public String readUrlContents(String url) throws Exception {
+        URL urlObj = new URL(url);
+        HttpURLConnection connection = null;
+        connection = (HttpURLConnection) urlObj.openConnection();
+        connection.setDoOutput(true);
+        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        StringBuilder sb = new StringBuilder();
+        // FIXME: should we be checking http response codes here?
+        String line;
+        while ((line = br.readLine()) != null) {
+            sb.append(line+"\n");
+        }
+        br.close();
+        String result = "";
+        result = sb.toString();
+        return result;
+    }
+
 
 }
