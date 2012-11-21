@@ -7,6 +7,8 @@
   <property name="src" location="src" />
   <property name="lib" location="lib" />
   <property name="build" location="build" />
+  <property name="reports.tests" location="${build}/test-results/" />
+
   <property name="dist" location="dist" />
   <property name="res" location="res" />
   <property environment="env"/>
@@ -87,20 +89,18 @@
   -->
   <target name="test" depends="compile,dist" description="Run the unit tests">
     <echo message="Running tests." />
+
+    <mkdir dir="${reports.tests}"/>
     <junit printsummary="no" haltonfailure="yes" haltonerror="yes">
 
       <!-- reference the path defined at the top of the file-->
       <classpath refid="project.test.class.path" />
 
-      <!-- run the tests and output results in plaintext as well as xml -->
-      <!-- <test name="edu.emory.library.namedropper.tests.NameDropperTest" haltonfailure="no" outfile="result">
-        <formatter type="plain" usefile="false"/>
-      </test>
- -->
-      <batchtest haltonfailure="no">
+      <formatter type="plain" usefile="false"/>
+      <formatter type="xml"/>
+
+      <batchtest fork="yes" haltonfailure="no" todir="${reports.tests}">
         <fileset dir="${src}" includes="**/tests/*Test*.java" />
-        <formatter type="plain" usefile="false"/>
-        <!-- TODO/FIXME: xml test reports? -->
       </batchtest>
 
     </junit>
