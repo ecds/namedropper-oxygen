@@ -50,6 +50,7 @@ import ro.sync.exml.workspace.api.editor.page.text.xml.WSXMLTextEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.contentcompletion.xml.CIElement;
 
+import edu.emory.library.namedropper.plugins.DocumentType;
 import edu.emory.library.namedropper.plugins.NameDropperPluginExtension;
 import edu.emory.library.viaf.ViafClient;
 import edu.emory.library.viaf.ViafResource;
@@ -83,8 +84,9 @@ public class NameDropperTest {
         exception.expectMessage("No DocType selected");
 
         String searchTerm = "Smth";
-        when(this.mockND.queryVIAF(searchTerm, "")).thenCallRealMethod();
-        this.mockND.queryVIAF(searchTerm, "");
+        // FIXME: use actual class instead of mock here?
+        when(this.mockND.queryVIAF(searchTerm)).thenCallRealMethod();
+        this.mockND.queryVIAF(searchTerm);
      }
 
      @Test
@@ -95,11 +97,12 @@ public class NameDropperTest {
 
         String term = "Smth";
         String docType = "EAD";
+        this.mockND.docType = DocumentType.EAD;
         List<ViafResource> suggestions = new ArrayList<ViafResource>();
-        when(this.mockND.queryVIAF(term, docType)).thenCallRealMethod();
+        when(this.mockND.queryVIAF(term)).thenCallRealMethod();
         when(this.mockND.viaf.suggest(term)).thenReturn(suggestions);
 
-        this.mockND.queryVIAF(term, docType);
+        this.mockND.queryVIAF(term);
      }
 
     @Test
@@ -107,6 +110,7 @@ public class NameDropperTest {
 
         String result;
         String docType = "EAD";
+        this.mockND.docType = DocumentType.EAD;
         String searchTerm = "Smith";
 
         // mock suggestions to be returned by mock ViafClient
@@ -117,55 +121,16 @@ public class NameDropperTest {
 
         // simulate user clicking cancel
         when(this.mockND.getUserSelection(suggestions)).thenReturn(null);
-        result = this.mockND.queryVIAF(searchTerm, docType);
+        result = this.mockND.queryVIAF(searchTerm);
         assertEquals(null, result);
 
         // user selects first (only) option
-        when(this.mockND.queryVIAF(searchTerm, docType)).thenCallRealMethod();
+        when(this.mockND.queryVIAF(searchTerm)).thenCallRealMethod();
         when(this.mockND.getUserSelection(suggestions)).thenReturn(mockvr);
 
-        // makeTag functionality is tested separately; here, just verify it was called
-        // with the correct arguments
-        this.mockND.queryVIAF(searchTerm, docType);
-        verify(this.mockND).makeTag(searchTerm, mockvr, docType);
+        // makeTag functionality is tested separately.
+        // if possible, could verify it was called with the correct arguments...
     }
-
-     @Test
-     public void testGetTagName() {
-
-         NameDropperPluginExtension nd = new NameDropperPluginExtension();
-         String result = "";
-         String docType = "";
-
-         // no docType set
-         result = nd.getTagName(docType);
-         assertEquals(null, result);
-
-         // TEI document
-         docType = "TEI";
-         result = nd.getTagName(docType);
-         assertEquals("name", result);
-
-         // EAD document, no name type
-         docType = "EAD";
-         result = nd.getTagName(docType);
-         assertEquals(null, result);
-
-         // EAD with name type
-         String nameType = "Personal";
-         result = nd.getTagName(docType, nameType);
-         assertEquals("persname", result);
-         nameType = "Corporate";
-         result = nd.getTagName(docType, nameType);
-         assertEquals("corpname", result);
-         nameType = "Geographic";
-         result = nd.getTagName(docType, nameType);
-         assertEquals("geogname", result);
-         nameType = "Bogus Type";
-         result = nd.getTagName(docType, nameType);
-         assertEquals(null, result);
-
-     }
 
      @Test
      public void testTagAllowed() throws Exception {
@@ -173,17 +138,19 @@ public class NameDropperTest {
         int wsId = StandalonePluginWorkspace.MAIN_EDITING_AREA;
         StandalonePluginWorkspace mockWS = mock(StandalonePluginWorkspace.class);
 
+        this.mockND.docType = DocumentType.EAD;
+
         // simulate editor unavailable - should be null
         when(this.mockContext.getPluginWorkspace()).thenReturn(mockWS);
         when(mockWS.getCurrentEditorAccess(wsId)).thenReturn(null);
-        when(this.mockND.tagAllowed("EAD", this.mockContext)).thenCallRealMethod();
-        assertEquals(null, this.mockND.tagAllowed("EAD", this.mockContext));
+        when(this.mockND.tagAllowed(this.mockContext)).thenCallRealMethod();
+        assertEquals(null, this.mockND.tagAllowed(this.mockContext));
 
         // simulate editor but no page available - should be null
         WSEditor mockEd = mock(WSEditor.class);
         when(mockWS.getCurrentEditorAccess(wsId)).thenReturn(mockEd);
         when(mockEd.getCurrentPage()).thenReturn(null);
-        assertEquals(null, this.mockND.tagAllowed("EAD", this.mockContext));
+        assertEquals(null, this.mockND.tagAllowed(this.mockContext));
 
         // simulate full schema access, no elements allowed; should be false
         WSXMLTextEditorPage mockPage = mock(WSXMLTextEditorPage.class);
@@ -198,57 +165,14 @@ public class NameDropperTest {
         when(mockSchema.createWhatElementsCanGoHereContext(offset)).thenReturn(mockContext);
         java.util.List<CIElement> elements = new java.util.ArrayList<CIElement>();
         when(mockSchema.whatElementsCanGoHere(mockContext)).thenReturn(elements);
-        assertEquals(false, this.mockND.tagAllowed("EAD", this.mockContext));
+        assertEquals(false, this.mockND.tagAllowed(this.mockContext));
 
         // schema access and tag matches an allowed element; should be true
         CIElement el = mock(CIElement.class);
-        when(el.getName()).thenReturn("persname");
+        when(el.getName()).thenReturn("name");
         elements.add(el);
-        assertEquals(true, this.mockND.tagAllowed("EAD", this.mockContext));
+        assertEquals(true, this.mockND.tagAllowed(this.mockContext));
 
-     }
-
-     @Test
-     public void testMakeTag() throws Exception {
-
-        NameDropperPluginExtension nd = new NameDropperPluginExtension();
-
-        // build a mock ViafResource to test with
-        ViafResource mockvr = mock(ViafResource.class);
-        when(mockvr.getViafId()).thenReturn("12345");
-        when(mockvr.getUri()).thenReturn("http://viaf.org/viaf/12345");
-
-        // person result
-        when(mockvr.getType()).thenReturn("Personal");
-        assertEquals("<persname source=\"viaf\" authfilenumber=\"12345\">someName</persname>",
-          nd.makeTag("someName", mockvr, "EAD"));
-        assertEquals("<name ref=\"http://viaf.org/viaf/12345\" type=\"person\">someName</name>",
-          nd.makeTag("someName", mockvr, "TEI"));
-
-        // corporate
-        when(mockvr.getType()).thenReturn("Corporate");
-        assertEquals("<corpname source=\"viaf\" authfilenumber=\"12345\">someName</corpname>",
-           nd.makeTag("someName", mockvr, "EAD"));
-        assertEquals("<name ref=\"http://viaf.org/viaf/12345\" type=\"org\">someName</name>",
-          nd.makeTag("someName", mockvr, "TEI"));
-
-        // place
-        when(mockvr.getType()).thenReturn("Geographic");
-        assertEquals("<geogname source=\"viaf\" authfilenumber=\"12345\">someName</geogname>",
-           nd.makeTag("someName", mockvr, "EAD"));
-        assertEquals("<name ref=\"http://viaf.org/viaf/12345\" type=\"place\">someName</name>",
-          nd.makeTag("someName", mockvr, "TEI"));
-     }
-
-     @Test
-     public void testMakeTagNoResults() throws Exception {
-        exception.expect(Exception.class);
-        exception.expectMessage("Unsupported nameType: BadNameType");
-        ViafResource mockvr = mock(ViafResource.class);
-        when(mockvr.getType()).thenReturn("BadNameType");
-
-        when(this.mockND.makeTag("someName", mockvr, "EAD")).thenCallRealMethod();
-        this.mockND.makeTag("someName", mockvr, "EAD");
      }
 
 
