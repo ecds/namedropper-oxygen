@@ -54,41 +54,18 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 // local dependencies
+import edu.emory.library.namedropper.plugins.DocumentType;
 import edu.emory.library.viaf.ViafClient;
 import edu.emory.library.viaf.ViafResource;
 
 
 public class NameDropperPluginExtension implements SelectionPluginExtension {
 
-    public static String eadLabel;
-    public static String teiLabel;
-
-    // used to determine ead tag
-    public static HashMap eadTag = new HashMap();
-
-    // used to determine tei type attribute
-    public static HashMap teiType = new HashMap();
-
     public ViafClient viaf = new ViafClient();
 
-    /*
-     * Constructor
-     */
+    public DocumentType docType;
+    // TODO: should probably make this private and use a setter
 
-    public NameDropperPluginExtension() {
-        this.eadLabel = "EAD";
-        this.teiLabel = "TEI";
-
-
-        this.eadTag.put("Personal", "persname");
-        this.eadTag.put("Corporate", "corpname");
-        this.eadTag.put("Geographic", "geogname");
-
-
-        this.teiType.put("Personal", "person");
-        this.teiType.put("Corporate", "org");
-        this.teiType.put("Geographic", "place");
-    }
 
     /**
     * Lookup name in name authority.
@@ -101,19 +78,26 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         //query VIAF for name data
         String orig = "";
         String result = "";
-        String docType = context.getPluginWorkspace().getOptionsStorage().getOption("docType", "");
+
+        String currentDocType = context.getPluginWorkspace().getOptionsStorage().getOption("docType", "");
+        // FIXME: must be a better way to do this; can we *store* as doctype?
+        if (currentDocType.equals("TEI")) {
+            this.docType = DocumentType.TEI;
+        } else if (currentDocType.equals("EAD")) {
+            this.docType = DocumentType.EAD;
+        }
 
         try {
             orig = context.getSelection();
             result = orig; // put back original text if anything goes wrong
 
-            if (this.tagAllowed(docType, context) == false) {
+            if (this.tagAllowed(context) == false) {
                 // if the tag is not allowed, throw an exception to be displayed
                 // as a warning message to the user
                 throw new Exception("Tag is not allowed in the current context");
             }
 
-            result = this.queryVIAF(orig, docType);
+            result = this.queryVIAF(orig);
 
             if(result == null) {result = orig;}
         } catch (Exception e) {
@@ -133,54 +117,19 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
 
 
     /**
-     * Determine what XML tag name to use for the specified document type.
-     *
-     * @param docType
-     * @return String or null
-     */
-    public String getTagName(String docType) {
-        return this.getTagName(docType, null);
-    }
-
-    /**
-     * Determine what XML tag name to use for the specified document type
-     * and type of name.
-     *
-     * @param docType (e.g., EAD or TEI)
-     * @param nameType (Personal, Corporate, or Geographic)
-     * @return String or null
-     */
-    public String getTagName(String docType, String nameType) {
-        String tag = null;
-        if (docType != null) {
-            if (docType.equals(this.teiLabel)) {
-                tag = "name";
-            } else if (docType.equals(this.eadLabel) && nameType != null) {
-                tag = (String) this.eadTag.get(nameType);
-            }
-        }
-        return tag;
-    }
-
-    /**
      * Attempt to determine if the tag that will be added for this document type
      * is allowed in the current context based on the XML Schema, if available.
      * Returns true or false when a schema is available to determine definitively
      * if the tag is allowed or not.  Otherwise returns null.
      *
-     * @param docType
      * @param context
      * @return Boolean
      */
-    public Boolean tagAllowed(String docType, SelectionPluginContext context) {
-        String tag = this.getTagName(docType);
+    public Boolean tagAllowed(SelectionPluginContext context) {
+        //String tag = this.getTagName(docType);
+        String tag = this.docType.getTagName();
         Boolean tagAllowed = null;
-        // determine what tag (roughly) we will be adding
-        if (tag == null && docType.equals(this.eadLabel)) {
-            // use as generic stand-in for EAD, since all name tags
-            // follow basically the same rules
-            tag = "persname";
-        }
+
         // use workspace context to get schema
         int workspaceId = StandalonePluginWorkspace.MAIN_EDITING_AREA;
         WSEditor ed = context.getPluginWorkspace().getCurrentEditorAccess(workspaceId);
@@ -220,17 +169,16 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
     * Query VIAF for name data
     *
     * @param  name  Name to query.
-    * @param  docType  String - EAD or TEI.
     * @return          String containing persname xml tag data.
     */
-    public String queryVIAF(String name, String docType) throws Exception {
+    public String queryVIAF(String name) throws Exception {
         // FIXME: may want to rename this method to be a little more descriptive
 
         String result = null;  // returned if no results are found
 
         // if document type is not set, don't bother to query VIAF
         // since we won't be able to add a tag
-        if (docType == null || docType.equals("")) {
+        if (this.docType == null) {
             throw new Exception("No DocType selected");
         }
 
@@ -242,7 +190,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
 
         // returns null if cancel button is clicked
         if (selection != null) {
-            result = this.makeTag(name, selection, docType);
+            result = this.docType.makeTag(name, selection);
          }
 
         return result;
@@ -263,50 +211,6 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         // fine in json response and as ViafResource label, but don't display correctly in the dialog
     }
 
-    /**
-     * Generate an xml tag based on a name, a resource, and the type of document.  Uses
-     * ViafResource type and viafid or URI to generate the appropriate tag and attributes.
-     *
-     * @param String name text of the name, which will be used as the content of the tag
-     * @param ViafResource resource
-     * @param String docType - type of document (EAD or TEI), to determine type of tag
-     *     to insert
-     *
-     * @return String of the generated tag or null
-     * @raises Exception if a resource has an unsupported name type
-     */
-    public String makeTag(String name, ViafResource resource, String docType) throws Exception {
 
-        String result = null;
-        String tag = null;
-        String type = null;
-
-        String nameType = resource.getType();
-
-        // docType must be set
-        if (docType.equals(this.eadLabel)){
-            tag = this.getTagName(docType, nameType);
-            if (tag == null) {
-                throw new Exception("Unsupported nameType: " + nameType);
-            }
-
-            result = String.format("<%s source=\"viaf\" authfilenumber=\"%s\">%s</%s>", tag,
-                resource.getViafId(), name, tag);
-
-        } else if (docType.equals(this.teiLabel)) {
-            tag = this.getTagName(docType);
-            type = (String) this.teiType.get(nameType);
-
-            if (type == null) {
-                throw new Exception("Unsupported nameType: " + nameType);
-            }
-
-            // create tag with viafid if result is one of the supported types
-            result = String.format("<%s ref=\"%s\" type=\"%s\">%s</%s>", tag,
-                resource.getUri(), type, name, tag);
-        }
-
-        return result;
-  }
 
 }
