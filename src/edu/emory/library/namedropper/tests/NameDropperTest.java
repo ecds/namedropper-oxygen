@@ -26,9 +26,14 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
-import static org.mockito.Mockito.*;
+import org.mockito.Mockito;
+
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -55,6 +60,8 @@ import edu.emory.library.namedropper.plugins.NameDropperPluginExtension;
 import edu.emory.library.viaf.ViafClient;
 import edu.emory.library.viaf.ViafResource;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(ViafClient.class)
 public class NameDropperTest {
     // Mock objects
     NameDropperPluginExtension mockND;
@@ -63,9 +70,9 @@ public class NameDropperTest {
     @Before
     public void setUp() {
         // initialize mocks
-        this.mockND = mock(NameDropperPluginExtension.class);
-        this.mockContext = mock(SelectionPluginContext.class);
-        this.mockND.viaf = mock(ViafClient.class);
+        this.mockND = Mockito.mock(NameDropperPluginExtension.class);
+        this.mockContext = Mockito.mock(SelectionPluginContext.class);
+        this.mockND.viaf = Mockito.mock(ViafClient.class);
     }
 
     @After
@@ -85,12 +92,13 @@ public class NameDropperTest {
 
         String searchTerm = "Smth";
         // FIXME: use actual class instead of mock here?
-        when(this.mockND.queryVIAF(searchTerm)).thenCallRealMethod();
+        Mockito.when(this.mockND.queryVIAF(searchTerm)).thenCallRealMethod();
         this.mockND.queryVIAF(searchTerm);
      }
 
      @Test
      public void testQueryViafNoResults() throws Exception {
+        PowerMockito.mockStatic(ViafClient.class);
 
         exception.expect(Exception.class);
         exception.expectMessage("No Results");
@@ -99,14 +107,15 @@ public class NameDropperTest {
         String docType = "EAD";
         this.mockND.docType = DocumentType.EAD;
         List<ViafResource> suggestions = new ArrayList<ViafResource>();
-        when(this.mockND.queryVIAF(term)).thenCallRealMethod();
-        when(this.mockND.viaf.suggest(term)).thenReturn(suggestions);
+        Mockito.when(this.mockND.queryVIAF(term)).thenCallRealMethod();
+        Mockito.when(ViafClient.suggest(term)).thenReturn(suggestions);
 
         this.mockND.queryVIAF(term);
      }
 
     @Test
     public void testQueryViaf() throws Exception {
+        PowerMockito.mockStatic(ViafClient.class);
 
         String result;
         String docType = "EAD";
@@ -114,19 +123,19 @@ public class NameDropperTest {
         String searchTerm = "Smith";
 
         // mock suggestions to be returned by mock ViafClient
-        ViafResource mockvr = mock(ViafResource.class);
+        ViafResource mockvr = Mockito.mock(ViafResource.class);
         List<ViafResource> suggestions = new ArrayList<ViafResource>();
         suggestions.add(mockvr);
-        when(this.mockND.viaf.suggest(searchTerm)).thenReturn(suggestions);
+        Mockito.when(ViafClient.suggest(searchTerm)).thenReturn(suggestions);
 
         // simulate user clicking cancel
-        when(this.mockND.getUserSelection(suggestions)).thenReturn(null);
+        Mockito.when(this.mockND.getUserSelection(suggestions)).thenReturn(null);
         result = this.mockND.queryVIAF(searchTerm);
         assertEquals(null, result);
 
         // user selects first (only) option
-        when(this.mockND.queryVIAF(searchTerm)).thenCallRealMethod();
-        when(this.mockND.getUserSelection(suggestions)).thenReturn(mockvr);
+        Mockito.when(this.mockND.queryVIAF(searchTerm)).thenCallRealMethod();
+        Mockito.when(this.mockND.getUserSelection(suggestions)).thenReturn(mockvr);
 
         // makeTag functionality is tested separately.
         // if possible, could verify it was called with the correct arguments...
@@ -136,40 +145,40 @@ public class NameDropperTest {
      public void testTagAllowed() throws Exception {
 
         int wsId = StandalonePluginWorkspace.MAIN_EDITING_AREA;
-        StandalonePluginWorkspace mockWS = mock(StandalonePluginWorkspace.class);
+        StandalonePluginWorkspace mockWS = Mockito.mock(StandalonePluginWorkspace.class);
 
         this.mockND.docType = DocumentType.EAD;
 
         // simulate editor unavailable - should be null
-        when(this.mockContext.getPluginWorkspace()).thenReturn(mockWS);
-        when(mockWS.getCurrentEditorAccess(wsId)).thenReturn(null);
-        when(this.mockND.tagAllowed(this.mockContext)).thenCallRealMethod();
+        Mockito.when(this.mockContext.getPluginWorkspace()).thenReturn(mockWS);
+        Mockito.when(mockWS.getCurrentEditorAccess(wsId)).thenReturn(null);
+        Mockito.when(this.mockND.tagAllowed(this.mockContext)).thenCallRealMethod();
         assertEquals(null, this.mockND.tagAllowed(this.mockContext));
 
         // simulate editor but no page available - should be null
-        WSEditor mockEd = mock(WSEditor.class);
-        when(mockWS.getCurrentEditorAccess(wsId)).thenReturn(mockEd);
-        when(mockEd.getCurrentPage()).thenReturn(null);
+        WSEditor mockEd = Mockito.mock(WSEditor.class);
+        Mockito.when(mockWS.getCurrentEditorAccess(wsId)).thenReturn(mockEd);
+        Mockito.when(mockEd.getCurrentPage()).thenReturn(null);
         assertEquals(null, this.mockND.tagAllowed(this.mockContext));
 
         // simulate full schema access, no elements allowed; should be false
-        WSXMLTextEditorPage mockPage = mock(WSXMLTextEditorPage.class);
-        WSTextXMLSchemaManager mockSchema = mock(WSTextXMLSchemaManager.class);
-        when(mockEd.getCurrentPage()).thenReturn(mockPage);
-        when(mockPage.getXMLSchemaManager()).thenReturn(mockSchema);
+        WSXMLTextEditorPage mockPage = Mockito.mock(WSXMLTextEditorPage.class);
+        WSTextXMLSchemaManager mockSchema = Mockito.mock(WSTextXMLSchemaManager.class);
+        Mockito.when(mockEd.getCurrentPage()).thenReturn(mockPage);
+        Mockito.when(mockPage.getXMLSchemaManager()).thenReturn(mockSchema);
         int offset = 1;
-        when(mockPage.getSelectionStart()).thenReturn(offset);
+        Mockito.when(mockPage.getSelectionStart()).thenReturn(offset);
         // getSelectionStart could throw a javax.swing.text.BadLocationException
         WhatElementsCanGoHereContext mockContext;
-        mockContext = mock(WhatElementsCanGoHereContext.class);
-        when(mockSchema.createWhatElementsCanGoHereContext(offset)).thenReturn(mockContext);
+        mockContext = Mockito.mock(WhatElementsCanGoHereContext.class);
+        Mockito.when(mockSchema.createWhatElementsCanGoHereContext(offset)).thenReturn(mockContext);
         java.util.List<CIElement> elements = new java.util.ArrayList<CIElement>();
-        when(mockSchema.whatElementsCanGoHere(mockContext)).thenReturn(elements);
+        Mockito.when(mockSchema.whatElementsCanGoHere(mockContext)).thenReturn(elements);
         assertEquals(false, this.mockND.tagAllowed(this.mockContext));
 
         // schema access and tag matches an allowed element; should be true
-        CIElement el = mock(CIElement.class);
-        when(el.getName()).thenReturn("name");
+        CIElement el = Mockito.mock(CIElement.class);
+        Mockito.when(el.getName()).thenReturn("name");
         elements.add(el);
         assertEquals(true, this.mockND.tagAllowed(this.mockContext));
 

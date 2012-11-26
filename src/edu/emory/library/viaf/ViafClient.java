@@ -57,11 +57,11 @@ public class ViafClient {
      * @param String search term
      * @return list of ViafResource
      */
-    public List<ViafResource> suggest(String term) throws Exception {
+    public static List<ViafResource> suggest(String term) throws Exception {
 
-        String uri = String.format("%s/AutoSuggest?query=%s", this.baseUrl,
+        String uri = String.format("%s/AutoSuggest?query=%s", baseUrl,
             URLEncoder.encode(term, "UTF-8"));
-        String result = this.readUrlContents(uri);
+        String result = readUrlContents(uri);
 
         List<ViafResource> resources = new ArrayList<ViafResource>();
 
@@ -92,7 +92,7 @@ public class ViafClient {
 
     // utility method to get the contents of a URL into a string
     // TODO: look for a better way to handle this / optiosn for more reusable code
-    public String readUrlContents(String url) throws Exception {
+    public static String readUrlContents(String url) throws Exception {
         URL urlObj = new URL(url);
         HttpURLConnection connection = null;
         connection = (HttpURLConnection) urlObj.openConnection();
