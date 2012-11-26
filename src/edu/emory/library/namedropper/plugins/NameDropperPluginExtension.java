@@ -81,11 +81,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
 
         String currentDocType = context.getPluginWorkspace().getOptionsStorage().getOption("docType", "");
         // FIXME: must be a better way to do this; can we *store* as doctype?
-        if (currentDocType.equals("TEI")) {
-            this.docType = DocumentType.TEI;
-        } else if (currentDocType.equals("EAD")) {
-            this.docType = DocumentType.EAD;
-        }
+        this.docType = DocumentType.fromString(currentDocType);
 
         try {
             orig = context.getSelection();

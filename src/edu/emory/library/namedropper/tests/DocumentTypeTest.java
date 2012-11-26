@@ -40,6 +40,41 @@ public class DocumentTypeTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
+    public void testFromString() {
+        assertEquals(DocumentType.TEI, DocumentType.fromString("TEI"));
+        assertEquals(DocumentType.TEI, DocumentType.fromString("tei"));
+        assertEquals(DocumentType.EAD, DocumentType.fromString("EAD"));
+        assertEquals(DocumentType.EAD, DocumentType.fromString("ead"));
+        assertNull(DocumentType.fromString("unknown"));
+    }
+
+    @Test
+    public void testNameType() {
+        assertEquals(DocumentType.NameType.PERSONAL, DocumentType.NameType.fromString("Personal"));
+        assertEquals(DocumentType.NameType.CORPORATE, DocumentType.NameType.fromString("Corporate"));
+        assertEquals(DocumentType.NameType.GEOGRAPHIC, DocumentType.NameType.fromString("Geographic"));
+        assertNull(DocumentType.NameType.fromString("unknown type"));
+    }
+
+
+    @Test
+    public void testEadTagFromNameType() {
+        assertEquals(DocumentType.EadTag.PERSNAME, DocumentType.EadTag.fromNameType(DocumentType.NameType.PERSONAL));
+        assertEquals(DocumentType.EadTag.CORPNAME, DocumentType.EadTag.fromNameType(DocumentType.NameType.CORPORATE));
+        assertEquals(DocumentType.EadTag.GEOGNAME, DocumentType.EadTag.fromNameType(DocumentType.NameType.GEOGRAPHIC));
+        assertNull(DocumentType.EadTag.fromNameType(null));
+    }
+
+    @Test
+    public void testTeiTypeFromNameType() {
+        assertEquals(DocumentType.TeiType.PERSON, DocumentType.TeiType.fromNameType(DocumentType.NameType.PERSONAL));
+        assertEquals(DocumentType.TeiType.ORG, DocumentType.TeiType.fromNameType(DocumentType.NameType.CORPORATE));
+        assertEquals(DocumentType.TeiType.PLACE, DocumentType.TeiType.fromNameType(DocumentType.NameType.GEOGRAPHIC));
+        assertNull(DocumentType.TeiType.fromNameType(null));
+    }
+
+
+    @Test
     public void testTagName() {
         DocumentType tei = DocumentType.TEI;
 

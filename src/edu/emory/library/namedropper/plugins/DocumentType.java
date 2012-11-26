@@ -38,19 +38,57 @@ public enum DocumentType {
         this.place = place;
     }
 
+    /**
+     * Types of names that are supported.
+     */
     public enum NameType {
         PERSONAL, CORPORATE, GEOGRAPHIC;
+
+        public static NameType fromString(String s) {
+            if (s != null) {
+                for (NameType n : NameType.values()) {
+                    if (s.equalsIgnoreCase(n.toString())) {
+                        return n;
+                    }
+                }
+            }
+            return null;
+        }
     }
 
+    /**
+     * Details for tags in EAD document type.
+     */
     public enum EadTag {
         PERSNAME, CORPNAME, GEOGNAME;
 
         @Override
         public String toString() {
             return super.toString().toLowerCase();
-       }
+        }
+
+       /**
+        * Static method to initialize an EadTag instance based on
+        * a NameType.
+        */
+        public static EadTag fromNameType(NameType name) {
+            if (name != null) {
+                switch (name) {
+                    case PERSONAL:
+                        return EadTag.PERSNAME;
+                    case GEOGRAPHIC:
+                        return EadTag.GEOGNAME;
+                    case CORPORATE:
+                        return EadTag.CORPNAME;
+                }
+            }
+            return null;
+        }
     };
 
+    /**
+     * Details for type in TEI document type.
+     */
     public enum TeiType {
         PERSON, ORG, PLACE;
 
@@ -58,7 +96,40 @@ public enum DocumentType {
         public String toString() {
             return super.toString().toLowerCase();
         }
+
+        /**
+         * Static method to initialize a TeiType instance based on
+         * a NameType.
+         */
+        public static TeiType fromNameType(NameType name) {
+            if (name != null) {
+                switch (name) {
+                    case PERSONAL:
+                        return TeiType.PERSON;
+                    case GEOGRAPHIC:
+                        return TeiType.PLACE;
+                    case CORPORATE:
+                        return TeiType.ORG;
+                }
+            }
+            return null;
+        }
     };
+
+    /**
+     * Static method to initialize a DocumentType instance from a string.
+     * Case insensitive.
+     */
+    public static DocumentType fromString(String value) {
+    if (value != null) {
+      for (DocumentType d : DocumentType.values()) {
+        if (value.equalsIgnoreCase(d.toString())) {
+          return d;
+        }
+      }
+    }
+    return null;
+  }
 
     /*
      * Determine what XML tag name to use for the current document type.
@@ -85,18 +156,9 @@ public enum DocumentType {
 
             case EAD:
 
-                if (name != null) {
-                    switch (name) {
-                        case PERSONAL:
-                            tag = EadTag.PERSNAME.toString();
-                            break;
-                        case GEOGRAPHIC:
-                            tag = EadTag.GEOGNAME.toString();
-                            break;
-                        case CORPORATE:
-                            tag = EadTag.CORPNAME.toString();
-                            break;
-                    }
+                EadTag eadtag = EadTag.fromNameType(name);
+                if (eadtag != null) {
+                    tag = eadtag.toString();
                 } else {
                     // use generic name tag for ead when entity type is unknown
                     tag = "name";
@@ -110,17 +172,8 @@ public enum DocumentType {
         String type = null;
         switch (this) {
             case TEI:
-                switch (name) {
-                    case PERSONAL:
-                        type = TeiType.PERSON.toString();
-                        break;
-                    case GEOGRAPHIC:
-                        type = TeiType.PLACE.toString();
-                        break;
-                    case CORPORATE:
-                        type = TeiType.ORG.toString();
-                        break;
-                }
+                type = TeiType.fromNameType(name).toString();
+                break;
 
             // no type needed for EAD
         }
@@ -143,19 +196,13 @@ public enum DocumentType {
         String tag = null;
         String type = null;
 
-        String nameType = resource.getType(); // TODO: could getType use NameType enum instead of string?
-        DocumentType.NameType nt;
-        // FIXME: must be a better way to do this
-        if (nameType.equals("Personal")) {
-            nt = DocumentType.NameType.PERSONAL;
-        } else if (nameType.equals("Corporate")) {
-            nt = DocumentType.NameType.CORPORATE;
-        } else if (nameType.equals("Geographic")) {
-            nt = DocumentType.NameType.GEOGRAPHIC;
-        } else {
+        // TODO: should NameType be somewhere common so
+        // ViafResource.getType could use NameType enum instead of string?
+        String nameType = resource.getType();
+        DocumentType.NameType nt = NameType.fromString(nameType);
+        if (nt == null) {
             throw new Exception("Unsupported nameType: " + nameType);
         }
-
 
         switch (this) {
             case TEI:
