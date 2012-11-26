@@ -49,6 +49,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import edu.emory.library.utils.EULHttpUtils;
 import edu.emory.library.viaf.ViafClient;
 import edu.emory.library.viaf.ViafResource;
 
@@ -61,6 +62,7 @@ public class ViafClientTest {
     static Document viafReturn;
 
     // method to read file into a string; used to load fixtures
+    // TODO: move into a TestUtils class for re-use in multiple tests?
     public static String readFile( String file ) throws IOException {
         // changed to getResourceAsStream to read from classpath inside jar
         InputStream is = ViafClientTest.class.getResourceAsStream(file);
@@ -89,8 +91,10 @@ public class ViafClientTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
+    @PrepareForTest(EULHttpUtils.class)
     public void testSuggest() throws Exception {
         PowerMockito.mockStatic(ViafClient.class);
+        PowerMockito.mockStatic(EULHttpUtils.class);
 
         String term = "John Smith";
         String expectedUri = String.format("%s/AutoSuggest?query=%s", ViafClient.baseUrl,
@@ -98,13 +102,13 @@ public class ViafClientTest {
         Mockito.when(ViafClient.suggest(term)).thenCallRealMethod();
 
         // use mock to simulate no response
-        Mockito.when(ViafClient.readUrlContents(expectedUri)).thenReturn("");
+        Mockito.when(EULHttpUtils.readUrlContents(expectedUri)).thenReturn("");
         // empty or unparsable result should return an empty list
         List<ViafResource> results = ViafClient.suggest(term);
         assertEquals(0, results.size());
 
         // use mock to return fixture result
-        Mockito.when(ViafClient.readUrlContents(expectedUri)).thenReturn(autoSuggestReturn);
+        Mockito.when(EULHttpUtils.readUrlContents(expectedUri)).thenReturn(autoSuggestReturn);
 
         results = ViafClient.suggest(term);
         assertEquals(2, results.size());

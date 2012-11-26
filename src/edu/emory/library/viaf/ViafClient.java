@@ -22,18 +22,14 @@ import java.util.List;
 import java.util.ArrayList;
 
 // http requests
-import java.net.URL;
-import java.net.HttpURLConnection;
-import java.lang.StringBuffer;
 import java.net.URLEncoder;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 // JSON Parsing
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONArray;
 
+import edu.emory.library.utils.EULHttpUtils;
 import edu.emory.library.viaf.ViafResource;
 
 /**
@@ -61,7 +57,8 @@ public class ViafClient {
 
         String uri = String.format("%s/AutoSuggest?query=%s", baseUrl,
             URLEncoder.encode(term, "UTF-8"));
-        String result = readUrlContents(uri);
+        String result = EULHttpUtils.readUrlContents(uri);
+        // todo: handle (at least log) http exceptions here
 
         List<ViafResource> resources = new ArrayList<ViafResource>();
 
@@ -85,29 +82,7 @@ public class ViafClient {
             // json parsing error - should just result in any empty resource list
             // TODO: log the error ?
         }
-//        System.out.println("generated list with " + resources.size() + " length");
-
         return resources;
     }
-
-    // utility method to get the contents of a URL into a string
-    // TODO: look for a better way to handle this / optiosn for more reusable code
-    public static String readUrlContents(String url) throws Exception {
-        URL urlObj = new URL(url);
-        HttpURLConnection connection = null;
-        connection = (HttpURLConnection) urlObj.openConnection();
-        connection.setDoOutput(true);
-        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = br.readLine()) != null) {
-            sb.append(line+"\n");
-        }
-        br.close();
-        String result = "";
-        result = sb.toString();
-        return result;
-    }
-
 
 }
