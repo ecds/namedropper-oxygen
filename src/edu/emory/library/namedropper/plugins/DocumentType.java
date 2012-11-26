@@ -45,16 +45,16 @@ public enum DocumentType {
         PERSONAL, CORPORATE, GEOGRAPHIC;
 
         public static NameType fromString(String s) {
-            if (s != null) {
-                for (NameType n : NameType.values()) {
-                    if (s.equalsIgnoreCase(n.toString())) {
-                        return n;
-                    }
+            if (s == null) { return null; }
+
+            for (NameType n : NameType.values()) {
+                if (s.equalsIgnoreCase(n.toString())) {
+                    return n;
                 }
             }
-            return null;
+            return null;  // return null if no match was found
         }
-    }
+    };
 
     /**
      * Details for tags in EAD document type.
@@ -72,17 +72,18 @@ public enum DocumentType {
         * a NameType.
         */
         public static EadTag fromNameType(NameType name) {
-            if (name != null) {
-                switch (name) {
-                    case PERSONAL:
-                        return EadTag.PERSNAME;
-                    case GEOGRAPHIC:
-                        return EadTag.GEOGNAME;
-                    case CORPORATE:
-                        return EadTag.CORPNAME;
-                }
+            if (name == null) { return null; }
+
+            switch (name) {
+                case PERSONAL:
+                    return EadTag.PERSNAME;
+                case GEOGRAPHIC:
+                    return EadTag.GEOGNAME;
+                case CORPORATE:
+                    return EadTag.CORPNAME;
+                default:
+                    return null;
             }
-            return null;
         }
     };
 
@@ -102,17 +103,18 @@ public enum DocumentType {
          * a NameType.
          */
         public static TeiType fromNameType(NameType name) {
-            if (name != null) {
-                switch (name) {
-                    case PERSONAL:
-                        return TeiType.PERSON;
-                    case GEOGRAPHIC:
-                        return TeiType.PLACE;
-                    case CORPORATE:
-                        return TeiType.ORG;
-                }
+            if (name == null) { return null; }
+
+            switch (name) {
+                case PERSONAL:
+                    return TeiType.PERSON;
+                case GEOGRAPHIC:
+                    return TeiType.PLACE;
+                case CORPORATE:
+                    return TeiType.ORG;
+                default:
+                    return null;
             }
-            return null;
         }
     };
 
@@ -121,15 +123,15 @@ public enum DocumentType {
      * Case insensitive.
      */
     public static DocumentType fromString(String value) {
-    if (value != null) {
-      for (DocumentType d : DocumentType.values()) {
-        if (value.equalsIgnoreCase(d.toString())) {
-          return d;
+        if (value == null) { return null; }
+
+        for (DocumentType d : DocumentType.values()) {
+            if (value.equalsIgnoreCase(d.toString())) {
+              return d;
+            }
         }
-      }
+        return null;  // no match found
     }
-    return null;
-  }
 
     /*
      * Determine what XML tag name to use for the current document type.
