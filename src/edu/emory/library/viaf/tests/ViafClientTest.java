@@ -56,8 +56,6 @@ import edu.emory.library.viaf.ViafResource;
 @PrepareForTest(ViafClient.class)
 public class ViafClientTest {
 
-    ViafClient mockViafClient;
-
     // Fixtures
     static String autoSuggestReturn;
     static Document viafReturn;
