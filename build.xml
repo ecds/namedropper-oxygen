@@ -15,7 +15,9 @@
 
   <!-- setup classpath for compilation -->
   <path id="project.class.path">
-    <fileset dir="${lib}/" includes="**/*.jar" />
+    <fileset dir="${lib}/" includes="**/*.jar">
+      <exclude name="mockito-all-1.9.5.jar" />
+    </fileset>
   </path>
 
   <!-- the classpath to be used for the JUnit tests -->

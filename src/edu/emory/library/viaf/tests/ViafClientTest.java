@@ -38,22 +38,31 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
-import static org.mockito.Mockito.*;
+import org.mockito.Mockito;
+// import static org.mockito.Mockito.*;
 
+/* PowerMock used to be able to mock static methods */
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import edu.emory.library.utils.EULHttpUtils;
 import edu.emory.library.viaf.ViafClient;
 import edu.emory.library.viaf.ViafResource;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(ViafClient.class)
 public class ViafClientTest {
-
-    ViafClient mockViafClient;
 
     // Fixtures
     static String autoSuggestReturn;
     static Document viafReturn;
 
     // method to read file into a string; used to load fixtures
+    // TODO: move into a TestUtils class for re-use in multiple tests?
     public static String readFile( String file ) throws IOException {
         // changed to getResourceAsStream to read from classpath inside jar
         InputStream is = ViafClientTest.class.getResourceAsStream(file);
@@ -78,38 +87,30 @@ public class ViafClientTest {
         viafReturn = xmlBuilder.build(ViafClientTest.class.getResourceAsStream("viafReturn.xml"));
     }
 
-    @Before
-    public void setUp() {
-        // init mock client
-        this.mockViafClient = mock(ViafClient.class);
-    }
-
-    @After
-    public void tearDown() {
-        this.mockViafClient = null;
-    }
-
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Test
+    @PrepareForTest(EULHttpUtils.class)
     public void testSuggest() throws Exception {
+        PowerMockito.mockStatic(ViafClient.class);
+        PowerMockito.mockStatic(EULHttpUtils.class);
 
         String term = "John Smith";
-        String expectedUri = String.format("%s/AutoSuggest?query=%s", this.mockViafClient.baseUrl,
+        String expectedUri = String.format("%s/AutoSuggest?query=%s", ViafClient.baseUrl,
             URLEncoder.encode(term, "UTF-8"));
-        when(this.mockViafClient.suggest(term)).thenCallRealMethod();
+        Mockito.when(ViafClient.suggest(term)).thenCallRealMethod();
 
         // use mock to simulate no response
-        when(this.mockViafClient.readUrlContents(expectedUri)).thenReturn("");
+        Mockito.when(EULHttpUtils.readUrlContents(expectedUri)).thenReturn("");
         // empty or unparsable result should return an empty list
-        List<ViafResource> results = this.mockViafClient.suggest(term);
+        List<ViafResource> results = ViafClient.suggest(term);
         assertEquals(0, results.size());
 
         // use mock to return fixture result
-        when(this.mockViafClient.readUrlContents(expectedUri)).thenReturn(autoSuggestReturn);
+        Mockito.when(EULHttpUtils.readUrlContents(expectedUri)).thenReturn(autoSuggestReturn);
 
-        results = this.mockViafClient.suggest(term);
+        results = ViafClient.suggest(term);
         assertEquals(2, results.size());
 
         // inspect that results were initialized correctly

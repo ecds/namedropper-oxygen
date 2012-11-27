@@ -29,12 +29,23 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
-import static org.mockito.Mockito.*;
+import org.mockito.Mockito;
+// import static org.mockito.Mockito.*;
 
+/* PowerMock used to be able to mock static methods */
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+
+import edu.emory.library.utils.EULHttpUtils;
 import edu.emory.library.viaf.ViafResource;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(EULHttpUtils.class)
 public class ViafResourceTest {
 
     ViafResource mockViafResource;
@@ -52,7 +63,7 @@ public class ViafResourceTest {
     @Before
     public void setUp() {
         // init mock resource
-        this.mockViafResource = mock(ViafResource.class);
+        this.mockViafResource = Mockito.mock(ViafResource.class);
     }
 
     @After
@@ -80,44 +91,46 @@ public class ViafResourceTest {
 
     @Test
     public void testGetType() throws Exception {
+        PowerMockito.mockStatic(EULHttpUtils.class);
         String nameType;
 
-        when(this.mockViafResource.getXmlDetails()).thenReturn(viafReturn);
-        when(this.mockViafResource.getType()).thenCallRealMethod();
+        Mockito.when(this.mockViafResource.getXmlDetails()).thenReturn(viafReturn);
+        Mockito.when(this.mockViafResource.getType()).thenCallRealMethod();
 
         nameType = this.mockViafResource.getType();
         assertEquals("Corporate", nameType);
 
         // details unavailable - should not raise an exception
-        when(this.mockViafResource.getXmlDetails()).thenReturn(null);
+        Mockito.when(this.mockViafResource.getXmlDetails()).thenReturn(null);
         nameType = this.mockViafResource.getType();
         assertEquals(null, nameType);
 
         // wrong xml - should not raise an exception
-        when(this.mockViafResource.readUrlContents(anyString())).thenReturn("<wrong-xml/>");
-        when(this.mockViafResource.getXmlDetails()).thenCallRealMethod();
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString())).thenReturn("<wrong-xml/>");
+        Mockito.when(this.mockViafResource.getXmlDetails()).thenCallRealMethod();
         assertEquals(null, nameType);
     }
 
     @Test
     public void testGetXmlDetails() throws Exception {
+        PowerMockito.mockStatic(EULHttpUtils.class);
         Document details;
-        when(this.mockViafResource.getXmlDetails()).thenCallRealMethod();
+        Mockito.when(this.mockViafResource.getXmlDetails()).thenCallRealMethod();
 
         // empty or unparsable result
-        when(this.mockViafResource.readUrlContents(anyString())).thenReturn("");
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString())).thenReturn("");
         assertNull(this.mockViafResource.getXmlDetails());
-        when(this.mockViafResource.readUrlContents(anyString())).thenReturn("<unfinished-tag");
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString())).thenReturn("<unfinished-tag");
         assertNull(this.mockViafResource.getXmlDetails());
 
         // return fixture xml
-        when(this.mockViafResource.readUrlContents(anyString())).thenReturn(viafReturn.toXML());
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString())).thenReturn(viafReturn.toXML());
         details = this.mockViafResource.getXmlDetails();
         assertNotNull(details);
         assert(details instanceof Document);
 
         // caching - should not load url after first successful request
-        when(this.mockViafResource.readUrlContents(anyString())).thenReturn("");
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString())).thenReturn("");
         assertEquals(details, this.mockViafResource.getXmlDetails());
 
     }

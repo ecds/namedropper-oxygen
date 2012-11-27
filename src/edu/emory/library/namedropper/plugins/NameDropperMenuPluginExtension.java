@@ -25,6 +25,9 @@ import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.ButtonGroup;
+
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.options.WSOptionChangedEvent;
 import ro.sync.exml.workspace.api.options.WSOptionListener;
@@ -32,60 +35,27 @@ import ro.sync.exml.workspace.api.standalone.MenuBarCustomizer;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.Menu;
 
+
+import edu.emory.library.namedropper.plugins.DocumentType;
+
 /**
  * Plugin extension - workspace access extension.
  */
 public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExtension {
 
-    // labels and stuff for menu actions
-    final String eadLabel = "EAD";
-    final String teiLabel = "TEI";
-    final String checkmark = " \u2713";
-
-    // Set EAD action
-    final Action setEADAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent arg0) {
-        pluginWorkspaceAccess.getOptionsStorage().setOption("docType", eadLabel);
+    // Store document type when one of the document type menu items is clicked
+    final Action setDocumentTypeAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent selection) {
+        // store the selected document type;
+        // action command is the text of the menu item, i.e. TEI or EAD
+        pluginWorkspaceAccess.getOptionsStorage().setOption("docType", selection.getActionCommand());
       }
     };
 
-    // Set TEI action
-    final Action setTEIAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent arg0) {
-        pluginWorkspaceAccess.getOptionsStorage().setOption("docType", teiLabel);
-      }
-    };
-
-    public final JMenuItem setEADItem = new JMenuItem();
-    public final JMenuItem setTEIItem = new JMenuItem();
-
-    /*
-     * Sets the check mark for in the menu for the currently selected mode EAD or TEI
-     */
-    public void setMenu(){
-
-
-      if (pluginWorkspaceAccess.getOptionsStorage().getOption("docType", "").equals(eadLabel)){
-         setEADItem.setText(eadLabel + checkmark);
-         setTEIItem.setText(teiLabel);
-      }
-
-      if (pluginWorkspaceAccess.getOptionsStorage().getOption("docType", "").equals(teiLabel)){
-         setTEIItem.setText(teiLabel + checkmark);
-          setEADItem.setText(eadLabel);
-
-      }
-  }
-
-
-
-    //Option Listener - triggers when docType option changes
-    WSOptionListener OL = new WSOptionListener("docType"){
-        @Override
-        public void  optionValueChanged(WSOptionChangedEvent e) {
-            setMenu();
-        }
-    };
+    // get the current value for selected docType, if any
+    public String getCurrentDoctype(){
+      return pluginWorkspaceAccess.getOptionsStorage().getOption("docType", "");
+    }
 
   /**
    * Plugin workspace access.
@@ -100,47 +70,52 @@ public class NameDropperMenuPluginExtension implements WorkspaceAccessPluginExte
       public void customizeMainMenu(JMenuBar mainMenuBar) {
         // nameDropper menu
         JMenu ndMenu = createNDMenu();
-        // Add the ndMenu
+        // Add the ndMenu just before Help menu
         mainMenuBar.add(ndMenu, mainMenuBar.getMenuCount() - 1);
       }
     });
 
-    // Attach option Listner to the options
-    pluginWorkspaceAccess.getOptionsStorage().addOptionListener(OL);
  }
 
   /**
-   * Create menu that contains the following actions:
-   * setEAD, setTEI
-   * @return The ndMenu.
+   * Create a custom NameDropper menu to allow the users to configure plugin behavior.
+   * Currently consists of a document type submenu with a radio-style list
+   * of supported document types
+   *
+   * @return Menu
    */
   private JMenu createNDMenu() {
     // ndMenu
     Menu ndMenu = new Menu("NameDropper", true);
     Menu docTypeMenu = new Menu("Document Type", true);
 
-    // Add setEAD action on the menu
-    setEADItem.setAction(setEADAction);
-    setEADItem.setText(eadLabel);
-    docTypeMenu.add(setEADItem);
+    String currentType = getCurrentDoctype();
 
-    // Add setTEI action on the menu
-    setTEIItem.setAction(setTEIAction);
-    setTEIItem.setText(teiLabel);
-    docTypeMenu.add(setTEIItem);
+    // create radio-button style menu for defined document types
+    ButtonGroup docTypeGroup = new ButtonGroup();
+    JRadioButtonMenuItem docTypeItem;
+
+    for (DocumentType type : DocumentType.values()) {
+      String label = type.toString();
+      docTypeItem = new JRadioButtonMenuItem(label);
+      // if current type is set, initialize matching menu item as selected
+      if (currentType.equals(label)) {
+        docTypeItem.setSelected(true);
+      }
+      docTypeItem.setAction(setDocumentTypeAction);
+      docTypeItem.setText(label);
+      docTypeGroup.add(docTypeItem);
+      docTypeMenu.add(docTypeItem);
+      // NOTE: should be possible to set keyboard shortcuts for these if we want to
+      // see methods setAccelerator and setMnemonic
+    }
 
     ndMenu.add(docTypeMenu);
-
-
-    setMenu();
-
     return ndMenu;
   }
 
-
-
-
-
-  //aparently required for some reason
-  public boolean applicationClosing() {return true;}
+  // required because we are implementing Interface WorkspaceAccessPluginExtension
+  public boolean applicationClosing() {
+    return true;  // it's ok with this plugin for the application to close
+  }
 }

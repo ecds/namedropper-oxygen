@@ -1,5 +1,5 @@
 /**
- * file oxygen/src/edu/emory/library/namedropper/viaf/ViafResource.java
+ * file src/edu/emory/library/namedropper/viaf/ViafResource.java
  *
  * Copyright 2012 Emory University Library
  *
@@ -30,6 +30,8 @@ import java.io.InputStreamReader;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
+
+import edu.emory.library.utils.EULHttpUtils;
 
 public class ViafResource {
 
@@ -73,7 +75,7 @@ public class ViafResource {
             // FIXME: can we do content-negotiation here instead?
             String result = "";
             try {
-                result = this.readUrlContents(this.getXmlUri());
+                result = EULHttpUtils.readUrlContents(this.getXmlUri());
                 // FIXME: it should be possible to use the base URI with content negotiation
                 //  - should use an HTTP_ACCEPT header of application/xml or text/xml
                 // something like this:
@@ -111,27 +113,5 @@ public class ViafResource {
         }
         return type;
     }
-
-    // utility method to get the contents of a URL into a string
-    // TODO: look for a better way to handle this / optiosn for more reusable code
-    // FIXME: duplicated from ViafClient!
-    public String readUrlContents(String url) throws Exception {
-        URL urlObj = new URL(url);
-        HttpURLConnection connection = null;
-        connection = (HttpURLConnection) urlObj.openConnection();
-        connection.setDoOutput(true);
-        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder sb = new StringBuilder();
-        // FIXME: should we be checking http response codes here?
-        String line;
-        while ((line = br.readLine()) != null) {
-            sb.append(line+"\n");
-        }
-        br.close();
-        String result = "";
-        result = sb.toString();
-        return result;
-    }
-
 
 }
