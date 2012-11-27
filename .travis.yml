@@ -2,3 +2,7 @@ language: java
 jdk:
   - oraclejdk6
   - openjdk6
+# currently using maven for dependency management but ant for tests
+install:
+  - "mvn dependency:copy-dependencies -DoutputDirectory=lib"
+script: ant test

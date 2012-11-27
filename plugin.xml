@@ -4,15 +4,15 @@
     description="Looks up names in name authority"
     version="1.0.0"
     vendor="Emory University"
-    class="edu.emory.library.oxygen_plugin.NameDropper.NameDropperPlugin">
+    class="edu.emory.library.namedropper.plugins.NameDropperPlugin">
     <runtime>
         <library name="NameDropper.jar"/>
     </runtime>
     <!-- main plugin -->
     <extension type="selectionProcessor"
-     class="edu.emory.library.oxygen_plugin.NameDropper.NameDropperPluginExtension"
+     class="edu.emory.library.namedropper.plugins.NameDropperPluginExtension"
      keyboardShortcut="ctrl shift N"/>
     <!-- menu plugin -->
     <extension type="WorkspaceAccess"
-     class="edu.emory.library.oxygen_plugin.NameDropper.NameDropperMenuPluginExtension"/> 
+     class="edu.emory.library.namedropper.plugins.NameDropperMenuPluginExtension"/>
 </plugin>
