@@ -83,7 +83,8 @@
 
     <buildnumber/>
     <jar jarfile="${dist}/${ant.project.name}-${version}.jar">
-      <fileset dir="${dist}/${ant.project.name}" />
+      <!-- plugin must include the wrapping NameDropper directory -->
+      <fileset dir="${dist}" includes="${ant.project.name}" />
     </jar>
   </target>
 
