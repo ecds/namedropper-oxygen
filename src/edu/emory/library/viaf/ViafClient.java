@@ -1,5 +1,5 @@
 /**
- * file oxygen/src/edu/emory/library/namedropper/viaf/ViafClient.java
+ * file src/edu/emory/library/namedropper/viaf/ViafClient.java
  *
  * Copyright 2012 Emory University Library
  *
