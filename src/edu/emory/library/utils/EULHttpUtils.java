@@ -1,5 +1,5 @@
 /**
- * file bsrc/edu/emory/library/utils/EULHttpUtils.java
+ * file src/edu/emory/library/utils/EULHttpUtils.java
  *
  * Copyright 2012 Emory University Library
  *

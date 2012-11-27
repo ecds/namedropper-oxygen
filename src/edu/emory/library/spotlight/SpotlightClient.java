@@ -1,5 +1,5 @@
 /**
- * file oxygen/src/edu/emory/library/namedropper/spotlight/SpotlightClient.java
+ * file src/edu/emory/library/namedropper/spotlight/SpotlightClient.java
  *
  * Copyright 2012 Emory University Library
  *
