@@ -56,3 +56,5 @@ lib/powermock-*.jar
 lib/xalan-*.jar
 lib/xercesImpl-*.jar
 lib/xml-apis-*.jar
+lib/objenesis-*.jar
+lib/javassist-*.jar
