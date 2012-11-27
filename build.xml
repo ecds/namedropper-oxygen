@@ -17,6 +17,7 @@
   <path id="project.class.path">
     <fileset dir="${lib}/" includes="**/*.jar">
       <exclude name="mockito-all-1.9.5.jar" />
+      <exclude name="xercesImpl-2.8.0.jar" /> <!-- version installed by maven causes a conflict -->
     </fileset>
   </path>
 
