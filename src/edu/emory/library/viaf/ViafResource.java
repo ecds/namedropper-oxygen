@@ -18,13 +18,7 @@
 
 package edu.emory.library.viaf;
 
-// http requests
-import java.net.URL;
-import java.net.HttpURLConnection;
-import java.lang.StringBuffer;
-import java.net.URLEncoder;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.util.HashMap;
 
 // XML Parsing
 import nu.xom.Builder;
@@ -75,12 +69,11 @@ public class ViafResource {
             // FIXME: can we do content-negotiation here instead?
             String result = "";
             try {
-                result = EULHttpUtils.readUrlContents(this.getXmlUri());
-                // FIXME: it should be possible to use the base URI with content negotiation
-                //  - should use an HTTP_ACCEPT header of application/xml or text/xml
-                // something like this:
-                // URL urlObj = new URL(this.getUri());
-                // connection.addRequestProperty("Accept", "application/xml");
+                // Request canonical resource URI with an accept header of
+                // application/xml to get the xml content (content negotiation)
+                HashMap headers = new HashMap<String, String>();
+                headers.put("Accept", "application/xml");
+                result = EULHttpUtils.readUrlContents(this.getUri(), headers);
 
             } catch (Exception e) {
                 // could be java.io.IOException or java.net.MalformedURLException

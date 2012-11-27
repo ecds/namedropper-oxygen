@@ -18,6 +18,9 @@
 
 package edu.emory.library.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 // http requests
 import java.net.URL;
 import java.net.HttpURLConnection;
@@ -26,29 +29,53 @@ import java.net.URLEncoder;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+// apache httpclient
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+
 /**
  *  Utility class for reusable HTTP functionalty.
  */
 public class EULHttpUtils {
 
     /**
-     *  Utility method to get the contents of a URL into a string.
+     *  Utility method to GET the contents of a URL and read it into a string.
+     *  @param url to be read
+     *  @return contents of the URL on successful request
      */
     public static String readUrlContents(String url) throws Exception {
-        URL urlObj = new URL(url);
-        HttpURLConnection connection = null;
-        connection = (HttpURLConnection) urlObj.openConnection();
-        connection.setDoOutput(true);
-        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = br.readLine()) != null) {
-            sb.append(line+"\n");
-        }
-        br.close();
-        String result = "";
-        result = sb.toString();
-        return result;
+        HashMap nomap = new HashMap<String, String>();
+        return EULHttpUtils.readUrlContents(url, nomap);
     }
+
+    /**
+     *  Utility method to GET the contents of a URL and read it into a string.
+     *  @param url to be read
+     *  @param HashMap of any request headers
+     */
+     public static String readUrlContents(String url, HashMap<String, String> headers) throws Exception {
+        String response = null;
+        HttpClient client = new DefaultHttpClient();
+        HttpGet getMethod = new HttpGet(url);
+
+        // add any request headers specified
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            getMethod.addHeader(header.getKey(), header.getValue());
+        }
+
+        ResponseHandler<String> responseHandler = new BasicResponseHandler();
+        // returns the response content as string on success
+        response = client.execute(getMethod, responseHandler); // could throw HttpException or IOException
+        // TODO: catch/handle errors (esp. periodic 503 when Spotlight is unavailable)
+        getMethod.releaseConnection();
+
+        return response;
+    }
+
 
 }

@@ -19,6 +19,8 @@
 
 package edu.emory.library.viaf.tests;
 
+import java.util.HashMap;
+
 import nu.xom.Builder;
 import nu.xom.Document;
 
@@ -53,11 +55,16 @@ public class ViafResourceTest {
     // Fixtures
     static Document viafReturn;
 
+    static HashMap xmlheader = new HashMap<String, String>();
+
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         // load fixture
         Builder xmlBuilder = new Builder();
         viafReturn = xmlBuilder.build(ViafClientTest.class.getResourceAsStream("viafReturn.xml"));
+
+        xmlheader.put("Accept", "application/xml");
     }
 
     @Before
@@ -106,7 +113,9 @@ public class ViafResourceTest {
         assertEquals(null, nameType);
 
         // wrong xml - should not raise an exception
-        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString())).thenReturn("<wrong-xml/>");
+
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString(),
+            Mockito.eq(xmlheader))).thenReturn("<wrong-xml/>");
         Mockito.when(this.mockViafResource.getXmlDetails()).thenCallRealMethod();
         assertEquals(null, nameType);
     }
@@ -118,19 +127,23 @@ public class ViafResourceTest {
         Mockito.when(this.mockViafResource.getXmlDetails()).thenCallRealMethod();
 
         // empty or unparsable result
-        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString())).thenReturn("");
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString(),
+            Mockito.eq(xmlheader))).thenReturn("");
         assertNull(this.mockViafResource.getXmlDetails());
-        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString())).thenReturn("<unfinished-tag");
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString(),
+            Mockito.eq(xmlheader))).thenReturn("<unfinished-tag");
         assertNull(this.mockViafResource.getXmlDetails());
 
         // return fixture xml
-        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString())).thenReturn(viafReturn.toXML());
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString(),
+            Mockito.eq(xmlheader))).thenReturn(viafReturn.toXML());
         details = this.mockViafResource.getXmlDetails();
         assertNotNull(details);
         assert(details instanceof Document);
 
         // caching - should not load url after first successful request
-        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString())).thenReturn("");
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString(),
+            Mockito.eq(xmlheader))).thenReturn("");
         assertEquals(details, this.mockViafResource.getXmlDetails());
 
     }

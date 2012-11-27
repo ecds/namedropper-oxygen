@@ -58,3 +58,7 @@ lib/xercesImpl-*.jar
 lib/xml-apis-*.jar
 lib/objenesis-*.jar
 lib/javassist-*.jar
+lib/commons-*.jar
+lib/httpclient-*.jar
+lib/httpcore-*.jar
+lib/httpmime-*.jar
