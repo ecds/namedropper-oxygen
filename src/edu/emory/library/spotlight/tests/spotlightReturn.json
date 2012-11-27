@@ -1,0 +1,37 @@
+{
+  "@text": "Michael Longley was born in Belfast, Northern Ireland.",
+  "@confidence": "0.1",
+  "@support": "10",
+  "@types": "",
+  "@sparql": "",
+  "@policy": "whitelist",
+  "Resources":   [
+        {
+      "@URI": "http://dbpedia.org/resource/Michael_Longley",
+      "@support": "78",
+      "@types": "Freebase:/book/author,Freebase:/book,Freebase:/people/person,Freebase:/people",
+      "@surfaceForm": "Michael Longley",
+      "@offset": "0",
+      "@similarityScore": "0.35976433753967285",
+      "@percentageOfSecondRank": "-1.0"
+    },
+        {
+      "@URI": "http://dbpedia.org/resource/Max_Born",
+      "@support": "255",
+      "@types": "DBpedia:Scientist,DBpedia:Person,Schema:Person,Freebase:/book/author,Freebase:/book,Freebase:/award/award_winner,Freebase:/award,Freebase:/education/academic,Freebase:/education,Freebase:/people/deceased_person,Freebase:/people,Freebase:/people/person",
+      "@surfaceForm": "born",
+      "@offset": "20",
+      "@similarityScore": "0.19735246896743774",
+      "@percentageOfSecondRank": "-1.0"
+    },
+        {
+      "@URI": "http://dbpedia.org/resource/Belfast",
+      "@support": "5677",
+      "@types": "DBpedia:Settlement,DBpedia:PopulatedPlace,DBpedia:Place,Schema:Place,Freebase:/location/citytown,Freebase:/location,Freebase:/location/location,Freebase:/location/dated_location,Freebase:/government/governmental_jurisdiction,Freebase:/government,Freebase:/location/administrative_division,Freebase:/location/statistical_region",
+      "@surfaceForm": "Belfast, Northern Ireland",
+      "@offset": "28",
+      "@similarityScore": "0.2128681242465973",
+      "@percentageOfSecondRank": "-1.0"
+    }
+  ]
+}

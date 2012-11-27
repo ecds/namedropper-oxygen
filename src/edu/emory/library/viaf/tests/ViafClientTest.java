@@ -97,18 +97,16 @@ public class ViafClientTest {
         PowerMockito.mockStatic(EULHttpUtils.class);
 
         String term = "John Smith";
-        String expectedUri = String.format("%s/AutoSuggest?query=%s", ViafClient.baseUrl,
-            URLEncoder.encode(term, "UTF-8"));
         Mockito.when(ViafClient.suggest(term)).thenCallRealMethod();
 
         // use mock to simulate no response
-        Mockito.when(EULHttpUtils.readUrlContents(expectedUri)).thenReturn("");
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString())).thenReturn("");
         // empty or unparsable result should return an empty list
         List<ViafResource> results = ViafClient.suggest(term);
         assertEquals(0, results.size());
 
         // use mock to return fixture result
-        Mockito.when(EULHttpUtils.readUrlContents(expectedUri)).thenReturn(autoSuggestReturn);
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString())).thenReturn(autoSuggestReturn);
 
         results = ViafClient.suggest(term);
         assertEquals(2, results.size());

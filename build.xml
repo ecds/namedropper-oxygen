@@ -7,6 +7,8 @@
   <property name="src" location="src" />
   <property name="lib" location="lib" />
   <property name="build" location="build" />
+  <property name="reports.tests" location="${build}/test-results/" />
+
   <property name="dist" location="dist" />
   <property name="res" location="res" />
   <property environment="env"/>
@@ -15,6 +17,7 @@
   <path id="project.class.path">
     <fileset dir="${lib}/" includes="**/*.jar">
       <exclude name="mockito-all-1.9.5.jar" />
+      <exclude name="xercesImpl-2.8.0.jar" /> <!-- version installed by maven causes a conflict -->
     </fileset>
   </path>
 
@@ -89,20 +92,18 @@
   -->
   <target name="test" depends="compile,dist" description="Run the unit tests">
     <echo message="Running tests." />
+
+    <mkdir dir="${reports.tests}"/>
     <junit printsummary="no" haltonfailure="yes" haltonerror="yes">
 
       <!-- reference the path defined at the top of the file-->
       <classpath refid="project.test.class.path" />
 
-      <!-- run the tests and output results in plaintext as well as xml -->
-      <!-- <test name="edu.emory.library.namedropper.tests.NameDropperTest" haltonfailure="no" outfile="result">
-        <formatter type="plain" usefile="false"/>
-      </test>
- -->
-      <batchtest haltonfailure="no" fork="true">
+      <formatter type="plain" usefile="false"/>
+      <formatter type="xml"/>
+
+      <batchtest fork="yes" haltonfailure="no" todir="${reports.tests}">
         <fileset dir="${src}" includes="**/tests/*Test*.java" />
-        <formatter type="plain" usefile="false"/>
-        <!-- TODO/FIXME: xml test reports? -->
       </batchtest>
 
     </junit>

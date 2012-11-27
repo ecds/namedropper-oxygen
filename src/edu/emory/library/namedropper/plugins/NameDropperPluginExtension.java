@@ -57,7 +57,8 @@ import java.io.StringWriter;
 import edu.emory.library.namedropper.plugins.DocumentType;
 import edu.emory.library.viaf.ViafClient;
 import edu.emory.library.viaf.ViafResource;
-
+import edu.emory.library.spotlight.SpotlightClient;
+import edu.emory.library.spotlight.SpotlightAnnotation;
 
 public class NameDropperPluginExtension implements SelectionPluginExtension {
 
@@ -87,15 +88,25 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             orig = context.getSelection();
             result = orig; // put back original text if anything goes wrong
 
-            if (this.tagAllowed(context) == false) {
-                // if the tag is not allowed, throw an exception to be displayed
-                // as a warning message to the user
-                throw new Exception("Tag is not allowed in the current context");
+            // TEMPORARY: for now, trigger dbpedia annotation if selection is over an arbitrary word count
+            Integer wordCount = orig.trim().split("\\s+").length;
+            if (wordCount > 5) {
+                this.showAnnotations(orig, context);
+                // skip viaf lookup
+
+            } else {
+                // otherwise, do previously implemented behavior (viaf lookup)
+
+                if (this.tagAllowed(context) == false) {
+                    // if the tag is not allowed, throw an exception to be displayed
+                    // as a warning message to the user
+                    throw new Exception("Tag is not allowed in the current context");
+                }
+
+                result = this.queryVIAF(orig);
+
+                if(result == null) {result = orig;}
             }
-
-            result = this.queryVIAF(orig);
-
-            if(result == null) {result = orig;}
         } catch (Exception e) {
             // This section is in case you want the whole stack trace in the error message
             // Pass sw.toString() instead of e.getMessage() in the showMessageDialog function
@@ -109,6 +120,23 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
         }
 
         return new SelectionPluginResultImpl(result);
+    }
+
+    // preliminary spotlight functionality: just display the identified resources
+    // in a pop-up window as a simple way to show that the spotlight request is working
+    public void showAnnotations(String text, SelectionPluginContext context) throws Exception {
+        // annotate the text and display identified resources
+        SpotlightClient spot = new SpotlightClient();
+        List<SpotlightAnnotation> annotations = spot.annotate(text);
+
+        String message = "DBpedia Spotlight identified the following resources in the selected text:\n\n";
+        for (SpotlightAnnotation sa : annotations) {
+            message += String.format("\t%s :\t%s\n", sa.getSurfaceForm(), sa.getUri());
+        }
+
+        JOptionPane.showMessageDialog(context.getFrame(),
+            message, "DBpedia Spotlight annotations",
+            JOptionPane.INFORMATION_MESSAGE);
     }
 
 

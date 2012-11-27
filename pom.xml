@@ -28,13 +28,13 @@
     <dependency>
       <groupId>com.jidesoft</groupId>
       <artifactId>jide-oss</artifactId>
-      <version>3.4.9_2</version>
+      <version>3.4.9</version>
     </dependency>
-    <!-- <dependency>
+    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>4.2.1</version>
-    </dependency> -->
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
