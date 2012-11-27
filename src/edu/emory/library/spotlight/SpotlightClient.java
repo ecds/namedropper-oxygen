@@ -21,16 +21,10 @@ package edu.emory.library.spotlight;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 // http requests
 import java.net.URLEncoder;
-// apache httpclient
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 // JSON Parsing
 import org.json.simple.JSONObject;
@@ -38,6 +32,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONArray;
 
 
+import edu.emory.library.utils.EULHttpUtils;
 import edu.emory.library.spotlight.SpotlightAnnotation;
 
 /**
@@ -54,7 +49,7 @@ public class SpotlightClient {
     private double confidence = 0.0;
     private int support = 0;
 
-    // TODO: allow overridign base url, confidence, support, types
+    // TODO: allow overriding base url, confidence, support, types
     // in constructor ?
 
     public List<SpotlightAnnotation> annotate(String txt) throws Exception {
@@ -68,7 +63,9 @@ public class SpotlightClient {
                 ); // java.io.UnsupportedEncodingException
 
             // could also add args for confidence, support
-            String response = this.readUrlContents(uri);
+            HashMap headers = new HashMap<String, String>();
+            headers.put("Accept", "application/json");
+            String response = EULHttpUtils.readUrlContents(uri, headers);
 
             // load the result as json
             JSONObject json = (JSONObject)new JSONParser().parse(response);
@@ -80,26 +77,11 @@ public class SpotlightClient {
             }
 
         } catch (java.io.UnsupportedEncodingException e) {
+            // TODO:  log error instead of just printing
             System.out.println("Error encoding text");
         } // TODO: also need to catch json decoding error
 
         return annotations;
     }
-
-    public String readUrlContents(String url) throws Exception {
-        String response = null;
-        HttpClient client = new DefaultHttpClient();
-        HttpGet getMethod = new HttpGet(url);
-        getMethod.addHeader("Accept", "application/json");
-
-        ResponseHandler<String> responseHandler = new BasicResponseHandler();
-        // returns the response content as string on success
-        response = client.execute(getMethod, responseHandler); // could throw HttpException or IOException
-        // TODO: catch/handle errors (esp. 503 when Spotlight is unavailable)
-        getMethod.releaseConnection();
-
-        return response;
-    }
-
 
 }
