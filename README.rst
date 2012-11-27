@@ -55,13 +55,15 @@ Development Requirements and Setup
 
 * Ant
 * Java
-* oxygen.jar api.zip, jide.jar and workspaceaccess.jar (from http://oxygenxml.com/InstData/Editor/Plugins/OxygenPluginsDevelopmentKit.zip ,
-  included in ``lib`` directory)
-* json-simple (from http://code.google.com/p/json-simple/ , included in ``lib``)
-* xom (from http://www.cafeconleche.org/XOM/xom-1.2.8.jar , included in ``lib``)
+* oxygen.jar api.zip, and workspaceaccess.jar (from `Oxygen Plugin SDK`_,
+  included in lib directory)
+* json-simple (from http://code.google.com/p/json-simple/ )
+* xom (from http://www.cafeconleche.org/XOM/xom-1.2.8.jar )
 * junit (provided by netbeans)
-* mockito (http://code.google.com/p/mockito/ , included in ``lib``)
-* log4j required for unit tests (included in ``lib``)
+* mockito (http://code.google.com/p/mockito/)
+* log4j
+
+.. _Oxygen Plugin SDK: http://oxygenxml.com/InstData/Editor/Plugins/OxygenPluginsDevelopmentKit.zip
 
 .. Note::
    Originally ``api.zip`` was named ``src.zip``.  In this project it has been renamed to api.zip to reduce confusion.
@@ -70,12 +72,22 @@ All setup instructions below assume you have cloned the repository from Github:
 
   git clone http://github.com/emory-libraries-disc/namedropper-oxygen
 
+Common setup
+------------
+
+Dependencies can now be downloaded using maven::
+
+  mvn dependency:copy-dependencies -DoutputDirectory=lib
+
+
+
 Setup with NetBeans
 -------------------
 
 * Create a new project "From Existing Source"
 * Set the source directory to the base directory (where this file is)
-* Edit the project properties > Libraries and add lib/oxygen.jar  lib/api.zip, json-simple-1.1.1.jar, lib/xom-1.2.8.jar
+* Edit the project properties > Libraries and add lib/oxygen.jar  lib/api.zip, json-simple-1.1.1.jar,
+  lib/xom-1.2.8.jar
 
 
 Setup with Eclipse
@@ -89,7 +101,7 @@ To build any changes just right click on ``build.xml`` and Run As > Ant Build.
 Setup without an IDE
 --------------------
 
-Run ``ant`` from name-dropper/oxygen to build the distribution and run the tests.
+Run ``ant`` to build the distribution and run the tests.
 
 
 Oxygen developer documentation

@@ -13,7 +13,9 @@
 
   <!-- setup classpath for compilation -->
   <path id="project.class.path">
-    <fileset dir="${lib}/" includes="**/*.jar" />
+    <fileset dir="${lib}/" includes="**/*.jar">
+      <exclude name="mockito-all-1.9.5.jar" />
+    </fileset>
   </path>
 
   <!-- the classpath to be used for the JUnit tests -->
@@ -87,15 +89,22 @@
   -->
   <target name="test" depends="compile,dist" description="Run the unit tests">
     <echo message="Running tests." />
-    <junit printsummary="yes" haltonfailure="yes" haltonerror="yes">
+    <junit printsummary="no" haltonfailure="yes" haltonerror="yes">
 
       <!-- reference the path defined at the top of the file-->
       <classpath refid="project.test.class.path" />
 
       <!-- run the tests and output results in plaintext as well as xml -->
-      <test name="edu.emory.library.oxygen_plugin.tests.NameDropperTest" haltonfailure="no" outfile="result">
+      <!-- <test name="edu.emory.library.namedropper.tests.NameDropperTest" haltonfailure="no" outfile="result">
         <formatter type="plain" usefile="false"/>
       </test>
+ -->
+      <batchtest haltonfailure="no" fork="true">
+        <fileset dir="${src}" includes="**/tests/*Test*.java" />
+        <formatter type="plain" usefile="false"/>
+        <!-- TODO/FIXME: xml test reports? -->
+      </batchtest>
+
     </junit>
 
   </target>
