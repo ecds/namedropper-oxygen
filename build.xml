@@ -10,6 +10,7 @@
   <property name="reports.tests" location="${build}/test-results/" />
 
   <property name="dist" location="dist" />
+  <property name="dist.docs" location="${dist}/docs/" />
   <property name="res" location="res" />
   <property environment="env"/>
 
@@ -144,7 +145,17 @@
       <delete dir="${env.OXYGEN_HOME}/plugins/${ant.project.name}"/>
   </target>
 
+  <!-- generate javadocs -->
+  <target name="doc">
+      <mkdir dir="${dist.docs}"/>
+      <javadoc charset="UTF-8" destdir="${dist.docs}" failonerror="true">
+            <classpath refid="project.class.path" />
+            <fileset dir="${src}">
+                <filename name="**/*.java"/>
+            </fileset>
+        </javadoc>
+  </target>
 
-
-  <target name="default" depends="dist,test" description="Compile, Build Distribution and Test the NameDropper Oxygen plugin" />
+  <target name="default" depends="dist,test,doc"
+      description="Compile, Build Distribution and Test the NameDropper Oxygen plugin" />
 </project>
