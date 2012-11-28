@@ -186,12 +186,12 @@ public enum DocumentType {
      * Generate an xml tag for the current document type, based on a name, a resource. Uses
      * ViafResource type and viafid or URI to generate the appropriate tag and attributes.
      *
-     * @param String name text of the name, which will be used as the content of the tag
-     * @param ViafResource resource
+     * @param name       text of the name to used as the content of the tag
+     * @param resource  ViafResource, for tag attributes
      *
      * @return String of the generated tag or null
      * @raises Exception if a resource has an unsupported name type
-     */
+     */     // FIXME: @raises causes javadoc error
     public String makeTag(String name, ViafResource resource) throws Exception {
 
         String result = null;

@@ -50,8 +50,8 @@ public class ViafClient {
      * no matches were found or if there was an error either making
      * the request or parsing the response.
      *
-     * @param String search term
-     * @return list of ViafResource
+     * @param term  search term
+     * @return      list of ViafResource
      */
     public static List<ViafResource> suggest(String term) throws Exception {
 

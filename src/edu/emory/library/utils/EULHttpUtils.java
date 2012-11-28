@@ -45,7 +45,7 @@ public class EULHttpUtils {
 
     /**
      *  Utility method to GET the contents of a URL and read it into a string.
-     *  @param url to be read
+     *  @param url  url to be read
      *  @return contents of the URL on successful request
      */
     public static String readUrlContents(String url) throws Exception {
@@ -55,8 +55,8 @@ public class EULHttpUtils {
 
     /**
      *  Utility method to GET the contents of a URL and read it into a string.
-     *  @param url to be read
-     *  @param HashMap of any request headers
+     *  @param url      url to be read
+     *  @param headers  HashMap of request headers
      */
      public static String readUrlContents(String url, HashMap<String, String> headers) throws Exception {
         String response = null;
