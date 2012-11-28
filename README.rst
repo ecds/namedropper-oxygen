@@ -124,7 +124,8 @@ Manually install the compiled plugin in Oxygen
   inside the ``oxygen/plugins`` directory.
 
 If you set the **OXYGEN_HOME** environment variable, you can use the ``ant install`` target as a convenience
-to build and copy the latest version of the code into the oxygen plugins directory.
+to build and copy the latest version of the code into the oxygen plugins directory, and ``ant uninstall`` to
+remove the locally installed plugin.
 
 -----
 

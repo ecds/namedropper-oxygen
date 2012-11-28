@@ -76,6 +76,16 @@
         <exclude name="junit/" />
         <exclude name="junit*/" />
         <exclude name="nblibraries*" />
+
+        <!-- don't duplicate oxygen files (these items included in oxygen SDK)  -->
+        <exclude name="oxygen.jar" />
+        <exclude name="api.zip" />
+        <exclude name="workspaceaccess.jar"/>
+        <exclude name="jide-*.jar"/>
+
+        <!-- don't include test dependencies -->
+        <exclude name="powermock-*.jar" />
+        <exclude name="mockito-*.jar" />
       </fileset>
     </copy>
 
@@ -120,13 +130,20 @@
     <delete dir="${dist}" />
   </target>
 
-<!-- convenience task to install built version to a local oxygen instance -->
+  <!-- convenience task to install built version to a local oxygen instance -->
   <target description="Copy built plugin to local Oxygen installation" name="install" depends="default">
       <fail unless="env.OXYGEN_HOME" message="Install requires OXYGEN_HOME environment variable."/>
       <copy todir="${env.OXYGEN_HOME}/plugins/${ant.project.name}">
         <fileset dir="${dist}/${ant.project.name}"/>
       </copy>
   </target>
+
+  <!-- convenience task to uninstall built version copied to a local oxygen instance -->
+  <target description="Remove built plugin from local Oxygen installation" name="uninstall">
+      <fail unless="env.OXYGEN_HOME" message="Uninstall requires OXYGEN_HOME environment variable."/>
+      <delete dir="${env.OXYGEN_HOME}/plugins/${ant.project.name}"/>
+  </target>
+
 
 
   <target name="default" depends="dist,test" description="Compile, Build Distribution and Test the NameDropper Oxygen plugin" />
