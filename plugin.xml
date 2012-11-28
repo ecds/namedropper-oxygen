@@ -2,8 +2,8 @@
 <plugin
     name="NameDropper"
     description="Looks up names in name authority"
-    version="1.0.0"
-    vendor="Emory University"
+    version="0.3.0"
+    vendor="Emory University Library"
     class="edu.emory.library.namedropper.plugins.NameDropperPlugin">
     <runtime>
         <library name="NameDropper.jar"/>
