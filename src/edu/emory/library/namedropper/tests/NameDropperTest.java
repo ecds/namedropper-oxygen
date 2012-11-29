@@ -72,7 +72,6 @@ public class NameDropperTest {
         // initialize mocks
         this.mockND = Mockito.mock(NameDropperPluginExtension.class);
         this.mockContext = Mockito.mock(SelectionPluginContext.class);
-        this.mockND.viaf = Mockito.mock(ViafClient.class);
     }
 
     @After
