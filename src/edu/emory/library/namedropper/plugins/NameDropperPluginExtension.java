@@ -62,8 +62,6 @@ import edu.emory.library.spotlight.SpotlightAnnotation;
 
 public class NameDropperPluginExtension implements SelectionPluginExtension {
 
-    public ViafClient viaf = new ViafClient();
-
     public DocumentType docType;
     // TODO: should probably make this private and use a setter
 
@@ -206,7 +204,7 @@ public class NameDropperPluginExtension implements SelectionPluginExtension {
             throw new Exception("No DocType selected");
         }
 
-        List<ViafResource> suggestions = this.viaf.suggest(name);
+        List<ViafResource> suggestions = ViafClient.suggest(name);
         if (suggestions.size() == 0) {
             throw new Exception("No Results");
         }
