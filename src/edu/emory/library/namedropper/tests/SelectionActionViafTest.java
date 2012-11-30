@@ -45,6 +45,7 @@ import ro.sync.contentcompletion.xml.CIElement;
 
 import edu.emory.library.namedropper.plugins.DocumentType;
 import edu.emory.library.namedropper.plugins.SelectionActionViaf;
+import edu.emory.library.namedropper.plugins.PluginOptions;
 import edu.emory.library.viaf.ViafClient;
 import edu.emory.library.viaf.ViafResource;
 
@@ -69,16 +70,19 @@ public class SelectionActionViafTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
+
      @Test
-     public void testQueryViafNoDocType() throws Exception {
+     @PrepareForTest(PluginOptions.class)
+     public void testProcessNoDocType() throws Exception {
+        PowerMockito.mockStatic(PluginOptions.class);
 
         exception.expect(Exception.class);
-        exception.expectMessage("No DocType selected");
+        exception.expectMessage("No Document Type has been selected");
 
         String searchTerm = "Smth";
-        // FIXME: use actual class instead of mock here?
-        Mockito.when(this.mockViaf.queryVIAF(searchTerm)).thenCallRealMethod();
-        this.mockViaf.queryVIAF(searchTerm);
+        Mockito.when(PluginOptions.getDocumentType()).thenReturn("");
+        Mockito.when(this.mockViaf.processSelection(searchTerm)).thenCallRealMethod();
+        this.mockViaf.processSelection(searchTerm);
      }
 
      @Test

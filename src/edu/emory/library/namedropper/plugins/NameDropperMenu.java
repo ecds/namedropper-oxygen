@@ -37,6 +37,7 @@ import java.awt.event.InputEvent;
 import edu.emory.library.namedropper.plugins.DocumentType;
 import edu.emory.library.namedropper.plugins.ActionType;
 import edu.emory.library.namedropper.plugins.SelectionActionViaf;
+import edu.emory.library.namedropper.plugins.PluginOptions;
 
 
 /**
@@ -51,9 +52,6 @@ public class NameDropperMenu extends Menu {
    */
   private StandalonePluginWorkspace workspace;
 
-  private static String documentTypeOption = "docType";  // FIXME: should this be namedropper-specific?
-  // FIXME: where should this be set? needs to be shared with plugin extension
-
   private static String label = "NameDropper";
 
   public NameDropperMenu(StandalonePluginWorkspace ws) {
@@ -63,7 +61,7 @@ public class NameDropperMenu extends Menu {
 
     // configure the menu
     Menu docTypeMenu = new Menu("Document Type");
-    String currentType = getCurrentDoctype();
+    String currentType = PluginOptions.getDocumentType();
 
     // create radio-button style menu for defined document types
     ButtonGroup docTypeGroup = new ButtonGroup();
@@ -85,6 +83,28 @@ public class NameDropperMenu extends Menu {
 
     // TODO: default action menu - based on action types,
     // but functions like document type (changes default)
+    Menu defaultActionMenu = new Menu("Default Lookup");
+    String currentAction = PluginOptions.getDefaultAction();
+
+    // create radio-button style menu for defined document types
+    ButtonGroup defaultActionGroup = new ButtonGroup();
+    JRadioButtonMenuItem setActionItem;
+
+    for (ActionType type : ActionType.values()) {
+      SelectionAction typeAction = type.getAction(workspace);
+      String label = typeAction.getShortName();
+      setActionItem = new JRadioButtonMenuItem(label);
+      // if current type is set, initialize matching menu item as selected
+      if (currentAction.equals(label)) {
+        setActionItem.setSelected(true);
+      }
+      setActionItem.setAction(setDefaultLookupAction);
+      setActionItem.setText(label);
+      defaultActionGroup.add(setActionItem);
+      defaultActionMenu.add(setActionItem);
+    }
+    this.add(defaultActionMenu);
+
 
     // add dividing line between options and actions
     this.addSeparator();
@@ -97,9 +117,11 @@ public class NameDropperMenu extends Menu {
     menuItem.setAccelerator(ctrlN);
     ActionListener defaultAction = new ActionListener() {
       public void actionPerformed(ActionEvent actionEvent) {
+        String defaultAction = PluginOptions.getDefaultAction();
+        SelectionAction action = ActionType.fromSelectionActionShortName(defaultAction).getAction(workspace);
         // for now, use Viaf action since that was the intial ^N functionality.
         // TODO: make this action dynamic based on currently-selected default action.
-        SelectionAction action = new SelectionActionViaf(workspace);
+        //SelectionAction action = new SelectionActionViaf(workspace);
         action.actionPerformed(actionEvent);
       }
     };
@@ -119,14 +141,17 @@ public class NameDropperMenu extends Menu {
     public void actionPerformed(ActionEvent selection) {
       // store the selected document type;
       // action command is the text of the menu item, i.e. TEI or EAD
-      workspace.getOptionsStorage().setOption(documentTypeOption,
-          selection.getActionCommand());
+      PluginOptions.setDocumentType(selection.getActionCommand());
     }
   };
 
-    // get the current value for selected docType, if any
-    public String getCurrentDoctype(){
-      return workspace.getOptionsStorage().getOption(documentTypeOption, "");
+  // Store default lookup action when one of the action type menu items is clicked
+  final Action setDefaultLookupAction = new AbstractAction() {
+    public void actionPerformed(ActionEvent selection) {
+      // store the selected document type;
+      // action command is the text of the menu item, i.e. TEI or EAD
+      PluginOptions.setDefaultAction(selection.getActionCommand());
     }
+  };
 
   }

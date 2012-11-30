@@ -36,8 +36,10 @@ import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
 
 import edu.emory.library.namedropper.plugins.DocumentType;
+import edu.emory.library.namedropper.plugins.PluginOptions;
 import edu.emory.library.viaf.ViafClient;
 import edu.emory.library.viaf.ViafResource;
+
 
 import edu.emory.library.namedropper.plugins.SelectionAction;
 
@@ -52,6 +54,7 @@ public class SelectionActionViaf extends SelectionAction {
     public DocumentType docType;
     // TODO: should probably make this private and use a setter
 
+    public static String shortName = "VIAF";
     private static String name = "VIAF lookup";
     private static KeyStroke shortcut = KeyStroke.getKeyStroke(KeyEvent.VK_V,
             InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK);
@@ -62,11 +65,20 @@ public class SelectionActionViaf extends SelectionAction {
         this.putValue(Action.ACCELERATOR_KEY, this.shortcut);
     }
 
+    public String getShortName() { return this.shortName; }
+
     public String processSelection(String selection) throws Exception {
         String result = selection;
-        String currentDocType = this.workspace.getOptionsStorage().getOption("docType", "");
+        //String currentDocType = this.workspace.getOptionsStorage().getOption("docType", "");
+        String currentDocType = PluginOptions.getDocumentType();
+
         // FIXME: must be a better way to do this; can we *store* as doctype?
         this.docType = DocumentType.fromString(currentDocType);
+
+        // if document type is not set, we can't check for allowed tags or query VIAF
+        if (this.docType == null) {
+            throw new Exception("No Document Type has been selected");
+        }
 
         // otherwise, do previously implemented behavior (viaf lookup)
         // TODO: shift to common select action ?
@@ -92,6 +104,9 @@ public class SelectionActionViaf extends SelectionAction {
      */
     public Boolean tagAllowed() {
         Boolean tagAllowed = null;
+
+        // shouldn't be called if doctype isn't set, but check and bail out just in case
+        if (this.docType == null) { return tagAllowed; }
 
         WSTextEditorPage page = this.getCurrentPage();
         if (page == null) { return tagAllowed; }
@@ -138,11 +153,8 @@ public class SelectionActionViaf extends SelectionAction {
 
         String result = null;  // returned if no results are found
 
-        // if document type is not set, don't bother to query VIAF
-        // since we won't be able to add a tag
-        if (this.docType == null) {
-            throw new Exception("No DocType selected");
-        }
+        // shouldn't be called if doctype isn't set, but check and bail out just in case
+        if (this.docType == null) { return result; }
 
         List<ViafResource> suggestions = ViafClient.suggest(name);
         if (suggestions.size() == 0) {
