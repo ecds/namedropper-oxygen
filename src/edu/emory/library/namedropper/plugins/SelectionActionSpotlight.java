@@ -41,6 +41,7 @@ import edu.emory.library.namedropper.plugins.SelectionAction;
  */
 public class SelectionActionSpotlight extends SelectionAction {
 
+    public static String shortName = "DBpedia Spotlight";
     private static String name = "DBpedia Spotlight annotation";
     private static String description = "Identify resources in selected text";
     private static KeyStroke shortcut = KeyStroke.getKeyStroke(KeyEvent.VK_D,
@@ -52,6 +53,8 @@ public class SelectionActionSpotlight extends SelectionAction {
         this.putValue(Action.SHORT_DESCRIPTION, this.description); // does Oxygen use this?
         this.putValue(Action.ACCELERATOR_KEY, this.shortcut);
     }
+
+    public String getShortName() { return this.shortName; }
 
     public String processSelection(String selection) throws Exception {
         this.showAnnotations(selection);

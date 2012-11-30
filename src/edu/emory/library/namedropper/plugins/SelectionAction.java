@@ -78,6 +78,9 @@ public abstract class SelectionAction extends AbstractAction {
      */
     abstract String processSelection(String selection) throws Exception;
 
+    // short name that will be used in menu to set default name lookup action
+    abstract String getShortName();
+
     /**
      * Update the document based on processed selection-- replace
      * the selected text with the result, if they are different.

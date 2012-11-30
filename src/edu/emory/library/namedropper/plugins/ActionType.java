@@ -58,4 +58,16 @@ public enum ActionType {
         }
     }
 
+    public static ActionType fromSelectionActionShortName(String shortName) {
+        if (shortName.equals(SelectionActionViaf.shortName)) {
+            return VIAF;
+        }
+
+        if (shortName.equals(SelectionActionSpotlight.shortName)) {
+            return DBPEDIA_SPOTLIGHT;
+        }
+        return null;
+    }
+
+
  }
