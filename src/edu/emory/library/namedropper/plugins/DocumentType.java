@@ -1,5 +1,5 @@
 /**
- * file src/edu/emory/library/namedropper/plugins/NameDropperMenuPlugin.java
+ * file src/edu/emory/library/namedropper/plugins/DocumentType.java
  *
  * Copyright 2012 Emory University Library
  *
