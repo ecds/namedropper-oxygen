@@ -36,8 +36,8 @@ To use the plugin once you have it installed:
 * The first time you use the plugin, or if you need to switch between documents, use the
   NameDropper menu located in the main Oxygen menu bar to choose the type of document
   you will be editing (TEI or EAD).
-* Highlight a name in your document and invoke the plugin either by using the contextual
-  menu and selecting **Plugins -> NameDropper** or by using the keyboard
+* Highlight a name in your document and invoke the plugin either by using the top-level
+  **NameDropper** menu and selecting **Lookup names** or by using the keyboard
   shortcut **Control + Shift + N**.
 
 Current behavior is to add an appropriate name tag (based on the document type and the
