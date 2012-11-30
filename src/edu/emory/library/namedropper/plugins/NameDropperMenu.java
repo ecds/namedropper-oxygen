@@ -20,6 +20,7 @@ package edu.emory.library.namedropper.plugins;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import java.awt.event.ActionListener;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -29,7 +30,14 @@ import javax.swing.ButtonGroup;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.Menu;
 
+import java.awt.event.KeyEvent;
+import javax.swing.KeyStroke;
+import java.awt.event.InputEvent;
+
 import edu.emory.library.namedropper.plugins.DocumentType;
+import edu.emory.library.namedropper.plugins.ActionType;
+import edu.emory.library.namedropper.plugins.SelectionActionViaf;
+
 
 /**
  * Custom NameDropper menu to allow users to configure plugin behavior.
@@ -72,11 +80,38 @@ public class NameDropperMenu extends Menu {
       docTypeItem.setText(label);
       docTypeGroup.add(docTypeItem);
       docTypeMenu.add(docTypeItem);
-      // NOTE: should be possible to set keyboard shortcuts for these if we want to
-      // see methods setAccelerator and setMnemonic
+    }
+    this.add(docTypeMenu);
+
+    // TODO: default action menu - based on action types,
+    // but functions like document type (changes default)
+
+    // add dividing line between options and actions
+    this.addSeparator();
+
+
+    // default name lookup action
+    JMenuItem menuItem = new JMenuItem("Lookup Names");
+    KeyStroke ctrlN = KeyStroke.getKeyStroke(KeyEvent.VK_N,
+        InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK);
+    menuItem.setAccelerator(ctrlN);
+    ActionListener defaultAction = new ActionListener() {
+      public void actionPerformed(ActionEvent actionEvent) {
+        // for now, use Viaf action since that was the intial ^N functionality.
+        // TODO: make this action dynamic based on currently-selected default action.
+        SelectionAction action = new SelectionActionViaf(workspace);
+        action.actionPerformed(actionEvent);
+      }
+    };
+    menuItem.addActionListener(defaultAction);
+    this.add(menuItem);
+
+    // add all available actions to the menu
+    for (ActionType at : ActionType.values()) {
+      // init from Action object directly to use name, accelerator, etc
+      this.add(new JMenuItem(at.getAction(workspace)));
     }
 
-    this.add(docTypeMenu);
   }
 
   // Store document type when one of the document type menu items is clicked
