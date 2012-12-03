@@ -37,28 +37,59 @@ public class PluginOptions {
     // static variables for option keys
     // methods for getting/setting options
 
+    /**
+     * Convenience method for accessing the current plugin workspace.
+     * Wrapper around PluginWorkspaceProvider.getPluginWorkspace().
+     */
+    public static PluginWorkspace getWorkspace() {
+        return PluginWorkspaceProvider.getPluginWorkspace();
+    }
+
+
+    /**
+     * Convenience method to get a plugin option by name.
+     * Currently defaults to empty string of option is not set.
+     * @param optionName    name of the option to retrieve
+     */
     public static String getOption(String optionName) {
-        PluginWorkspace ws = PluginWorkspaceProvider.getPluginWorkspace();
+        PluginWorkspace ws = PluginOptions.getWorkspace();
         return ws.getOptionsStorage().getOption(optionName, "");  // FIXME: use null instead?
     }
 
+    /**
+     * Convenience method to set a plugin option.
+     * @param optionName  name of the option to be updated
+     * @param value     value to be set
+     */
     public static void setOption(String optionName, String value) {
-        PluginWorkspace ws = PluginWorkspaceProvider.getPluginWorkspace();
+        PluginWorkspace ws = PluginOptions.getWorkspace();
         ws.getOptionsStorage().setOption(optionName, value);
     }
 
+    /**
+     * Get the current user-selected document type.
+     */
     public static String getDocumentType() {
         return PluginOptions.getOption(PluginOptions.DOCUMENT_TYPE);
     }
 
+    /*
+     * Set the current user-selected document type.
+     */
     public static void setDocumentType(String value) {
         PluginOptions.setOption(PluginOptions.DOCUMENT_TYPE, value);
     }
 
+    /*
+     * Get the current default action.
+     */
     public static String getDefaultAction() {
         return PluginOptions.getOption(PluginOptions.DEFAULT_ACTION);
     }
 
+    /**
+     * Set the current default action.
+     */
     public static void setDefaultAction(String value) {
         PluginOptions.setOption(PluginOptions.DEFAULT_ACTION, value);
     }
