@@ -32,42 +32,51 @@ import javax.swing.JMenuBar;
 import edu.emory.library.namedropper.plugins.NameDropperMenu;
 import edu.emory.library.namedropper.ui.DBPediaPanel;
 
-public class NameDropperPluginExtension implements WorkspaceAccessPluginExtension {
+public class NameDropperPluginExtension implements
+		WorkspaceAccessPluginExtension {
 
-    /**
-     * Plugin workspace access.
-     */
-    private StandalonePluginWorkspace pluginWorkspaceAccess;
+	/**
+	 * Plugin workspace access.
+	 */
+	private StandalonePluginWorkspace pluginWorkspaceAccess;
+	private DBPediaPanel dbpediaPanel;
 
-    /**
-     * On application startup, add NameDropper menu to top-level menubar.
-     */
-    public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
-        this.pluginWorkspaceAccess = pluginWorkspaceAccess;
+	/**
+	 * On application startup, add NameDropper menu to top-level menubar.
+	 */
+	public void applicationStarted(
+			final StandalonePluginWorkspace pluginWorkspaceAccess) {
+		this.pluginWorkspaceAccess = pluginWorkspaceAccess;
 
-        pluginWorkspaceAccess.addMenuBarCustomizer(new MenuBarCustomizer() {
+		pluginWorkspaceAccess.addMenuBarCustomizer(new MenuBarCustomizer() {
 
-          public void customizeMainMenu(JMenuBar mainMenuBar) {
-            // Add the NameDropper menu just before the last menu in the bar (Help menu)
-            mainMenuBar.add(new NameDropperMenu(pluginWorkspaceAccess),
-                mainMenuBar.getMenuCount() - 1);
-          }
-        });
+			public void customizeMainMenu(JMenuBar mainMenuBar) {
+				// Add the NameDropper menu just before the last menu in the bar
+				// (Help menu)
+				mainMenuBar.add(new NameDropperMenu(pluginWorkspaceAccess),
+						mainMenuBar.getMenuCount() - 1);
+			}
+		});
 
-        pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
-          public void customizeView(ViewInfo viewInfo) {
-            if ("DBPediaViewID".equals(viewInfo.getViewID())) {
-              DBPediaPanel panel = new DBPediaPanel();
-              viewInfo.setTitle("DBPedia");
-              viewInfo.setComponent(panel);
-            }
-          }
-        });
-    }
+		pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
+			public void customizeView(ViewInfo viewInfo) {
+				if ("DBPediaViewID".equals(viewInfo.getViewID())) {
+					dbpediaPanel = new DBPediaPanel();
+					viewInfo.setTitle("DBPedia");
+					viewInfo.setComponent(dbpediaPanel);
+				}
+			}
+		});
+	}
 
-    // required because we are implementing Interface WorkspaceAccessPluginExtension
-    public boolean applicationClosing() {
-        return true;  // it's ok with this plugin for the application to close
-    }
+	// required because we are implementing Interface
+	// WorkspaceAccessPluginExtension
+	public boolean applicationClosing() {
+		return true; // it's ok with this plugin for the application to close
+	}
+	
+	public DBPediaPanel getDBPediaPanel() {
+		return this.dbpediaPanel;
+	}
 
 }

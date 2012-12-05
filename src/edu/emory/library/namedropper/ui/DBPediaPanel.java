@@ -7,6 +7,8 @@ import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
+
+import edu.emory.library.spotlight.SpotlightAnnotation;
 // awt imports
 import java.awt.Color;
 import java.awt.Insets;
@@ -15,6 +17,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class DBPediaPanel extends JPanel {
 
@@ -53,7 +56,6 @@ public class DBPediaPanel extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         fillerPanel = new JPanel();
-        fillerPanel.setBackground(Color.GREEN);
         scrollContent.add(fillerPanel, gbc);
 
         scrollPane = new JScrollPane(scrollContent);
@@ -69,37 +71,45 @@ public class DBPediaPanel extends JPanel {
 
         gbc.anchor = (x == 0) ? GridBagConstraints.FIRST_LINE_START : GridBagConstraints.FIRST_LINE_START;
         //gbc.fill = (x == 0) ? GridBagConstraints.BOTH : GridBagConstraints.HORIZONTAL;
-
+        
+        //Insets(top, left, bottom, right)
         gbc.insets = (y == 0) ? new Insets(3, 5, 3, 5) : new Insets(0, 5, 3, 5);
         gbc.weightx = (x == 0) ? 0.1 : 1.0;
         gbc.weighty = 0.0;
 
         return gbc;
     }
-
-    public void addStringToList(String str) {
-        System.out.println("in addStringToList");
-        System.out.println("attempting to add " + str + " to the list");
-        scrollContent.remove(fillerPanel);
-
-        GridBagConstraints gbc = createGbc(0, currentRow);
-        scrollContent.add(new JCheckBox(), gbc);
-
-        gbc = createGbc(1, currentRow);
-        scrollContent.add(new JTextField(str), gbc);
-
-        gbc = createGbc(0, currentRow+1);
+    
+    public void setResults(List<SpotlightAnnotation> annotations) {
+    	scrollContent.removeAll();
+    	currentRow = 0;
+    	
+    	// iterate through annotations to add each to the display
+    	for (SpotlightAnnotation sa : annotations) {
+    		this.addStringToList(sa.getSurfaceForm());
+    	}
+    	
+    	// create gbc for the filler div to ensure layout starts at the top
+    	GridBagConstraints gbc = createGbc(0, currentRow+1);
         gbc.anchor = GridBagConstraints.LAST_LINE_START;
         gbc.gridheight = 1;
         gbc.gridwidth = 1;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         scrollContent.add(fillerPanel, gbc);
+        
         // revalidate and repaint the scrollContent to ensure it gets added to the view
-
-        scrollContent.layout();
         scrollContent.revalidate();
         scrollContent.repaint();
+    }
+    
+    private void addStringToList(String str) {
+        GridBagConstraints gbc = createGbc(0, currentRow);
+        scrollContent.add(new JCheckBox(), gbc);
+
+        gbc = createGbc(1, currentRow);
+        gbc.ipady = 3;
+        scrollContent.add(new JLabel(str), gbc);
 
         currentRow++;
     }

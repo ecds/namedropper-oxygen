@@ -35,7 +35,7 @@ public class NameDropperPlugin extends Plugin {
     */
     public NameDropperPlugin(PluginDescriptor descriptor) {
         super(descriptor);
-
+        
         if (instance != null) {
             throw new IllegalStateException("Already instantiated !");
         }
@@ -49,5 +49,14 @@ public class NameDropperPlugin extends Plugin {
     */
     public static NameDropperPlugin getInstance() {
         return instance;
+    }
+    
+    /**
+     * Get the plugin extension
+     * 
+     * @return the plugin extension
+     */
+    public NameDropperPluginExtension getExtension() {
+    	return (NameDropperPluginExtension)instance.getDescriptor().getExtension("WorkspaceAccess");
     }
 }
