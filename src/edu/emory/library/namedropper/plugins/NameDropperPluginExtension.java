@@ -22,12 +22,15 @@ package edu.emory.library.namedropper.plugins;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.standalone.MenuBarCustomizer;
+import ro.sync.exml.workspace.api.standalone.ViewComponentCustomizer;
+import ro.sync.exml.workspace.api.standalone.ViewInfo;
 
 // for customizing oxygen menubar
 import javax.swing.JMenuBar;
 
 // local dependencies
 import edu.emory.library.namedropper.plugins.NameDropperMenu;
+import edu.emory.library.namedropper.ui.DBPediaPanel;
 
 public class NameDropperPluginExtension implements WorkspaceAccessPluginExtension {
 
@@ -48,6 +51,16 @@ public class NameDropperPluginExtension implements WorkspaceAccessPluginExtensio
             // Add the NameDropper menu just before the last menu in the bar (Help menu)
             mainMenuBar.add(new NameDropperMenu(pluginWorkspaceAccess),
                 mainMenuBar.getMenuCount() - 1);
+          }
+        });
+
+        pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
+          public void customizeView(ViewInfo viewInfo) {
+            if ("DBPediaViewID".equals(viewInfo.getViewID())) {
+              DBPediaPanel panel = new DBPediaPanel();
+              viewInfo.setTitle("DBPedia");
+              viewInfo.setComponent(panel);
+            }
           }
         });
     }

@@ -139,6 +139,14 @@
       </copy>
   </target>
 
+  <!-- convenience task to install built version to a local oxygen instance -->
+  <target description="Copy built plugin to local Oxygen installation without running tests or javadocs." name="install-no-doc" depends="dist">
+      <fail unless="env.OXYGEN_HOME" message="Install requires OXYGEN_HOME environment variable."/>
+      <copy todir="${env.OXYGEN_HOME}/plugins/${ant.project.name}">
+        <fileset dir="${dist}/${ant.project.name}"/>
+      </copy>
+  </target>
+
   <!-- convenience task to uninstall built version copied to a local oxygen instance -->
   <target description="Remove built plugin from local Oxygen installation" name="uninstall">
       <fail unless="env.OXYGEN_HOME" message="Uninstall requires OXYGEN_HOME environment variable."/>
