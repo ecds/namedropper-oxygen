@@ -80,6 +80,8 @@ public class SelectionActionSpotlight extends SelectionAction {
             message, "DBpedia Spotlight annotations",
             JOptionPane.INFORMATION_MESSAGE);
 
+        // make the view visible if it isn't already
+        this.workspace.showView(AnnotationPanel.VIEW_ID, false); // false = don't request focus
         AnnotationPanel panel = NameDropperPlugin.getInstance().getExtension().getAnnotationPanel();
         panel.setResults(annotations);
 

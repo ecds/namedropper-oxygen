@@ -39,6 +39,9 @@ import java.util.List;
 
 public class AnnotationPanel extends JPanel {
 
+    public static String VIEW_ID = "AnnotationViewID";
+    public static String TITLE = "NameDropper Annotations";
+
     private JScrollPane scrollPane;
     private JPanel scrollContent;
     private JPanel fillerPanel;

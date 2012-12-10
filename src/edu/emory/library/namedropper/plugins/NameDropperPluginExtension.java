@@ -60,9 +60,9 @@ public class NameDropperPluginExtension implements
 
 		pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
 			public void customizeView(ViewInfo viewInfo) {
-				if ("AnnotationViewID".equals(viewInfo.getViewID())) {
+				if (AnnotationPanel.VIEW_ID.equals(viewInfo.getViewID())) {
 					annotationPanel = new AnnotationPanel();
-					viewInfo.setTitle("Annotations");
+					viewInfo.setTitle(annotationPanel.TITLE);
 					viewInfo.setComponent(annotationPanel);
 				}
 			}
