@@ -91,11 +91,9 @@
     </copy>
 
     <copy file="plugin.xml" todir="${dist}/${ant.project.name}" />
-
-    <buildnumber/>
     <jar jarfile="${dist}/${ant.project.name}-${version}.jar">
       <!-- plugin must include the wrapping NameDropper directory -->
-      <fileset dir="${dist}" includes="${ant.project.name}" />
+      <fileset dir="${dist}" includes="${ant.project.name}/**" />
     </jar>
   </target>
 
