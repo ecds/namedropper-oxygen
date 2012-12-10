@@ -34,7 +34,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import edu.emory.library.spotlight.SpotlightClient;
 import edu.emory.library.spotlight.SpotlightAnnotation;
 import edu.emory.library.namedropper.plugins.SelectionAction;
-import edu.emory.library.namedropper.ui.DBPediaPanel;
+import edu.emory.library.namedropper.ui.AnnotationPanel;
 
 /**
  *  Use the DBpedia Spotlight API to annotate user-selected text
@@ -80,8 +80,7 @@ public class SelectionActionSpotlight extends SelectionAction {
             message, "DBpedia Spotlight annotations",
             JOptionPane.INFORMATION_MESSAGE);
 
-        DBPediaPanel panel = NameDropperPlugin.getInstance().getExtension().getDBPediaPanel();
-
+        AnnotationPanel panel = NameDropperPlugin.getInstance().getExtension().getAnnotationPanel();
         panel.setResults(annotations);
 
     }

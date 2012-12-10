@@ -30,7 +30,7 @@ import javax.swing.JMenuBar;
 
 // local dependencies
 import edu.emory.library.namedropper.plugins.NameDropperMenu;
-import edu.emory.library.namedropper.ui.DBPediaPanel;
+import edu.emory.library.namedropper.ui.AnnotationPanel;
 
 public class NameDropperPluginExtension implements
 		WorkspaceAccessPluginExtension {
@@ -39,7 +39,7 @@ public class NameDropperPluginExtension implements
 	 * Plugin workspace access.
 	 */
 	private StandalonePluginWorkspace pluginWorkspaceAccess;
-	private DBPediaPanel dbpediaPanel;
+	private AnnotationPanel annotationPanel;
 
 	/**
 	 * On application startup, add NameDropper menu to top-level menubar.
@@ -60,10 +60,10 @@ public class NameDropperPluginExtension implements
 
 		pluginWorkspaceAccess.addViewComponentCustomizer(new ViewComponentCustomizer() {
 			public void customizeView(ViewInfo viewInfo) {
-				if ("DBPediaViewID".equals(viewInfo.getViewID())) {
-					dbpediaPanel = new DBPediaPanel();
-					viewInfo.setTitle("DBPedia");
-					viewInfo.setComponent(dbpediaPanel);
+				if ("AnnotationViewID".equals(viewInfo.getViewID())) {
+					annotationPanel = new AnnotationPanel();
+					viewInfo.setTitle("Annotations");
+					viewInfo.setComponent(annotationPanel);
 				}
 			}
 		});
@@ -74,9 +74,9 @@ public class NameDropperPluginExtension implements
 	public boolean applicationClosing() {
 		return true; // it's ok with this plugin for the application to close
 	}
-	
-	public DBPediaPanel getDBPediaPanel() {
-		return this.dbpediaPanel;
+
+	public AnnotationPanel getAnnotationPanel() {
+		return this.annotationPanel;
 	}
 
 }

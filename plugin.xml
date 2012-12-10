@@ -10,5 +10,5 @@
     </runtime>
     <extension type="WorkspaceAccess"
         class="edu.emory.library.namedropper.plugins.NameDropperPluginExtension"/>
-    <view id="DBPediaViewID" initialSide="WEST" initialRow="1" />
+    <view id="AnnotationViewID" initialSide="WEST" initialRow="1" />
 </plugin>
