@@ -56,4 +56,8 @@ public class SpotlightAnnotation {
         return this.surfaceForm;
     }
 
+    public void adjustOffset(int relative) {
+        this.offset += relative;
+    }
+
 }

@@ -19,33 +19,29 @@
 package edu.emory.library.namedropper.ui;
 
 import java.util.List;
+import java.util.ArrayList;
 
 // swing imports
 import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JCheckBox;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
-import javax.swing.JOptionPane;
-import javax.swing.JList;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 // awt imports
 import java.awt.Color;
-import java.awt.Insets;
 import java.awt.BorderLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseEvent;
 
 // oxygen imports
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 import ro.sync.exml.workspace.api.editor.WSEditor;
-
 
 // local imports
 import edu.emory.library.spotlight.SpotlightAnnotation;
@@ -58,129 +54,153 @@ public class AnnotationPanel extends JPanel {
     public static String TITLE = "NameDropper Annotations";
 
     private JScrollPane scrollPane;
-    private JPanel scrollContent;
-    private JPanel fillerPanel;
-    private JButton btnAcceptAll;
-    private int currentRow = 0;
+    private JTable table;
+
+    /**
+     * Abstract table model that uses a list of annotations
+     * as the basis for each row of data in a table.
+     */
+    class AnnotationTableModel extends AbstractTableModel {
+        private String[] columnNames = {"Approve", "Recognized Name"};
+        static final int APPROVED = 0;
+        static final int NAME = 1;
+
+        private List<SpotlightAnnotation> data = new ArrayList<SpotlightAnnotation>();
+
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        public int getRowCount() {
+            return data.size();
+        }
+
+        public String getColumnName(int col) {
+            return columnNames[col];
+        }
+
+        public Object getValueAt(int row, int col) {
+            switch (col) {
+                case APPROVED:
+                    return false;
+
+                case NAME:
+                    return data.get(row).getSurfaceForm();
+            }
+            return null;
+        }
+
+        public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
+        }
+
+        public boolean isCellEditable(int row, int col) {
+            // FIXME: this seems to be ignored/unused; probably need to set table editable
+            switch (col) {
+                case APPROVED:             // selected for insert; should eventually be editable
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        /**
+         * Add a list of annotations and update the table to display them.
+         */
+        public void addAnnotations(List<SpotlightAnnotation> annotations) {
+            int last_row = data.size();
+            for (SpotlightAnnotation sa : annotations) {
+                data.add(sa);
+            }
+            fireTableRowsInserted(last_row, data.size());
+        }
+
+        /**
+         * Return the SpotlightAnnotation object for a specific row.
+         */
+        public SpotlightAnnotation getRowAnnotation(int row) {
+            return data.get(row);
+        }
+
+        /**
+         * Remove all associated annotations and update the table
+         */
+        public void clearAnnotations() {
+            int size = data.size();
+            data.clear();
+            fireTableRowsDeleted(0, size);
+        }
+
+    } // end table model
 
     public AnnotationPanel() {
         this.setLayout(new BorderLayout());
-        this.setBackground(Color.BLACK);
+        this.setBackground(Color.GRAY);
 
-        this.add(getScrollPane(), BorderLayout.CENTER);
+        // initialize table and scroll pane
+        table = new JTable(new AnnotationTableModel());
 
-        btnAcceptAll = new JButton("Add Row");
-        btnAcceptAll.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                addStringToList("row " + currentRow);
-                System.out.println("test");
-            }
-        });
-        this.add(btnAcceptAll, BorderLayout.SOUTH);
-    }
+        scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+        // force first column (check box) to be small
+        TableColumn column = table.getColumnModel().getColumn(0);
+        column.setPreferredWidth(5);  // this should work, but as far as I can tell Oxygen ignores it
+        column.setMaxWidth(7);      // force the column to be minimal width
 
-    private JScrollPane getScrollPane() {
-        scrollContent = new JPanel(new GridBagLayout());
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        ListSelectionModel rowSM = table.getSelectionModel();
+        // add a row listener
+        rowSM.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                // Ignore extra messages.
+                if (e.getValueIsAdjusting()) return;
 
-        GridBagConstraints gbc = new GridBagConstraints();
+                ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+                if (! lsm.isSelectionEmpty()) {
+                    int selectedRow = lsm.getMinSelectionIndex();
 
-        //gbc.gridx = gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.LAST_LINE_START;
-        gbc.gridheight = 1;
-        gbc.gridwidth = 1;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+                    AnnotationTableModel model = (AnnotationTableModel) table.getModel();
+                    SpotlightAnnotation an = model.getRowAnnotation(selectedRow);
 
-        fillerPanel = new JPanel();
-        scrollContent.add(fillerPanel, gbc);
-
-        scrollPane = new JScrollPane(scrollContent);
-        return scrollPane;
-    }
-
-    private GridBagConstraints createGbc(int x, int y) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = x;
-        gbc.gridy = y;
-        gbc.gridwidth = 1;
-        gbc.gridheight = 1;
-
-        gbc.anchor = (x == 0) ? GridBagConstraints.FIRST_LINE_START : GridBagConstraints.FIRST_LINE_START;
-        //gbc.fill = (x == 0) ? GridBagConstraints.BOTH : GridBagConstraints.HORIZONTAL;
-
-        //Insets(top, left, bottom, right)
-        gbc.insets = (y == 0) ? new Insets(3, 5, 3, 5) : new Insets(0, 5, 3, 5);
-        gbc.weightx = (x == 0) ? 0.1 : 1.0;
-        gbc.weighty = 0.0;
-
-        return gbc;
-    }
-
-    public void setResults(List<SpotlightAnnotation> annotations, int offset) {
-    	scrollContent.removeAll();
-    	currentRow = 0;
-
-    	// iterate through annotations to add each to the display
-    	for (SpotlightAnnotation sa : annotations) {
-    		//this.addStringToList(sa.getSurfaceForm());
-            this.addAnnotationToList(sa, offset);
-    	}
-
-    	// create gbc for the filler div to ensure layout starts at the top
-    	GridBagConstraints gbc = createGbc(0, currentRow+1);
-        gbc.anchor = GridBagConstraints.LAST_LINE_START;
-        gbc.gridheight = 1;
-        gbc.gridwidth = 1;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        scrollContent.add(fillerPanel, gbc);
-
-        // revalidate and repaint the scrollContent to ensure it gets added to the view
-        scrollContent.revalidate();
-        scrollContent.repaint();
-    }
-
-    private void addStringToList(String str) {
-        GridBagConstraints gbc = createGbc(0, currentRow);
-        scrollContent.add(new JCheckBox(), gbc);
-
-        gbc = createGbc(1, currentRow);
-        gbc.ipady = 3;
-        JLabel label = new JLabel(str);
-        scrollContent.add(label, gbc);
-
-        currentRow++;
-    }
-
-
-    private void addAnnotationToList(final SpotlightAnnotation sa, final int offset) {
-        GridBagConstraints gbc = createGbc(0, currentRow);
-        scrollContent.add(new JCheckBox(), gbc);
-
-        gbc = createGbc(1, currentRow);
-        gbc.ipady = 3;
-        JLabel label = new JLabel(sa.getSurfaceForm());
-
-        label.addMouseListener(new java.awt.event.MouseAdapter() {  // java.awt.event.MouseListener
-            public void mouseClicked(MouseEvent e) {
-                PluginWorkspace ws = PluginOptions.getWorkspace();
-                WSTextEditorPage ed = null;
-                WSEditor editorAccess = ws.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
-                if (editorAccess != null && editorAccess.getCurrentPage() instanceof WSTextEditorPage) {
-                    ed = (WSTextEditorPage)editorAccess.getCurrentPage();
-                    // test setting caret position
-                    int start = sa.getOffset() + offset;
-                    ed.setCaretPosition(start);
-                    ed.select(start, start + sa.getSurfaceForm().length());
+                    // Based on the selected annotation, highlight the corresponding
+                    // recognized text where it occurs in the document.
+                    PluginWorkspace ws = PluginOptions.getWorkspace();
+                    WSTextEditorPage ed = null;
+                    WSEditor editorAccess = ws.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
+                    if (editorAccess != null && editorAccess.getCurrentPage() instanceof WSTextEditorPage) {
+                        ed = (WSTextEditorPage)editorAccess.getCurrentPage();
+                        int start = an.getOffset();
+                        ed.setCaretPosition(start);
+                        ed.select(start, start + an.getSurfaceForm().length());
+                    }
                 }
             }
         });
 
+        this.add(scrollPane, BorderLayout.CENTER);
 
-        scrollContent.add(label, gbc);
+        // add a button to clear all current annotations
+        JButton clearAll = new JButton("Clear");
+        clearAll.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                AnnotationTableModel model = (AnnotationTableModel) table.getModel();
+                model.clearAnnotations();
+            }
+        });
+        this.add(clearAll, BorderLayout.SOUTH);
 
-        currentRow++;
-
+        // todo: eventually we will want other buttons
+        // (insert all, insert selected?)
     }
+
+    /**
+     * Add a list of annotations to the table.
+     */
+    public void addAnnotations(List<SpotlightAnnotation> annotations) {
+        AnnotationTableModel model = (AnnotationTableModel) this.table.getModel();
+        model.addAnnotations(annotations);
+    }
+
 
 }

@@ -61,7 +61,7 @@ public class SelectionActionSpotlight extends SelectionAction {
     public String getShortName() { return this.shortName; }
 
     public String processSelection(String selection) throws Exception {
-        this.showAnnotations(selection);
+        this.findAnnotations(selection);
         return selection;
     }
 
@@ -69,36 +69,30 @@ public class SelectionActionSpotlight extends SelectionAction {
      * Preliminary spotlight functionality: just display the identified resources
      * in a pop-up window as a simple way to show that the spotlight request is working
      */
-    public void showAnnotations(String text) throws Exception {
+    public void findAnnotations(String text) throws Exception {
         // annotate the text and display identified resources
         SpotlightClient spot = new SpotlightClient();
+        // store document offset for current selected text
+        WSTextEditorPage ed = this.getCurrentPage();
+        if (ed == null) { return; }
+        int selectionOffset = ed.getSelectionStart();
+        // clear user-selected text be setting an empty selection
+        ed.select(selectionOffset, selectionOffset);
+
         // TODO: this should run in the background
         List<SpotlightAnnotation> annotations = spot.annotate(text);
-        // todo: clear user-selected text
-
-        // preliminary implementation: simple pop-up message with identified resources
-        // String message = "DBpedia Spotlight identified the following resources in the selected text:\n\n";
-        // for (SpotlightAnnotation sa : annotations) {
-        //     message += String.format("\t%s :\t%s\n", sa.getSurfaceForm(), sa.getUri());
-        //     System.out.println(String.format("%s offset: %s", sa.getSurfaceForm(), sa.getOffset()));
-        // }
-
-        // JOptionPane.showMessageDialog((java.awt.Frame)this.workspace.getParentFrame(),
-        //     message, "DBpedia Spotlight annotations",
-        //     JOptionPane.INFORMATION_MESSAGE);
 
         // make the view visible if it isn't already
         this.workspace.showView(AnnotationPanel.VIEW_ID, false); // false = don't request focus
         AnnotationPanel panel = NameDropperPlugin.getInstance().getExtension().getAnnotationPanel();
 
-        WSTextEditorPage ed = this.getCurrentPage();
-        if (ed == null) { return; }
-        int selectionOffset = ed.getSelectionStart();
-
-        panel.setResults(annotations, selectionOffset);
-
-
-
+        // Annotation offsets are relative to the selected text that was sent to Spotlight.
+        // Adjust them so they are relative to the entire document.
+        for (SpotlightAnnotation sa : annotations) {
+            sa.adjustOffset(selectionOffset);
+        }
+        // add them to the UI annotation panel for display and user interaction
+        panel.addAnnotations(annotations);
     }
 
 }
