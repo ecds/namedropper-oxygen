@@ -29,8 +29,11 @@ import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
 
+// oxygen dependencies
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 
+// local
 import edu.emory.library.spotlight.SpotlightClient;
 import edu.emory.library.spotlight.SpotlightAnnotation;
 import edu.emory.library.namedropper.plugins.SelectionAction;
@@ -69,21 +72,32 @@ public class SelectionActionSpotlight extends SelectionAction {
     public void showAnnotations(String text) throws Exception {
         // annotate the text and display identified resources
         SpotlightClient spot = new SpotlightClient();
+        // TODO: this should run in the background
         List<SpotlightAnnotation> annotations = spot.annotate(text);
+        // todo: clear user-selected text
 
-        String message = "DBpedia Spotlight identified the following resources in the selected text:\n\n";
-        for (SpotlightAnnotation sa : annotations) {
-            message += String.format("\t%s :\t%s\n", sa.getSurfaceForm(), sa.getUri());
-        }
+        // preliminary implementation: simple pop-up message with identified resources
+        // String message = "DBpedia Spotlight identified the following resources in the selected text:\n\n";
+        // for (SpotlightAnnotation sa : annotations) {
+        //     message += String.format("\t%s :\t%s\n", sa.getSurfaceForm(), sa.getUri());
+        //     System.out.println(String.format("%s offset: %s", sa.getSurfaceForm(), sa.getOffset()));
+        // }
 
-        JOptionPane.showMessageDialog((java.awt.Frame)this.workspace.getParentFrame(),
-            message, "DBpedia Spotlight annotations",
-            JOptionPane.INFORMATION_MESSAGE);
+        // JOptionPane.showMessageDialog((java.awt.Frame)this.workspace.getParentFrame(),
+        //     message, "DBpedia Spotlight annotations",
+        //     JOptionPane.INFORMATION_MESSAGE);
 
         // make the view visible if it isn't already
         this.workspace.showView(AnnotationPanel.VIEW_ID, false); // false = don't request focus
         AnnotationPanel panel = NameDropperPlugin.getInstance().getExtension().getAnnotationPanel();
-        panel.setResults(annotations);
+
+        WSTextEditorPage ed = this.getCurrentPage();
+        if (ed == null) { return; }
+        int selectionOffset = ed.getSelectionStart();
+
+        panel.setResults(annotations, selectionOffset);
+
+
 
     }
 

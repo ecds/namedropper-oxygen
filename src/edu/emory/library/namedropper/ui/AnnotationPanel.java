@@ -18,6 +18,8 @@
 
 package edu.emory.library.namedropper.ui;
 
+import java.util.List;
+
 // swing imports
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -25,8 +27,9 @@ import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
+import javax.swing.JOptionPane;
+import javax.swing.JList;
 
-import edu.emory.library.spotlight.SpotlightAnnotation;
 // awt imports
 import java.awt.Color;
 import java.awt.Insets;
@@ -35,7 +38,19 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
+
+// oxygen imports
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
+import ro.sync.exml.workspace.api.editor.WSEditor;
+
+
+// local imports
+import edu.emory.library.spotlight.SpotlightAnnotation;
+import edu.emory.library.namedropper.plugins.PluginOptions;
+
 
 public class AnnotationPanel extends JPanel {
 
@@ -101,13 +116,14 @@ public class AnnotationPanel extends JPanel {
         return gbc;
     }
 
-    public void setResults(List<SpotlightAnnotation> annotations) {
+    public void setResults(List<SpotlightAnnotation> annotations, int offset) {
     	scrollContent.removeAll();
     	currentRow = 0;
 
     	// iterate through annotations to add each to the display
     	for (SpotlightAnnotation sa : annotations) {
-    		this.addStringToList(sa.getSurfaceForm());
+    		//this.addStringToList(sa.getSurfaceForm());
+            this.addAnnotationToList(sa, offset);
     	}
 
     	// create gbc for the filler div to ensure layout starts at the top
@@ -130,9 +146,41 @@ public class AnnotationPanel extends JPanel {
 
         gbc = createGbc(1, currentRow);
         gbc.ipady = 3;
-        scrollContent.add(new JLabel(str), gbc);
+        JLabel label = new JLabel(str);
+        scrollContent.add(label, gbc);
 
         currentRow++;
+    }
+
+
+    private void addAnnotationToList(final SpotlightAnnotation sa, final int offset) {
+        GridBagConstraints gbc = createGbc(0, currentRow);
+        scrollContent.add(new JCheckBox(), gbc);
+
+        gbc = createGbc(1, currentRow);
+        gbc.ipady = 3;
+        JLabel label = new JLabel(sa.getSurfaceForm());
+
+        label.addMouseListener(new java.awt.event.MouseAdapter() {  // java.awt.event.MouseListener
+            public void mouseClicked(MouseEvent e) {
+                PluginWorkspace ws = PluginOptions.getWorkspace();
+                WSTextEditorPage ed = null;
+                WSEditor editorAccess = ws.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
+                if (editorAccess != null && editorAccess.getCurrentPage() instanceof WSTextEditorPage) {
+                    ed = (WSTextEditorPage)editorAccess.getCurrentPage();
+                    // test setting caret position
+                    int start = sa.getOffset() + offset;
+                    ed.setCaretPosition(start);
+                    ed.select(start, start + sa.getSurfaceForm().length());
+                }
+            }
+        });
+
+
+        scrollContent.add(label, gbc);
+
+        currentRow++;
+
     }
 
 }
