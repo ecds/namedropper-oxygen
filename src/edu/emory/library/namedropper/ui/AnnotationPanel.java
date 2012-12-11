@@ -23,17 +23,21 @@ import java.util.ArrayList;
 
 // swing imports
 import javax.swing.JPanel;
+import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 // awt imports
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -56,14 +60,15 @@ public class AnnotationPanel extends JPanel {
     private JScrollPane scrollPane;
     private JTable table;
 
+
     /**
      * Abstract table model that uses a list of annotations
      * as the basis for each row of data in a table.
      */
     class AnnotationTableModel extends AbstractTableModel {
         private String[] columnNames = {"Approve", "Recognized Name"};
-        static final int APPROVED = 0;
-        static final int NAME = 1;
+        public static final int APPROVED = 0;
+        public static final int NAME = 1;
 
         private List<SpotlightAnnotation> data = new ArrayList<SpotlightAnnotation>();
 
@@ -134,6 +139,33 @@ public class AnnotationPanel extends JPanel {
 
     } // end table model
 
+    /**
+     * Custom table cell renderer for annotations to add information
+     * about the recognized resource via tooltip text.
+     */
+    public class AnnotationRenderer extends DefaultTableCellRenderer {
+
+        public Component getTableCellRendererComponent(
+                                JTable table, Object obj,
+                                boolean isSelected, boolean hasFocus,
+                                int row, int column) {
+            // inherit all the default display logic
+            super.getTableCellRendererComponent(table, obj,
+                isSelected, hasFocus, row, column);
+
+            // add a custom tool tip
+            AnnotationTableModel model = (AnnotationTableModel) table.getModel();
+            SpotlightAnnotation an = model.getRowAnnotation(row);
+
+            // For now, just the display dbpedia URI.
+            // - could grab dbpedia label for display here?
+            // How much information is sufficient? Do we need to be able to link to dbpedia?
+            // - consider displaying label, abstract (perhaps with some cut off), and URI
+            setToolTipText(an.getUri());
+            return this;
+        }
+    }
+
     public AnnotationPanel() {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.GRAY);
@@ -144,9 +176,15 @@ public class AnnotationPanel extends JPanel {
         scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
         // force first column (check box) to be small
-        TableColumn column = table.getColumnModel().getColumn(0);
+        TableColumn column = table.getColumnModel().getColumn(AnnotationTableModel.APPROVED);
         column.setPreferredWidth(5);  // this should work, but as far as I can tell Oxygen ignores it
         column.setMaxWidth(7);      // force the column to be minimal width
+
+        // Customize tool tips for annotation text
+        column = table.getColumnModel().getColumn(AnnotationTableModel.NAME);
+        // DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        // renderer.setToolTipText("test tool tip");
+        column.setCellRenderer(new AnnotationRenderer());
 
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ListSelectionModel rowSM = table.getSelectionModel();
