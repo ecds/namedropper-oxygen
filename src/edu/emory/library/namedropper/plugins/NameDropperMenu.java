@@ -81,10 +81,15 @@ public class NameDropperMenu extends Menu {
     }
     this.add(docTypeMenu);
 
-    // TODO: default action menu - based on action types,
+    // default action menu - based on action types,
     // but functions like document type (changes default)
     Menu defaultActionMenu = new Menu("Default Lookup");
     String currentAction = PluginOptions.getDefaultAction();
+    // default default: if no default action has been chosen, set to VIAF lookup
+    if (currentAction.equals("")) {
+      currentAction = SelectionActionViaf.shortName;
+      PluginOptions.setDefaultAction(currentAction);
+    }
 
     // create radio-button style menu for defined document types
     ButtonGroup defaultActionGroup = new ButtonGroup();
