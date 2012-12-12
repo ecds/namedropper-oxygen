@@ -71,9 +71,12 @@ public class SpotlightClient {
             JSONObject json = (JSONObject)new JSONParser().parse(response);
             // information about identified names are listed under 'Resources'
             JSONArray jsonArray = (JSONArray)json.get("Resources");
-            for (int i=0; i < jsonArray.size(); i++) {
-                SpotlightAnnotation sa = new SpotlightAnnotation((JSONObject) jsonArray.get(i));
-                annotations.add(sa);
+            // if no names are identified, resources will not be set
+            if (jsonArray != null) {
+                for (int i=0; i < jsonArray.size(); i++) {
+                    SpotlightAnnotation sa = new SpotlightAnnotation((JSONObject) jsonArray.get(i));
+                    annotations.add(sa);
+                }
             }
 
         } catch (java.io.UnsupportedEncodingException e) {

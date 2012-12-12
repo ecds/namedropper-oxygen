@@ -81,6 +81,9 @@ public class SelectionActionSpotlight extends SelectionAction {
 
         // TODO: this should run in the background
         List<SpotlightAnnotation> annotations = spot.annotate(text);
+        if (annotations.size() == 0) {
+            throw new Exception("No resources were identified in the selected text");
+        }
 
         // make the view visible if it isn't already
         this.workspace.showView(AnnotationPanel.VIEW_ID, false); // false = don't request focus
