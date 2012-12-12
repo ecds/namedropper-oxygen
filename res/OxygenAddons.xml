@@ -8,9 +8,10 @@
     <!-- NOTE: if we ever want to split out, or list multiple plugins, look at using an include for each plugin -->
     <!-- <xi:include href="OxygenExtension-NameDropper.xml" /> -->
 
-    <xt:extension id="edu.emory.library.namedropper.plugins.NameDropper" >
-        <xt:location href="https://github.com/downloads/emory-libraries-disc/namedropper-oxygen/NameDropper-0.3.0-dev-20121210.jar"/>
-        <xt:version>0.3.000</xt:version>
+    <xt:extension id="edu.emory.library.namedropper.plugins.NameDropper">
+        <!-- internal location for emory testers -->
+        <xt:location href="https://wilson.library.emory.edu/jenkins/job/namedropper-oxygen/34/artifact/dist/NameDropper-0.3.0-dev.jar"/>
+        <xt:version>0.3.0001</xt:version>
         <xt:oxy_version>14.0+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Emory University Library</xt:author>
