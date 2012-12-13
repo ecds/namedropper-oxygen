@@ -62,3 +62,6 @@ lib/commons-*.jar
 lib/httpclient-*.jar
 lib/httpcore-*.jar
 lib/httpmime-*.jar
+lib/aduna-*.jar
+lib/sesame-*.jar
+lib/slf4j-*.jar

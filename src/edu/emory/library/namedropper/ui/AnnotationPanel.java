@@ -90,7 +90,13 @@ public class AnnotationPanel extends JPanel {
                     return false;
 
                 case NAME:
-                    return data.get(row).getSurfaceForm();
+                    // NOTE: this is a bit slow and should probably be done in the background, if possible
+                    String name = data.get(row).getLabel();
+                    // use recognized surface form, if query doesn't find a label
+                    if (name == null || name.equals("")) {
+                        return data.get(row).getSurfaceForm();
+                    }
+                    return name;
             }
             return null;
         }
@@ -157,11 +163,17 @@ public class AnnotationPanel extends JPanel {
             AnnotationTableModel model = (AnnotationTableModel) table.getModel();
             SpotlightAnnotation an = model.getRowAnnotation(row);
 
-            // For now, just the display dbpedia URI.
-            // - could grab dbpedia label for display here?
-            // How much information is sufficient? Do we need to be able to link to dbpedia?
-            // - consider displaying label, abstract (perhaps with some cut off), and URI
-            setToolTipText(an.getUri());
+            // display the beginning of the resource description;
+            // should be enough in most cases to see if it's the right thing or not
+            // (eventually we'll probably want a way to expose more information)
+            String description = an.getAbstract();
+            // use dbpedia URI as a fallback if we can't get an abstract
+            if (description == null || description.equals("")) {
+                description = an.getUri();
+            } else if (description.length() > 100) {
+                description = description.substring(0, 100) + "...";
+            }
+            setToolTipText(description);
             return this;
         }
     }

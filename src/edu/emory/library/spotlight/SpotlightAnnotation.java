@@ -20,6 +20,16 @@ package edu.emory.library.spotlight;
 
 import org.json.simple.JSONObject;
 
+import java.util.List;
+import org.openrdf.OpenRDFException;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.http.HTTPRepository;
+import org.openrdf.query.TupleQuery;
+import org.openrdf.query.TupleQueryResult;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.model.Value;
+
 public class SpotlightAnnotation {
 
     private String uri;
@@ -59,5 +69,67 @@ public class SpotlightAnnotation {
     public void adjustOffset(int relative) {
         this.offset += relative;
     }
+
+    private String _label = null;
+    // query dbpedia for the label; store it on first query
+    public String getLabel() {
+        if (_label != null) { return _label; }
+        _label = getDBpediaProperty("rdfs:label");
+        return _label;
+    }
+
+    private String _abstract = null;
+    // query dbpedia for the abstract; store it on first query
+    public String getAbstract() {
+        if (_abstract != null) { return _abstract; }
+        _abstract = getDBpediaProperty("<http://dbpedia.org/ontology/abstract>");
+        return _abstract;
+    }
+
+    private String getDBpediaProperty(String property) {
+        return getDBpediaProperty(property, "EN");
+    }
+
+    // get a dbpedia property for this resource
+    // property should either be a <uri> or a ns:property in a namespace dbpedia
+    // has pre-defined
+    private String getDBpediaProperty(String property, String language) {
+        String val = "";
+        try {
+
+            String endpointURL = "http://dbpedia.org/sparql";
+            HTTPRepository dbpediaEndpoint = new HTTPRepository(endpointURL, "");
+            dbpediaEndpoint.initialize();
+            RepositoryConnection conn =  dbpediaEndpoint.getConnection();
+
+            try {
+                String queryString =
+                    "SELECT ?val " +
+                    "\n WHERE { <%s> %s ?val" +
+                    "\n FILTER langMatches( lang(?val), \"%s\" )}";
+                queryString = String.format(queryString, this.uri, property, language);
+                TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+                TupleQueryResult result = tupleQuery.evaluate();
+                try {
+                    if (result.hasNext()) {
+                        BindingSet bindingSet = result.next();
+                        Value l = bindingSet.getValue("val");
+                        val = l.stringValue();
+                    }
+
+                }  finally {
+                    result.close();
+                }
+
+           } finally {
+              conn.close();
+           }
+        } catch (OpenRDFException e) {
+           // TODO... handle exception
+            System.out.println("exception " + e);
+        }
+        return val;
+    }
+
 
 }
