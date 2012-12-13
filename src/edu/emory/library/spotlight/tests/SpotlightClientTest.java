@@ -135,6 +135,24 @@ public class SpotlightClientTest {
     }
 
     // TODO: can we test getLabel and getAbstract without querying dbpedia in unit tests?
+    //@Test   // NOTE: disabling for now; re-enable to test when needed
+    public void testDBpediaProperties() throws Exception {
+        PowerMockito.mockStatic(EULHttpUtils.class);
+
+        Mockito.when(this.mockSpotlightClient.annotate(text)).thenCallRealMethod();
+
+        HashMap headers = new HashMap<String, String>();
+        headers.put("Accept", "application/json");
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString(),
+            Mockito.eq(headers))).thenReturn(anntotationResponse);
+        List<SpotlightAnnotation> results = this.mockSpotlightClient.annotate(this.text);
+
+        SpotlightAnnotation anno = results.get(0);
+        assertEquals("Michael Longley", anno.getLabel());
+        assertEquals("Michael Longley, CBE (born 27 July 1939) is a Northern Irish poet from Belfast.",
+            anno.getAbstract());
+
+    }
 
 }
 

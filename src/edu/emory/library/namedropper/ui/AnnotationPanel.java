@@ -171,7 +171,7 @@ public class AnnotationPanel extends JPanel {
             if (description == null || description.equals("")) {
                 description = an.getUri();
             } else if (description.length() > 100) {
-                description = description.substring(0, 100) + " ...";
+                description = description.substring(0, 100) + "...";
             }
             setToolTipText(description);
             return this;

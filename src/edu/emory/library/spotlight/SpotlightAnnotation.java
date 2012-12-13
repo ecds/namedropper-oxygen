@@ -23,8 +23,6 @@ import org.json.simple.JSONObject;
 import java.util.List;
 import org.openrdf.OpenRDFException;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.sparql.SPARQLRepository;
 import org.openrdf.repository.http.HTTPRepository;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
