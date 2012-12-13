@@ -134,6 +134,7 @@ public class SpotlightClientTest {
 
     }
 
+    // TODO: can we test getLabel and getAbstract without querying dbpedia in unit tests?
 
 }
 
