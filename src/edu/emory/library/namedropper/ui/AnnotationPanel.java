@@ -50,7 +50,7 @@ import ro.sync.exml.workspace.api.editor.WSEditor;
 // local imports
 import edu.emory.library.spotlight.SpotlightAnnotation;
 import edu.emory.library.namedropper.plugins.PluginOptions;
-
+import edu.emory.library.namedropper.plugins.DocumentType;
 
 public class AnnotationPanel extends JPanel {
 
@@ -66,11 +66,12 @@ public class AnnotationPanel extends JPanel {
      * as the basis for each row of data in a table.
      */
     class AnnotationTableModel extends AbstractTableModel {
-        private String[] columnNames = {"Approve", "Recognized Name"};
+        private String[] columnNames = {"OK", "Recognized Name"};
         public static final int APPROVED = 0;
         public static final int NAME = 1;
 
         private List<SpotlightAnnotation> data = new ArrayList<SpotlightAnnotation>();
+        private List<Boolean> approved = new ArrayList<Boolean>();
 
         public int getColumnCount() {
             return columnNames.length;
@@ -87,7 +88,7 @@ public class AnnotationPanel extends JPanel {
         public Object getValueAt(int row, int col) {
             switch (col) {
                 case APPROVED:
-                    return false;
+                    return approved.get(row);
 
                 case NAME:
                     // NOTE: this is a bit slow and should probably be done in the background, if possible
@@ -97,8 +98,15 @@ public class AnnotationPanel extends JPanel {
                         return data.get(row).getSurfaceForm();
                     }
                     return name;
+
             }
             return null;
+        }
+
+        public void setValueAt(Object val, int row, int col) {
+            if (col == APPROVED) {
+                approved.set(row, (Boolean) val);
+            }
         }
 
         public Class getColumnClass(int c) {
@@ -106,7 +114,6 @@ public class AnnotationPanel extends JPanel {
         }
 
         public boolean isCellEditable(int row, int col) {
-            // FIXME: this seems to be ignored/unused; probably need to set table editable
             switch (col) {
                 case APPROVED:             // selected for insert; should eventually be editable
                     return true;
@@ -123,6 +130,8 @@ public class AnnotationPanel extends JPanel {
             int last_row = data.size();
             for (SpotlightAnnotation sa : annotations) {
                 data.add(sa);
+                // keep approved array consistent with data; init as false
+                approved.add(false);
             }
             fireTableRowsInserted(last_row, data.size());
         }
@@ -135,11 +144,21 @@ public class AnnotationPanel extends JPanel {
         }
 
         /**
+         * Remove a row from the table by row number.
+         */
+        public void removeRowAnnotation(int row) {
+            data.remove(row);
+            approved.remove(row);
+            fireTableRowsDeleted(row, row);
+        }
+
+        /**
          * Remove all associated annotations and update the table
          */
         public void clearAnnotations() {
             int size = data.size();
             data.clear();
+            approved.clear();
             fireTableRowsDeleted(0, size);
         }
 
@@ -223,6 +242,8 @@ public class AnnotationPanel extends JPanel {
                         int start = an.getOffset();
                         ed.setCaretPosition(start);
                         ed.select(start, start + an.getSurfaceForm().length());
+
+
                     }
                 }
             }
