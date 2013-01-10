@@ -33,6 +33,7 @@ import static org.mockito.Mockito.*;
 
 import edu.emory.library.namedropper.plugins.DocumentType;
 import edu.emory.library.viaf.ViafResource;
+import edu.emory.library.spotlight.SpotlightAnnotation;
 
 public class DocumentTypeTest {
 
@@ -108,22 +109,41 @@ public class DocumentTypeTest {
         when(mockvr.getViafId()).thenReturn("12345");
         when(mockvr.getUri()).thenReturn("http://viaf.org/viaf/12345");
 
+        // mock spotlight annotation to test with
+        SpotlightAnnotation mockAnnotation = mock(SpotlightAnnotation.class);
+        when(mockAnnotation.getUri()).thenReturn("http://dbpedia.org/Some_Person");
+        when(mockAnnotation.getSurfaceForm()).thenReturn("someName");
+
         DocumentType tei = DocumentType.TEI;
         DocumentType ead = DocumentType.EAD;
 
         // person result
+        // - viaf
         when(mockvr.getType()).thenReturn("Personal");
         assertEquals("<persname source=\"viaf\" authfilenumber=\"12345\">someName</persname>",
             ead.makeTag("someName", mockvr));
         assertEquals("<name ref=\"http://viaf.org/viaf/12345\" type=\"person\">someName</name>",
             tei.makeTag("someName", mockvr));
+        // - spotlight annotation
+        when(mockAnnotation.getType()).thenReturn("Personal");
+        assertEquals("<persname source=\"dbpedia\" authfilenumber=\"http://dbpedia.org/Some_Person\">someName</persname>",
+            ead.makeTag(mockAnnotation));
+        assertEquals("<name ref=\"http://dbpedia.org/Some_Person\" type=\"person\">someName</name>",
+            tei.makeTag(mockAnnotation));
 
         // corporate
+        // - viaf
         when(mockvr.getType()).thenReturn("Corporate");
         assertEquals("<corpname source=\"viaf\" authfilenumber=\"12345\">someName</corpname>",
             ead.makeTag("someName", mockvr));
         assertEquals("<name ref=\"http://viaf.org/viaf/12345\" type=\"org\">someName</name>",
             tei.makeTag("someName", mockvr));
+        // - spotlight annotation
+        when(mockAnnotation.getType()).thenReturn("Corporate");
+        assertEquals("<corpname source=\"dbpedia\" authfilenumber=\"http://dbpedia.org/Some_Person\">someName</corpname>",
+            ead.makeTag(mockAnnotation));
+        assertEquals("<name ref=\"http://dbpedia.org/Some_Person\" type=\"org\">someName</name>",
+            tei.makeTag(mockAnnotation));
 
         // place
         when(mockvr.getType()).thenReturn("Geographic");
@@ -131,9 +151,13 @@ public class DocumentTypeTest {
             ead.makeTag("someName", mockvr));
         assertEquals("<name ref=\"http://viaf.org/viaf/12345\" type=\"place\">someName</name>",
             tei.makeTag("someName", mockvr));
-
+        // - spotlight annotation
+        when(mockAnnotation.getType()).thenReturn("Geographic");
+        assertEquals("<geogname source=\"dbpedia\" authfilenumber=\"http://dbpedia.org/Some_Person\">someName</geogname>",
+            ead.makeTag(mockAnnotation));
+        assertEquals("<name ref=\"http://dbpedia.org/Some_Person\" type=\"place\">someName</name>",
+            tei.makeTag(mockAnnotation));
      }
-
 
      @Test
      public void testMakeTagNoResults() throws Exception {

@@ -19,6 +19,7 @@
 package edu.emory.library.namedropper.plugins;
 
 import edu.emory.library.viaf.ViafResource;
+import edu.emory.library.spotlight.SpotlightAnnotation;
 
 /**
  * Information about supported document types.
@@ -185,13 +186,13 @@ public enum DocumentType {
     /**
      * Generate an xml tag for the current document type, based on a name, a resource. Uses
      * ViafResource type and viafid or URI to generate the appropriate tag and attributes.
+     * Raises an exception when resource has an unsupported name type.
      *
      * @param name       text of the name to used as the content of the tag
      * @param resource  ViafResource, for tag attributes
      *
      * @return String of the generated tag or null
-     * @raises Exception if a resource has an unsupported name type
-     */     // FIXME: @raises causes javadoc error
+     */
     public String makeTag(String name, ViafResource resource) throws Exception {
 
         String result = null;
@@ -205,6 +206,52 @@ public enum DocumentType {
         if (nt == null) {
             throw new Exception("Unsupported nameType: " + nameType);
         }
+        return this.makeTag(name, nt, resource.getUri(), "viaf", resource.getViafId());
+    }
+
+    /**
+     * Generate an xml tag for the current document type, based on a resource identified
+     * by DBpedia Spotlight annotation.
+     *
+     * @param annotation DBpedia Spotlight annotation result
+     *
+     * @return String of the generated tag or null
+     */
+    public String makeTag(SpotlightAnnotation annotation) throws Exception {
+
+        String result = null;
+        String tag = null;
+        String type = null;
+
+        String nameType = annotation.getType();
+        DocumentType.NameType nt = NameType.fromString(nameType);
+        if (nt == null) {
+            throw new Exception("Unsupported nameType: " + nameType);
+        }
+
+        return this.makeTag(annotation.getSurfaceForm(), nt, annotation.getUri(),
+            "dbpedia", annotation.getUri());
+        // viafid still TODO for dbpedia resources
+        // for now, use dbpedia uri as an identifier
+    }
+
+    /**
+     * Generate an xml tag for the current document type, based on a name, a resource. Uses
+     * ViafResource type and viafid or URI to generate the appropriate tag and attributes.
+     *
+     * @param text  text to be used as the content of the tag
+     * @param type  type of name to generate a tag for
+     * @param uri   Resource URI (used to generate TEI tags)
+     * @param idSource Source name for identifier (used for EAD source attribute)
+     * @param id    Identifier (used for EAD authfilenumber attribute with idSource)
+     *
+     * @return String of the generated tag or null
+     */
+    public String makeTag(String text, NameType nt, String uri, String idSource, String id)  {
+
+        String result = null;
+        String tag = null;
+        String type = null;
 
         switch (this) {
             case TEI:
@@ -212,18 +259,20 @@ public enum DocumentType {
                 type = this.getTagType(nt);
                 // create tag with viafid if result is one of the supported types
                 result = String.format("<%s ref=\"%s\" type=\"%s\">%s</%s>", tag,
-                    resource.getUri(), type, name, tag);
+                    uri, type, text, tag);
 
                 break;
 
             case EAD:
                 tag = this.getTagName(nt);
-                result = String.format("<%s source=\"viaf\" authfilenumber=\"%s\">%s</%s>", tag,
-                    resource.getViafId(), name, tag);
+                result = String.format("<%s source=\"%s\" authfilenumber=\"%s\">%s</%s>", tag,
+                    idSource, id, text, tag);
                 break;
         }
 
         return result;
   }
+
+
 
 }
