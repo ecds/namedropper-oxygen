@@ -256,66 +256,19 @@ public class AnnotationPanel extends JPanel {
         JButton insertAll = new JButton("Insert All");
         insertAll.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                AnnotationTableModel model = (AnnotationTableModel) table.getModel();
-
-                // get access to the editor so we can update the document
-                PluginWorkspace ws = PluginOptions.getWorkspace();
-                WSTextEditorPage ed = null;
-                WSEditor editorAccess = ws.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
-                if (editorAccess != null && editorAccess.getCurrentPage() instanceof WSTextEditorPage) {
-
-                    // select the matched term so we can replace it with a tag
-                    ed = (WSTextEditorPage)editorAccess.getCurrentPage();
-                    // begin a single undoable edit for ALL inserted tags
-                    ed.beginCompoundUndoableEdit();
-
-                    String currentDocType = PluginOptions.getDocumentType();
-                    DocumentType docType = DocumentType.fromString(currentDocType);
-
-                    // iterate through each row in the table and insert tags for the annotation
-                    int offsetAdjust = 0;
-                    for (int i = 0; i < model.getRowCount(); i++) {
-                        SpotlightAnnotation an = model.getRowAnnotation(i);
-
-                        int start = an.getOffset() + offsetAdjust;
-                        ed.setCaretPosition(start);
-                        ed.select(start, start + an.getSurfaceForm().length());
-
-                        try {
-                            String result = docType.makeTag(an);
-                            // could error if annotation is an unsupported name type
-
-                            // replace recognized word with tagged name
-                            int selectionOffset = ed.getSelectionStart();
-                            ed.deleteSelection();
-                            javax.swing.text.Document doc = ed.getDocument();
-                            try {
-                                doc.insertString(selectionOffset, result,
-                                    javax.swing.text.SimpleAttributeSet.EMPTY);
-                            } catch (javax.swing.text.BadLocationException b) {
-                            // should be a valid location based on original selection
-                            }
-
-                            // keep track of change to upcoming offsets based on text added
-                            offsetAdjust += result.length() - an.getSurfaceForm().length();
-
-                        } catch (Exception err) {
-                        // TODO ... ?
-                        }
-
-                    }  // end looping through rows
-
-                    // end of the compound edit (inserted all items)
-                    ed.endCompoundUndoableEdit();
-
-                    // remove all annotations (all inserted)
-                    model.clearAnnotations();
-                } // end editor access
+                insertAllAnnotations();
             }
         });
         toolbar.add(insertAll, BorderLayout.SOUTH);
 
         // insert selected still TODO
+        JButton insertSelected = new JButton("Insert Selected");
+        insertSelected.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                insertSelectedAnnotations();
+            }
+        });
+        toolbar.add(insertSelected, BorderLayout.SOUTH);
 
         // add a button to clear all current annotations
         JButton clearAll = new JButton("Clear");
@@ -339,5 +292,98 @@ public class AnnotationPanel extends JPanel {
         model.addAnnotations(annotations);
     }
 
+
+    private void insertAllAnnotations() {
+        insertAnnotations(false);
+    }
+
+    private void insertSelectedAnnotations() {
+        insertAnnotations(true);
+    }
+
+    private void insertAnnotations(boolean selectedOnly) {
+        AnnotationTableModel model = (AnnotationTableModel) table.getModel();
+
+        // get access to the editor so we can update the document
+        PluginWorkspace ws = PluginOptions.getWorkspace();
+        WSTextEditorPage ed = null;
+        WSEditor editorAccess = ws.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
+        if (editorAccess != null && editorAccess.getCurrentPage() instanceof WSTextEditorPage) {
+
+            // select the matched term so we can replace it with a tag
+            ed = (WSTextEditorPage)editorAccess.getCurrentPage();
+            // begin a single undoable edit for ALL inserted tags
+            ed.beginCompoundUndoableEdit();
+
+            String currentDocType = PluginOptions.getDocumentType();
+            DocumentType docType = DocumentType.fromString(currentDocType);
+
+            // iterate through each row in the table and insert tags for the annotation
+            int offsetAdjust = 0;
+            int i = 0;
+            int start = 0;
+
+            // loop through annotations, removing them as they are inserted,
+            // until we run out of annotations to insert or get to the end
+            while (i < model.getRowCount()) {
+                SpotlightAnnotation an = model.getRowAnnotation(i);
+
+                // if only inserting selected annotations, skip unapproved items
+                if (selectedOnly && (Boolean) model.getValueAt(i, model.APPROVED) == false) {
+                    // if there is an offset adjustment due to previous insertions,
+                    // update the unselected annotation
+                    if (offsetAdjust != 0) {
+                        an.adjustOffset(offsetAdjust);
+                    }
+
+                    // increment to process the next annotation, skip to next loop
+                    i++;
+                    continue;
+                }
+
+                // otherwise, process the annotation and insert a tag
+
+                // select recognized text for replacement
+                start = an.getOffset() + offsetAdjust;
+                ed.setCaretPosition(start);
+                ed.select(start, start + an.getSurfaceForm().length());
+
+                try {
+                    String result = docType.makeTag(an);
+                    // could error if annotation is an unsupported name type
+
+                    // replace recognized word with tagged name
+                    int selectionOffset = ed.getSelectionStart();
+                    ed.deleteSelection();
+                    javax.swing.text.Document doc = ed.getDocument();
+                    try {
+                        doc.insertString(selectionOffset, result,
+                            javax.swing.text.SimpleAttributeSet.EMPTY);
+                    } catch (javax.swing.text.BadLocationException b) {
+                        // should be a valid location based on original selection
+                    }
+
+                    // keep track of change to upcoming offsets based on text added
+                    offsetAdjust += result.length() - an.getSurfaceForm().length();
+
+                    // remove the processed annotation
+                    model.removeRowAnnotation(i);
+
+                } catch (Exception err) {
+                    // FIXME: handle exceptions better here...
+
+                    // error: increment so to process the next annotation
+                    i++;
+                }
+
+            }  // end looping through annotations
+
+            ed.select(start, start);  // ensure no text is highlighted
+
+            // end of the compound edit (inserted all/selected items)
+            ed.endCompoundUndoableEdit();
+
+        } // end editor access
+    }
 
 }
