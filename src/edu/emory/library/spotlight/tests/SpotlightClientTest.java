@@ -121,6 +121,7 @@ public class SpotlightClientTest {
         assertEquals("Michael Longley", anno.getSurfaceForm());
         Integer expectedOffset = 0;
         assertEquals(expectedOffset, anno.getOffset());
+        assertEquals("Personal", anno.getType());
 
         anno = results.get(1);
         assertEquals("born", anno.getSurfaceForm());
@@ -131,6 +132,7 @@ public class SpotlightClientTest {
         assertEquals("Belfast, Northern Ireland", anno.getSurfaceForm());
         expectedOffset = 28;
         assertEquals(expectedOffset, anno.getOffset());
+        assertEquals("Geographic", anno.getType());
 
     }
 

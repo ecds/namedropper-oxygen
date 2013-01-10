@@ -70,6 +70,21 @@ public class SpotlightAnnotation {
         this.offset += relative;
     }
 
+    /**
+     * Determine what type of name this resource is.
+     */
+    public String getType() {
+        String type = null;
+        if (this.types.contains("DBpedia:Person") || this.types.contains("Freebase:/people/person")) {
+            type = "Personal";
+        } else if (this.types.contains("DBpedia:Organisation")) {
+            type = "Corporate";
+        } else if (this.types.contains("DBpedia:Place")) {
+            type = "Geographic";
+        }
+        return type;
+    }
+
     private String _label = null;
     // query dbpedia for the label; store it on first query
     public String getLabel() {
