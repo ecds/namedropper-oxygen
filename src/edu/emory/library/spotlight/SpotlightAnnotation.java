@@ -73,16 +73,17 @@ public class SpotlightAnnotation {
     /**
      * Determine what type of name this resource is.
      */
+    String _type = null;
     public String getType() {
-        String type = null;
+        if (_type != null) { return _type; }
         if (this.types.contains("DBpedia:Person") || this.types.contains("Freebase:/people/person")) {
-            type = "Personal";
+            _type = "Personal";
         } else if (this.types.contains("DBpedia:Organisation")) {
-            type = "Corporate";
+            _type = "Corporate";
         } else if (this.types.contains("DBpedia:Place")) {
-            type = "Geographic";
+            _type = "Geographic";
         }
-        return type;
+        return _type;
     }
 
     private String _label = null;
@@ -99,6 +100,17 @@ public class SpotlightAnnotation {
         if (_abstract != null) { return _abstract; }
         _abstract = getDBpediaProperty("<http://dbpedia.org/ontology/abstract>");
         return _abstract;
+    }
+
+    private String _viafid = null;
+    public String getViafId() {
+        // viaf id look-up currently only supported for personal names
+        if (this.getType() != "Personal") { return _viafid; }
+        if (_viafid != null) { return _viafid; }
+        // some dbpedia records have a viaf property in DBpedia; check for that first
+        _viafid = getDBpediaProperty("<http://dbpedia.org/property/viaf>",
+            null);  // null = disable language filter (numeric property, no language)
+        return _viafid;
     }
 
     private String getDBpediaProperty(String property) {
@@ -118,11 +130,20 @@ public class SpotlightAnnotation {
             RepositoryConnection conn =  dbpediaEndpoint.getConnection();
 
             try {
+                // generate the sparql query for the requested property
                 String queryString =
                     "SELECT ?val " +
-                    "\n WHERE { <%s> %s ?val" +
-                    "\n FILTER langMatches( lang(?val), \"%s\" )}";
-                queryString = String.format(queryString, this.uri, property, language);
+                    "\n WHERE { <%s> %s ?val";
+                // only use language filter if language is not null
+                // (some properties, such as viaf, are numeric and do not have a language)
+                if (language != null) {
+                    queryString += "\n FILTER langMatches( lang(?val), \"%s\" ) }";
+                    queryString = String.format(queryString, this.uri, property, language);
+                } else {
+                    queryString += "}";
+                    queryString = String.format(queryString, this.uri, property);
+                }
+
                 TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
                 TupleQueryResult result = tupleQuery.evaluate();
                 try {

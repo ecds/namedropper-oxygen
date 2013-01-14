@@ -229,10 +229,19 @@ public enum DocumentType {
             throw new Exception("Unsupported nameType: " + nameType);
         }
 
+        // use dbpedia URI as default identifier
+        String id = annotation.getUri();
+        String source = "dbpedia";
+        // get VIAF id if possible (currently only supported for personal names)
+        if (nt == DocumentType.NameType.PERSONAL) {
+            String viafid = annotation.getViafId();
+            if (viafid != null) {
+                id = viafid;
+                source = "viaf";
+            }
+        }
         return this.makeTag(annotation.getSurfaceForm(), nt, annotation.getUri(),
-            "dbpedia", annotation.getUri());
-        // viafid still TODO for dbpedia resources
-        // for now, use dbpedia uri as an identifier
+            source, id);
     }
 
     /**
