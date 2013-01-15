@@ -372,7 +372,7 @@ public class AnnotationPanel extends JPanel {
                 } catch (Exception err) {
                     // FIXME: handle exceptions better here...
 
-                    // error: increment so to process the next annotation
+                    // error: increment so we move on to process the next annotation
                     i++;
                 }
 
