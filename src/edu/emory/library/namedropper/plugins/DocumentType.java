@@ -230,6 +230,7 @@ public enum DocumentType {
         }
 
         // use dbpedia URI as default identifier
+        String uri = annotation.getUri();
         String id = annotation.getUri();
         String source = "dbpedia";
         // get VIAF id if possible (currently only supported for personal names)
@@ -238,7 +239,10 @@ public enum DocumentType {
             if (viafid != null) {
                 id = viafid;
                 source = "viaf";
+                // When VIAF id is available, use VIAF URI also
+                uri = String.format('http://viaf.org/viaf/%d' % viafid);
             }
+
         }
         return this.makeTag(annotation.getSurfaceForm(), nt, annotation.getUri(),
             source, id);
@@ -249,7 +253,7 @@ public enum DocumentType {
      * ViafResource type and viafid or URI to generate the appropriate tag and attributes.
      *
      * @param text  text to be used as the content of the tag
-     * @param type  type of name to generate a tag for
+     * @param nt  type of name to generate a tag for
      * @param uri   Resource URI (used to generate TEI tags)
      * @param idSource Source name for identifier (used for EAD source attribute)
      * @param id    Identifier (used for EAD authfilenumber attribute with idSource)
