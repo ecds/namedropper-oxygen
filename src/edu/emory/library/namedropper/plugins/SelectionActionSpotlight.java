@@ -19,6 +19,10 @@
 package edu.emory.library.namedropper.plugins;
 
 import java.util.List;
+import java.util.TreeMap;
+
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import javax.swing.Action;
 import javax.swing.AbstractAction;
@@ -70,13 +74,40 @@ public class SelectionActionSpotlight extends SelectionAction {
      * in a pop-up window as a simple way to show that the spotlight request is working
      */
     public void findAnnotations(String text) throws Exception {
-        // annotate the text and display identified resources
+
+        // regular expression to remove xml tags from the selected text
+        Pattern xmlTag = Pattern.compile("(</?\\w+[ =:.\\w\\\"]*>)");
+        Matcher m = xmlTag.matcher(text);
+        // treemap to store offsets and adjustments (using treemap to retain sorting)
+        TreeMap<Integer,Integer> offsetAdjustments = new TreeMap();
+        // store offset and length of text removed so spotlight annotation
+        // offsets can be matched back to original text with the xml tags
+        Integer currentOffset = 0;
+        Integer adjustedStart = 0;
+        // iterate over matched xml tags in the selected text
+        while (m.find()) {
+            // start of the match relative to the text *without* xml tags
+            adjustedStart = m.start() - currentOffset;
+            // current total offset adjustment at this point (length of all removed tags)
+            currentOffset += (m.end() - m.start());
+            // store the offset where a tag was removed and the length of text removed
+            offsetAdjustments.put(adjustedStart, currentOffset);
+        }
+
+        // replace all xml tags in the selected text with the empty string
+        String[] textParts = xmlTag.split(text);  // split on regex and join segments
+        text = "";
+        for (int i = 0; i < textParts.length; i++) {
+            text += textParts[i];
+        }
+
+        // query spotlight to annotate the text and display identified resources
         SpotlightClient spot = new SpotlightClient();
         // store document offset for current selected text
         WSTextEditorPage ed = this.getCurrentPage();
         if (ed == null) { return; }
         int selectionOffset = ed.getSelectionStart();
-        // clear user-selected text be setting an empty selection
+        // clear user-selected text by setting an empty selection
         ed.select(selectionOffset, selectionOffset);
 
         // TODO: this should run in the background
@@ -85,15 +116,24 @@ public class SelectionActionSpotlight extends SelectionAction {
             throw new Exception("No resources were identified in the selected text");
         }
 
-        // make the view visible if it isn't already
+        // make the annotation panel visible if it isn't already
         this.workspace.showView(AnnotationPanel.VIEW_ID, false); // false = don't request focus
         AnnotationPanel panel = NameDropperPlugin.getInstance().getExtension().getAnnotationPanel();
 
         // Annotation offsets are relative to the selected text that was sent to Spotlight.
-        // Adjust them so they are relative to the entire document.
+        // Adjust offsets to account for any xml tags removed from the selection
+        Integer offset = null;
         for (SpotlightAnnotation sa : annotations) {
+            // find the greatest offset less than or equal to the current annotation offset
+            offset = offsetAdjustments.floorKey(sa.getOffset());
+            // if there is an adjustment for this offset, use it
+            if (offset != null) {
+                sa.adjustOffset(offsetAdjustments.get(offset));
+            }
+            // all anntaotions must be adjusted so they are relative to the entire document
             sa.adjustOffset(selectionOffset);
         }
+
         // add them to the UI annotation panel for display and user interaction
         panel.addAnnotations(annotations);
     }
