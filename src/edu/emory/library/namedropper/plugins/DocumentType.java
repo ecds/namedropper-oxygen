@@ -240,11 +240,11 @@ public enum DocumentType {
                 id = viafid;
                 source = "viaf";
                 // When VIAF id is available, use VIAF URI also
-                uri = String.format("http://viaf.org/viaf/%d", viafid);
+                uri = String.format("http://viaf.org/viaf/%s", viafid);
             }
 
         }
-        return this.makeTag(annotation.getSurfaceForm(), nt, annotation.getUri(),
+        return this.makeTag(annotation.getSurfaceForm(), nt, uri,
             source, id);
     }
 

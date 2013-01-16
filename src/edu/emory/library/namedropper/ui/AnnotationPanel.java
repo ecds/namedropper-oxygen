@@ -371,6 +371,7 @@ public class AnnotationPanel extends JPanel {
 
                 } catch (Exception err) {
                     // FIXME: handle exceptions better here...
+                    // At *least* we should have logging or something
 
                     // error: increment so we move on to process the next annotation
                     i++;
