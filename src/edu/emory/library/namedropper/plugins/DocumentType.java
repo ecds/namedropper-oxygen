@@ -236,7 +236,7 @@ public enum DocumentType {
         // get VIAF id if possible (currently only supported for personal names)
         if (nt == DocumentType.NameType.PERSONAL) {
             String viafid = annotation.getViafId();
-            if (viafid != null) {
+            if (viafid != null && viafid.length() != 0) {
                 id = viafid;
                 source = "viaf";
                 // When VIAF id is available, use VIAF URI also

@@ -124,11 +124,18 @@ public class DocumentTypeTest {
             ead.makeTag("someName", mockvr));
         assertEquals("<name ref=\"http://viaf.org/viaf/12345\" type=\"person\">someName</name>",
             tei.makeTag("someName", mockvr));
-        // - spotlight annotation
+        // - spotlight annotation with no viaf id
         when(mockAnnotation.getType()).thenReturn("Personal");
+        when(mockAnnotation.getViafId()).thenReturn("");
         assertEquals("<persname source=\"dbpedia\" authfilenumber=\"http://dbpedia.org/Some_Person\">someName</persname>",
             ead.makeTag(mockAnnotation));
         assertEquals("<name ref=\"http://dbpedia.org/Some_Person\" type=\"person\">someName</name>",
+            tei.makeTag(mockAnnotation));
+        // - spotlight annotation with viaf id
+        when(mockAnnotation.getViafId()).thenReturn("12345");
+        assertEquals("<persname source=\"viaf\" authfilenumber=\"12345\">someName</persname>",
+            ead.makeTag(mockAnnotation));
+        assertEquals("<name ref=\"http://viaf.org/viaf/12345\" type=\"person\">someName</name>",
             tei.makeTag(mockAnnotation));
 
         // corporate
