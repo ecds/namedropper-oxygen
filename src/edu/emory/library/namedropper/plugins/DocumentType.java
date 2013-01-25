@@ -231,7 +231,7 @@ public enum DocumentType {
 
         // use dbpedia URI as default identifier
         String uri = annotation.getUri();
-        String id = annotation.getUri();
+        String id = annotation.getId();
         String source = "dbpedia";
         // get VIAF id if possible (currently only supported for personal names)
         if (nt == DocumentType.NameType.PERSONAL) {

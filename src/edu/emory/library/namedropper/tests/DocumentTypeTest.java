@@ -112,6 +112,7 @@ public class DocumentTypeTest {
         // mock spotlight annotation to test with
         SpotlightAnnotation mockAnnotation = mock(SpotlightAnnotation.class);
         when(mockAnnotation.getUri()).thenReturn("http://dbpedia.org/Some_Person");
+        when(mockAnnotation.getId()).thenReturn("Some_Person");
         when(mockAnnotation.getSurfaceForm()).thenReturn("someName");
 
         DocumentType tei = DocumentType.TEI;
@@ -127,7 +128,7 @@ public class DocumentTypeTest {
         // - spotlight annotation with no viaf id
         when(mockAnnotation.getType()).thenReturn("Personal");
         when(mockAnnotation.getViafId()).thenReturn("");
-        assertEquals("<persname source=\"dbpedia\" authfilenumber=\"http://dbpedia.org/Some_Person\">someName</persname>",
+        assertEquals("<persname source=\"dbpedia\" authfilenumber=\"Some_Person\">someName</persname>",
             ead.makeTag(mockAnnotation));
         assertEquals("<name ref=\"http://dbpedia.org/Some_Person\" type=\"person\">someName</name>",
             tei.makeTag(mockAnnotation));
@@ -147,7 +148,7 @@ public class DocumentTypeTest {
             tei.makeTag("someName", mockvr));
         // - spotlight annotation
         when(mockAnnotation.getType()).thenReturn("Corporate");
-        assertEquals("<corpname source=\"dbpedia\" authfilenumber=\"http://dbpedia.org/Some_Person\">someName</corpname>",
+        assertEquals("<corpname source=\"dbpedia\" authfilenumber=\"Some_Person\">someName</corpname>",
             ead.makeTag(mockAnnotation));
         assertEquals("<name ref=\"http://dbpedia.org/Some_Person\" type=\"org\">someName</name>",
             tei.makeTag(mockAnnotation));
@@ -160,7 +161,7 @@ public class DocumentTypeTest {
             tei.makeTag("someName", mockvr));
         // - spotlight annotation
         when(mockAnnotation.getType()).thenReturn("Geographic");
-        assertEquals("<geogname source=\"dbpedia\" authfilenumber=\"http://dbpedia.org/Some_Person\">someName</geogname>",
+        assertEquals("<geogname source=\"dbpedia\" authfilenumber=\"Some_Person\">someName</geogname>",
             ead.makeTag(mockAnnotation));
         assertEquals("<name ref=\"http://dbpedia.org/Some_Person\" type=\"place\">someName</name>",
             tei.makeTag(mockAnnotation));
