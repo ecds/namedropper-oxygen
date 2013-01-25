@@ -18,9 +18,11 @@
 
 package edu.emory.library.spotlight;
 
+import java.util.logging.Logger;
+import java.util.List;
+
 import org.json.simple.JSONObject;
 
-import java.util.List;
 import org.openrdf.OpenRDFException;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.http.HTTPRepository;
@@ -29,6 +31,9 @@ import org.openrdf.query.TupleQueryResult;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.model.Value;
+
+import edu.emory.library.viaf.ViafClient;
+import edu.emory.library.viaf.ViafResource;
 
 public class SpotlightAnnotation {
 
@@ -39,6 +44,8 @@ public class SpotlightAnnotation {
     private Integer offset;
     private double similarityScore;
     private double percentageOfSecondRank;
+
+    private final static Logger LOGGER = Logger.getLogger(SpotlightAnnotation.class.getName());
 
     public SpotlightAnnotation(JSONObject annotation) {
         this.uri = (String) annotation.get("@URI");
@@ -53,6 +60,15 @@ public class SpotlightAnnotation {
     public String getUri() {
         return this.uri;
     }
+
+    private String dbpedia_base_uri = "http://dbpedia.org/resource/";
+
+    public String getId() {
+        // treat the unique resource string after dbpedia url as a dbpedia/wikipedia id
+        String uri = this.getUri();
+        return uri.substring(dbpedia_base_uri.length(), uri.length());
+    }
+
 
     public String getSurfaceForm() {
         return this.surfaceForm;
@@ -110,6 +126,34 @@ public class SpotlightAnnotation {
         // some dbpedia records have a viaf property in DBpedia; check for that first
         _viafid = getDBpediaProperty("<http://dbpedia.org/property/viaf>",
             null);  // null = disable language filter (numeric property, no language)
+
+        // if viafid is not available as a dbpedia property, search viaf for a match
+        if (_viafid == null || _viafid.length() == 0) {
+            // in some cases, dbpedia label is empty; use surface form as fallback
+            String label = this.getLabel();
+            if (label.isEmpty()) {
+                label = this.getSurfaceForm();
+            }
+
+            try {
+                List<ViafResource> suggestions = ViafClient.suggest(label);
+                String id = this.getId();
+                // iterate through suggestions looking for a VIAF record with a sameAs rel
+                // to the current dbpedia resource
+                for (int i = 0; i < suggestions.size(); i++) {
+                    ViafResource vres = suggestions.get(i);
+                    if (vres.isSameAs(this.getUri())) {
+                        _viafid = vres.getViafId();
+                        // stop checking results as soon as we find a match
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.warning(String.format("Error looking up VIAF id for %s : %s",
+                    label, e.getMessage()));
+            }
+
+        }
         return _viafid;
     }
 
@@ -161,8 +205,8 @@ public class SpotlightAnnotation {
               conn.close();
            }
         } catch (OpenRDFException e) {
-           // TODO... handle exception
-            System.out.println("exception " + e);
+            LOGGER.warning(String.format("Error querying DBpedia for %s : %s",
+                property, e.getMessage()));
         }
         return val;
     }

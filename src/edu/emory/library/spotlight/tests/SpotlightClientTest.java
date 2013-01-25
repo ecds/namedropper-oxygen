@@ -118,6 +118,7 @@ public class SpotlightClientTest {
         // do some minimal inspection of the three results
         SpotlightAnnotation anno = results.get(0);
         assertEquals("http://dbpedia.org/resource/Michael_Longley", anno.getUri());
+        assertEquals("Michael_Longley", anno.getId());
         assertEquals("Michael Longley", anno.getSurfaceForm());
         Integer expectedOffset = 0;
         assertEquals(expectedOffset, anno.getOffset());
