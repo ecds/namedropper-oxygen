@@ -67,6 +67,11 @@
       <version>2.3.3</version>
     </dependency>
     <dependency>
+      <groupId>org.openrdf.sesame</groupId>
+      <artifactId>sesame-rio-rdfxml</artifactId>
+      <version>2.3.3</version>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.8.2</version>  <!-- older version needed for PowerMockito 1.4.12 -->
