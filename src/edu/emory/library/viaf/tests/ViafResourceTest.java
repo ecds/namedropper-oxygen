@@ -34,6 +34,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
+import org.openrdf.model.Graph;
+
 import org.mockito.Mockito;
 // import static org.mockito.Mockito.*;
 
@@ -45,6 +47,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import edu.emory.library.utils.EULHttpUtils;
 import edu.emory.library.viaf.ViafResource;
+import edu.emory.library.viaf.tests.ViafClientTest;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(EULHttpUtils.class)
@@ -54,17 +57,21 @@ public class ViafResourceTest {
 
     // Fixtures
     static Document viafReturn;
-
     static HashMap xmlheader = new HashMap<String, String>();
 
+    //static Document viafRdfRecord;
+    static String viafRdfRecord;
+    static HashMap rdfxmlheader = new HashMap<String, String>();
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         // load fixture
         Builder xmlBuilder = new Builder();
         viafReturn = xmlBuilder.build(ViafClientTest.class.getResourceAsStream("viafReturn.xml"));
-
         xmlheader.put("Accept", "application/xml");
+
+        viafRdfRecord = ViafClientTest.readFile("viafRdfRecord.xml");
+        rdfxmlheader.put("Accept", "application/rdf+xml");
     }
 
     @Before
@@ -92,7 +99,7 @@ public class ViafResourceTest {
 
         // test other basic properties
         assertEquals(term, res.toString());
-        assertEquals("http://viaf.org/viaf/67890/", res.getUri());
+        assertEquals("http://viaf.org/viaf/67890", res.getUri());
         assertEquals("http://viaf.org/viaf/67890/viaf.xml", res.getXmlUri());
     }
 
@@ -147,4 +154,52 @@ public class ViafResourceTest {
         assertEquals(details, this.mockViafResource.getXmlDetails());
 
     }
+
+    @Test
+    public void testGetRdfDetails() throws Exception {
+        PowerMockito.mockStatic(EULHttpUtils.class);
+
+        Mockito.when(this.mockViafResource.getRdfDetails()).thenCallRealMethod();
+        Mockito.when(this.mockViafResource.getUri()).thenReturn("http://viaf.org/viaf/39398205");
+
+        // return empty string (invalid rdf)
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString(),
+            Mockito.eq(rdfxmlheader))).thenReturn("");
+        Graph data = this.mockViafResource.getRdfDetails();
+        assertNull(data);
+
+        // return rdf fixture
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString(),
+            Mockito.eq(rdfxmlheader))).thenReturn(viafRdfRecord);
+        data = this.mockViafResource.getRdfDetails();
+        assertNotNull(data);
+
+    }
+
+    @Test
+    public void testIsSameAs() throws Exception {
+        PowerMockito.mockStatic(EULHttpUtils.class);
+
+        Mockito.when(this.mockViafResource.getRdfDetails()).thenCallRealMethod();
+        Mockito.when(this.mockViafResource.isSameAs(Mockito.anyString())).thenCallRealMethod();
+        Mockito.when(this.mockViafResource.getUri()).thenReturn("http://viaf.org/viaf/39398205");
+        // use rdf fixture
+        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString(),
+            Mockito.eq(rdfxmlheader))).thenReturn(viafRdfRecord);
+
+
+        // URIs for a few of the sameAs relations in the fixture RDF
+        String dbpediaUri = "http://dbpedia.org/resource/Michael_Longley";
+        String bnfUri = "http://data.bnf.fr/ark:/12148/cb12058813z#foaf:Person";
+        String idref = "http://www.idref.fr/02883416X/id";
+
+        // should match
+        assertEquals(true, this.mockViafResource.isSameAs(dbpediaUri));
+        assertEquals(true, this.mockViafResource.isSameAs(bnfUri));
+        assertEquals(true, this.mockViafResource.isSameAs(idref));
+        // should not match
+        assertEquals(false, this.mockViafResource.isSameAs("http://some.other/uri"));
+
+    }
+
 }
