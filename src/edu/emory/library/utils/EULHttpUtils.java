@@ -21,16 +21,7 @@ package edu.emory.library.utils;
 import java.util.HashMap;
 import java.util.Map;
 
-// http requests
-import java.net.URL;
-import java.net.HttpURLConnection;
-import java.lang.StringBuffer;
-import java.net.URLEncoder;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 // apache httpclient
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
