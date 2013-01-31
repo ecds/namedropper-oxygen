@@ -299,6 +299,9 @@ public class AnnotationPanel extends JPanel {
 
     private void insertSelectedAnnotations() {
         insertAnnotations(true);
+        // clear out unselected annotations
+        AnnotationTableModel model = (AnnotationTableModel) this.table.getModel();
+        model.clearAnnotations();
     }
 
     private void insertAnnotations(boolean selectedOnly) {
