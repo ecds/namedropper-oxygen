@@ -131,8 +131,8 @@ public class AnnotationPanel extends JPanel {
             int last_row = data.size();
             for (SpotlightAnnotation sa : annotations) {
                 data.add(sa);
-                // keep approved array consistent with data; init as false
-                approved.add(false);
+                // keep approved array consistent with data; init as true
+                approved.add(true);
             }
             fireTableRowsInserted(last_row, data.size());
         }
