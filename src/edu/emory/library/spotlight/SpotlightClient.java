@@ -56,16 +56,21 @@ public class SpotlightClient {
         List<SpotlightAnnotation> annotations = new ArrayList<SpotlightAnnotation>();
 
         try {
-            String uri = String.format("%s/annotate?text=%s&types=%s", this.baseUrl,
-                URLEncoder.encode(txt, "UTF-8"),
-                // restrict to supported types (TODO: don't hard-code here; configurable?)
-                URLEncoder.encode("Person,Place,Organisation", "UTF-8")
-                ); // java.io.UnsupportedEncodingException
+            String uri = String.format("%s/annotate", this.baseUrl);
 
-            // could also add args for confidence, support
             HashMap headers = new HashMap<String, String>();
             headers.put("Accept", "application/json");
-            String response = EULHttpUtils.readUrlContents(uri, headers);
+            // content-type required when using POST
+            headers.put("Content-Type", "application/x-www-form-urlencoded");
+
+            HashMap params = new HashMap<String, String>();
+            params.put("text", txt);
+            // restrict to supported types (TODO: don't hard-code here; configurable?)
+            params.put("types", "Person,Place,Organisation");
+
+            // always use POST to support text larger than that allowed in
+            // an HTTP GET request URI
+            String response = EULHttpUtils.postUrlContents(uri, headers, params);
 
             // load the result as json
             JSONObject json = (JSONObject)new JSONParser().parse(response);

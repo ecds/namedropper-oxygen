@@ -107,8 +107,16 @@ public class SpotlightClientTest {
 
         HashMap headers = new HashMap<String, String>();
         headers.put("Accept", "application/json");
-        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString(),
-            Mockito.eq(headers))).thenReturn(anntotationResponse);
+        // required when querying via POST
+        headers.put("Content-Type", "application/x-www-form-urlencoded");
+
+        HashMap params = new HashMap<String, String>();
+        params.put("text", text);
+        params.put("types", "Person,Place,Organisation");
+
+        Mockito.when(EULHttpUtils.postUrlContents(Mockito.anyString(),
+            Mockito.eq(headers), Mockito.eq(params))).thenReturn(anntotationResponse);
+
         List<SpotlightAnnotation> results = this.mockSpotlightClient.annotate(this.text);
 
         // inspect annotations initialized from fixture
@@ -146,8 +154,12 @@ public class SpotlightClientTest {
 
         HashMap headers = new HashMap<String, String>();
         headers.put("Accept", "application/json");
-        Mockito.when(EULHttpUtils.readUrlContents(Mockito.anyString(),
-            Mockito.eq(headers))).thenReturn(anntotationResponse);
+        headers.put("Content-Type", "application/x-www-form-urlencoded");
+        HashMap params = new HashMap<String, String>();
+        params.put("text", text);
+        params.put("types", "Person,Place,Organisation");
+        Mockito.when(EULHttpUtils.postUrlContents(Mockito.anyString(),
+            Mockito.eq(headers), Mockito.eq(params))).thenReturn(anntotationResponse);
         List<SpotlightAnnotation> results = this.mockSpotlightClient.annotate(this.text);
 
         SpotlightAnnotation anno = results.get(0);

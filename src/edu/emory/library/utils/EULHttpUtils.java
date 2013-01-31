@@ -18,6 +18,8 @@
 
 package edu.emory.library.utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,8 +27,13 @@ import java.util.Map;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 
 
 /**
@@ -64,6 +71,38 @@ public class EULHttpUtils {
         response = client.execute(getMethod, responseHandler); // could throw HttpException or IOException
         // TODO: catch/handle errors (esp. periodic 503 when Spotlight is unavailable)
         getMethod.releaseConnection();
+
+        return response;
+    }
+
+    /**
+     *  Utility method to POST to a URL and read the result into a string
+     *  @param url      url to be read
+     *  @param headers  HashMap of request headers
+     *  @param parameters  HashMap of parameters
+     */
+     public static String postUrlContents(String url, HashMap<String, String> headers,
+        HashMap<String, String> parameters) throws Exception {
+        String response = null;
+        HttpClient client = new DefaultHttpClient();
+        HttpPost postMethod = new HttpPost(url);
+
+        // add any request headers specified
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            postMethod.addHeader(header.getKey(), header.getValue());
+        }
+
+        List <NameValuePair> nvps = new ArrayList <NameValuePair>();
+        for (Map.Entry<String, String> param : parameters.entrySet()) {
+            nvps.add(new BasicNameValuePair(param.getKey(), param.getValue()));
+        }
+        postMethod.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+
+        ResponseHandler<String> responseHandler = new BasicResponseHandler();
+        // returns the response content as string on success
+        response = client.execute(postMethod, responseHandler); // could throw HttpException or IOException
+        // TODO: catch/handle errors (esp. periodic 503 when Spotlight is unavailable)
+        postMethod.releaseConnection();
 
         return response;
     }
