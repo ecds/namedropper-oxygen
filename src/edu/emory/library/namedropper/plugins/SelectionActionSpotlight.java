@@ -134,6 +134,18 @@ public class SelectionActionSpotlight extends SelectionAction {
             sa.adjustOffset(selectionOffset);
         }
 
+        // loop through the list and remove annotations where
+        // names cannot be tagged in the context (e.g., previously tagged names)
+        int i = 0;
+        while (i < annotations.size()) {
+            SpotlightAnnotation sa = annotations.get(i);
+            if (this.tagAllowed(sa.getOffset()) == false) {
+                annotations.remove(sa);
+            } else {
+                i++;
+            }
+        }
+
         // add them to the UI annotation panel for display and user interaction
         panel.addAnnotations(annotations);
     }
