@@ -31,6 +31,14 @@ import java.io.StringWriter;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
+import ro.sync.exml.workspace.api.editor.page.text.xml.WSXMLTextEditorPage;
+import ro.sync.exml.workspace.api.editor.page.text.WSTextXMLSchemaManager;
+import ro.sync.contentcompletion.xml.WhatElementsCanGoHereContext;
+import ro.sync.contentcompletion.xml.CIElement;
+
+import edu.emory.library.namedropper.plugins.DocumentType;
+import edu.emory.library.namedropper.plugins.PluginOptions;
+
 
 /**
  * Base-class for plugin selection-based Actions.
@@ -40,6 +48,10 @@ public abstract class SelectionAction extends AbstractAction {
      * Plugin workspace access.
      */
     protected StandalonePluginWorkspace workspace;
+
+    public DocumentType docType;
+    // should this be made private? initialized via pluginoptions
+
 
     SelectionAction(StandalonePluginWorkspace ws) {
         this.workspace = ws;
@@ -106,15 +118,17 @@ public abstract class SelectionAction extends AbstractAction {
 
     /**
      *  Run through the selection action when this item is triggered via
-     *  the menu.  Gets the selected text and calls processSelection if
-     *  there is any text, and then update the document with the result.
+     *  the menu.  Gets the selected text, currently configured document type,
+     *  then calls processSelection if there is any text, and then updates
+     *  the document with the result.
      *  Displays a message dialog to the user if any exception occurs
      *  during the selection processing.
      */
     public void actionPerformed(ActionEvent actionEvent) {
         try {
             String selection = this.getSelection();
-            if (selection == null) { return;}
+            if (selection == null) { return; }
+            this.preprocess();
             String result = this.processSelection(selection);
             this.updateDocument(selection, result);
         } catch (Exception e) {
@@ -130,5 +144,71 @@ public abstract class SelectionAction extends AbstractAction {
         }
 
     }
+
+    /**
+     * Common pre-processing when handling a selection,
+     * before calling processSelection.
+     * Currently, checks that document type is set.
+     */
+    public void preprocess() throws Exception {
+        String currentDocType = PluginOptions.getDocumentType();
+        // FIXME: must be a better way to do this; can we *store* as doctype?
+        this.docType = DocumentType.fromString(currentDocType);
+        // if document type is not set, we can't check for allowed tags or query VIAF
+        if (this.docType == null) {
+            throw new Exception("No Document Type has been selected");
+        }
+    }
+
+
+    /**
+     * Attempt to determine if the tag that will be added for this document type
+     * is allowed in the current context based on the XML Schema, if available.
+     * Returns true or false when a schema is available to determine definitively
+     * if the tag is allowed or not.  Otherwise returns null.
+     *
+     * @return Boolean
+     */
+    public Boolean tagAllowed() {
+        Boolean tagAllowed = null;
+
+        // shouldn't be called if doctype isn't set, but check and bail out just in case
+        if (this.docType == null) { return tagAllowed; }
+
+        WSTextEditorPage page = this.getCurrentPage();
+        if (page == null) { return tagAllowed; }
+
+        String tag = this.docType.getTagName();
+
+        // use workspace context to get schema
+        // cast as an xml text editor page if possible, for access to schema
+        if (page != null && page instanceof WSXMLTextEditorPage) {
+            WSTextEditorPage textpage = (WSXMLTextEditorPage) page;
+            WSTextXMLSchemaManager schema = textpage.getXMLSchemaManager();
+            int selectionOffset = textpage.getSelectionStart();
+            try {
+                // use the schema to get a context-based list of allowable elements
+                WhatElementsCanGoHereContext elContext = schema.createWhatElementsCanGoHereContext(selectionOffset);
+                java.util.List<CIElement> elements;
+                elements = schema.whatElementsCanGoHere(elContext);
+                tagAllowed = false;
+                // loop through the list to see if the tag we want to add
+                // matches a name on any of the allowed elements
+                for (int i=0; elements != null && i < elements.size(); i++) {
+                    ro.sync.contentcompletion.xml.CIElement el = elements.get(i);
+                    if (el.getName().equals(tag)) {
+                        tagAllowed = true;
+                        break;
+                    }
+                }
+            } catch (javax.swing.text.BadLocationException e) {
+                tagAllowed = null;
+            }
+        }
+
+       return tagAllowed;
+    }
+
+
 
 }

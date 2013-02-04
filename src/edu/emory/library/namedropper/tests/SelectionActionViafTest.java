@@ -38,11 +38,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.util.List;
 import java.util.ArrayList;
 
-import ro.sync.contentcompletion.xml.WhatElementsCanGoHereContext;
-import ro.sync.exml.workspace.api.editor.page.text.WSTextXMLSchemaManager;
-import ro.sync.exml.workspace.api.editor.page.text.xml.WSXMLTextEditorPage;
-import ro.sync.contentcompletion.xml.CIElement;
-
 import edu.emory.library.namedropper.plugins.DocumentType;
 import edu.emory.library.namedropper.plugins.SelectionActionViaf;
 import edu.emory.library.namedropper.plugins.PluginOptions;
@@ -69,21 +64,6 @@ public class SelectionActionViafTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
-
-
-     @Test
-     @PrepareForTest(PluginOptions.class)
-     public void testProcessNoDocType() throws Exception {
-        PowerMockito.mockStatic(PluginOptions.class);
-
-        exception.expect(Exception.class);
-        exception.expectMessage("No Document Type has been selected");
-
-        String searchTerm = "Smth";
-        Mockito.when(PluginOptions.getDocumentType()).thenReturn("");
-        Mockito.when(this.mockViaf.processSelection(searchTerm)).thenCallRealMethod();
-        this.mockViaf.processSelection(searchTerm);
-     }
 
      @Test
      public void testQueryViafNoResults() throws Exception {
@@ -127,38 +107,5 @@ public class SelectionActionViafTest {
         // makeTag functionality is tested separately.
         // if possible, could verify it was called with the correct arguments...
     }
-
-     @Test
-     public void testTagAllowed() throws Exception {
-
-        Mockito.when(this.mockViaf.tagAllowed()).thenCallRealMethod();
-        this.mockViaf.docType = DocumentType.EAD;
-
-        // simulate editor page unavailable - should be null
-        Mockito.when(this.mockViaf.getCurrentPage()).thenReturn(null);
-        assertEquals(null, this.mockViaf.tagAllowed());
-
-        // simulate full schema access, no elements allowed; should be false
-        WSXMLTextEditorPage mockPage = Mockito.mock(WSXMLTextEditorPage.class);
-        WSTextXMLSchemaManager mockSchema = Mockito.mock(WSTextXMLSchemaManager.class);
-        Mockito.when(this.mockViaf.getCurrentPage()).thenReturn(mockPage);
-        Mockito.when(mockPage.getXMLSchemaManager()).thenReturn(mockSchema);
-        int offset = 1;
-        Mockito.when(mockPage.getSelectionStart()).thenReturn(offset);
-        // getSelectionStart could throw a javax.swing.text.BadLocationException
-        WhatElementsCanGoHereContext mockContext;
-        mockContext = Mockito.mock(WhatElementsCanGoHereContext.class);
-        Mockito.when(mockSchema.createWhatElementsCanGoHereContext(offset)).thenReturn(mockContext);
-        java.util.List<CIElement> elements = new java.util.ArrayList<CIElement>();
-        Mockito.when(mockSchema.whatElementsCanGoHere(mockContext)).thenReturn(elements);
-        assertEquals(false, this.mockViaf.tagAllowed());
-
-        // schema access and tag matches an allowed element; should be true
-        CIElement el = Mockito.mock(CIElement.class);
-        Mockito.when(el.getName()).thenReturn("name");
-        elements.add(el);
-        assertEquals(true, this.mockViaf.tagAllowed());
-
-     }
 
 }
