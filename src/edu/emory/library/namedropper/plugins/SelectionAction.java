@@ -160,6 +160,15 @@ public abstract class SelectionAction extends AbstractAction {
         }
     }
 
+    /**
+     * Check if a tag is allowed at the location of the current selection.
+     * Gets selection offset and then calls tagAllowed.
+     */
+    public Boolean tagAllowedAtSelection() {
+        WSTextEditorPage ed = this.getCurrentPage();
+        int selectionOffset = ed.getSelectionStart();
+        return tagAllowed(selectionOffset);
+    }
 
     /**
      * Attempt to determine if the tag that will be added for this document type
@@ -169,7 +178,7 @@ public abstract class SelectionAction extends AbstractAction {
      *
      * @return Boolean
      */
-    public Boolean tagAllowed() {
+    public Boolean tagAllowed(int offset) {
         Boolean tagAllowed = null;
 
         // shouldn't be called if doctype isn't set, but check and bail out just in case
@@ -185,10 +194,9 @@ public abstract class SelectionAction extends AbstractAction {
         if (page != null && page instanceof WSXMLTextEditorPage) {
             WSTextEditorPage textpage = (WSXMLTextEditorPage) page;
             WSTextXMLSchemaManager schema = textpage.getXMLSchemaManager();
-            int selectionOffset = textpage.getSelectionStart();
             try {
                 // use the schema to get a context-based list of allowable elements
-                WhatElementsCanGoHereContext elContext = schema.createWhatElementsCanGoHereContext(selectionOffset);
+                WhatElementsCanGoHereContext elContext = schema.createWhatElementsCanGoHereContext(offset);
                 java.util.List<CIElement> elements;
                 elements = schema.whatElementsCanGoHere(elContext);
                 tagAllowed = false;

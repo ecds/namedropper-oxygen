@@ -108,4 +108,18 @@ public class SelectionActionViafTest {
         // if possible, could verify it was called with the correct arguments...
     }
 
+    @Test
+    @PrepareForTest(PluginOptions.class)
+    public void testProcessSelectionTagNotAllowed() throws Exception {
+        this.mockViaf.docType = DocumentType.EAD;
+
+        Mockito.when(this.mockViaf.tagAllowedAtSelection()).thenReturn(false);
+        Mockito.when(this.mockViaf.processSelection(Mockito.anyString())).thenCallRealMethod();
+
+        exception.expect(Exception.class);
+        exception.expectMessage("Tag is not allowed in the current context");
+        this.mockViaf.processSelection("some text");
+    }
+
+
 }

@@ -81,12 +81,12 @@ public class SelectionActionTest {
      @Test
      public void testTagAllowed() throws Exception {
 
-        Mockito.when(this.mockAction.tagAllowed()).thenCallRealMethod();
+        Mockito.when(this.mockAction.tagAllowed(1)).thenCallRealMethod();
         this.mockAction.docType = DocumentType.EAD;
 
         // simulate editor page unavailable - should be null
         Mockito.when(this.mockAction.getCurrentPage()).thenReturn(null);
-        assertEquals(null, this.mockAction.tagAllowed());
+        assertEquals(null, this.mockAction.tagAllowed(1));
 
         // simulate full schema access, no elements allowed; should be false
         WSXMLTextEditorPage mockPage = Mockito.mock(WSXMLTextEditorPage.class);
@@ -94,20 +94,33 @@ public class SelectionActionTest {
         Mockito.when(this.mockAction.getCurrentPage()).thenReturn(mockPage);
         Mockito.when(mockPage.getXMLSchemaManager()).thenReturn(mockSchema);
         int offset = 1;
-        Mockito.when(mockPage.getSelectionStart()).thenReturn(offset);
-        // getSelectionStart could throw a javax.swing.text.BadLocationException
         WhatElementsCanGoHereContext mockContext;
         mockContext = Mockito.mock(WhatElementsCanGoHereContext.class);
         Mockito.when(mockSchema.createWhatElementsCanGoHereContext(offset)).thenReturn(mockContext);
         java.util.List<CIElement> elements = new java.util.ArrayList<CIElement>();
         Mockito.when(mockSchema.whatElementsCanGoHere(mockContext)).thenReturn(elements);
-        assertEquals(false, this.mockAction.tagAllowed());
+        assertEquals(false, this.mockAction.tagAllowed(offset));
 
         // schema access and tag matches an allowed element; should be true
         CIElement el = Mockito.mock(CIElement.class);
         Mockito.when(el.getName()).thenReturn("name");
         elements.add(el);
-        assertEquals(true, this.mockAction.tagAllowed());
+        assertEquals(true, this.mockAction.tagAllowed(offset));
+
+    }
+
+     @Test
+     public void testTagAllowedAtSelection() throws Exception {
+        // should just get selection offset and call tagAllowed
+        int offset = 55;
+        WSXMLTextEditorPage mockPage = Mockito.mock(WSXMLTextEditorPage.class);
+        Mockito.when(mockPage.getSelectionStart()).thenReturn(offset);
+        Mockito.when(this.mockAction.tagAllowedAtSelection()).thenCallRealMethod();
+        Mockito.when(this.mockAction.getCurrentPage()).thenReturn(mockPage);
+
+        this.mockAction.tagAllowedAtSelection();
+        // verify tag allowed was called with selection offset
+        Mockito.verify(this.mockAction).tagAllowed(offset);
 
      }
 

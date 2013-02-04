@@ -63,8 +63,7 @@ public class SelectionActionViaf extends SelectionAction {
         String result = selection;
 
         // otherwise, do previously implemented behavior (viaf lookup)
-        // TODO: shift to common select action ?
-        if (this.tagAllowed() == false) {
+        if (this.tagAllowedAtSelection() == false) {
             // if the tag is not allowed, throw an exception to be displayed
             // as a warning message to the user
             throw new Exception("Tag is not allowed in the current context");
