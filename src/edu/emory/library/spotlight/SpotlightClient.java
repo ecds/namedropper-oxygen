@@ -46,11 +46,18 @@ public class SpotlightClient {
      */
     public static String baseUrl = "http://spotlight.dbpedia.org/rest";
 
-    private double confidence = 0.0;
-    private int support = 0;
+    private Double confidence = null;
+    private Integer support = null;
 
     // TODO: allow overriding base url, confidence, support, types
     // in constructor ?
+
+    public SpotlightClient() {}
+
+    public SpotlightClient(double confidence, int support) {
+        this.confidence = confidence;
+        this.support = support;
+    }
 
     public List<SpotlightAnnotation> annotate(String txt) throws Exception {
         List<SpotlightAnnotation> annotations = new ArrayList<SpotlightAnnotation>();
@@ -67,6 +74,13 @@ public class SpotlightClient {
             params.put("text", txt);
             // restrict to supported types (TODO: don't hard-code here; configurable?)
             params.put("types", "Person,Place,Organisation");
+            // include confidence & support parameters if set
+            if (this.confidence != null) {
+                params.put("confidence", String.format("%s", this.confidence));
+            }
+            if (this.support != null) {
+                params.put("support", String.format("%d", this.support));
+            }
 
             // always use POST to support text larger than that allowed in
             // an HTTP GET request URI

@@ -36,6 +36,7 @@ import java.awt.event.InputEvent;
 
 import edu.emory.library.namedropper.plugins.DocumentType;
 import edu.emory.library.namedropper.plugins.ActionType;
+import edu.emory.library.namedropper.plugins.SelectionAction;
 import edu.emory.library.namedropper.plugins.SelectionActionViaf;
 import edu.emory.library.namedropper.plugins.PluginOptions;
 
@@ -110,7 +111,6 @@ public class NameDropperMenu extends Menu {
     }
     this.add(defaultActionMenu);
 
-
     // add dividing line between options and actions
     this.addSeparator();
 
@@ -139,6 +139,24 @@ public class NameDropperMenu extends Menu {
       this.add(new JMenuItem(at.getAction(workspace)));
     }
 
+
+    JMenuItem options = null;
+    // add action-specific options for actions that have them
+    for (ActionType at : ActionType.values()) {
+      SelectionAction sel = at.getAction(workspace);
+      if (sel.hasUserOptions()){
+        // if this is the first option, add a separator
+        if (options == null) {
+          this.addSeparator();
+        }
+
+        // FIXME: menu item label is NOT displaying !?!
+        options = new JMenuItem(sel.getShortName() + " settings");
+        options.setAction(sel.getOptionsAction());
+        this.add(options);
+      }
+    }
+
   }
 
   // Store document type when one of the document type menu items is clicked
@@ -159,4 +177,5 @@ public class NameDropperMenu extends Menu {
     }
   };
 
-  }
+
+}

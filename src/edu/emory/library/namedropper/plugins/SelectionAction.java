@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 
 // Pop-Up Message for errors, selection dialog
 import javax.swing.JOptionPane;
+import javax.swing.Action;
 // Used when getting full stack trace
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -51,7 +52,6 @@ public abstract class SelectionAction extends AbstractAction {
 
     public DocumentType docType;
     // should this be made private? initialized via pluginoptions
-
 
     SelectionAction(StandalonePluginWorkspace ws) {
         this.workspace = ws;
@@ -217,6 +217,16 @@ public abstract class SelectionAction extends AbstractAction {
        return tagAllowed;
     }
 
+
+    /** place-holder methods for action subclasses that have user-configurable options */
+
+    public boolean hasUserOptions() {
+        return false;
+    }
+
+    public Action getOptionsAction() {
+        return null;
+    }
 
 
 }

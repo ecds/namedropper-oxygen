@@ -52,8 +52,15 @@ public class PluginOptions {
      * @param optionName    name of the option to retrieve
      */
     public static String getOption(String optionName) {
+        return PluginOptions.getOption(optionName, "");  // FIXME: use null instead?
+    }
+
+    /**
+     * Same as getOption, but with a configurable default value.
+     */
+    public static String getOption(String optionName, String def) {
         PluginWorkspace ws = PluginOptions.getWorkspace();
-        return ws.getOptionsStorage().getOption(optionName, "");  // FIXME: use null instead?
+        return ws.getOptionsStorage().getOption(optionName, def);
     }
 
     /**

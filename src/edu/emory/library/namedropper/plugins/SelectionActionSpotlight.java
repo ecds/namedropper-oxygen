@@ -27,11 +27,14 @@ import java.util.regex.Matcher;
 import javax.swing.Action;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
-import javax.swing.JOptionPane;
 
 import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
+import java.awt.GridLayout;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 // oxygen dependencies
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -42,6 +45,8 @@ import edu.emory.library.spotlight.SpotlightClient;
 import edu.emory.library.spotlight.SpotlightAnnotation;
 import edu.emory.library.namedropper.plugins.SelectionAction;
 import edu.emory.library.namedropper.ui.AnnotationPanel;
+import edu.emory.library.utils.IntegerField;
+import edu.emory.library.utils.DoubleField;
 
 /**
  *  Use the DBpedia Spotlight API to annotate user-selected text
@@ -102,7 +107,9 @@ public class SelectionActionSpotlight extends SelectionAction {
         }
 
         // query spotlight to annotate the text and display identified resources
-        SpotlightClient spot = new SpotlightClient();
+        double confidence = Double.parseDouble(SelectionActionSpotlight.getSpotlightConfidence());
+        int support = Integer.parseInt(SelectionActionSpotlight.getSpotlightSupport());
+        SpotlightClient spot = new SpotlightClient(confidence, support);
         // store document offset for current selected text
         WSTextEditorPage ed = this.getCurrentPage();
         if (ed == null) { return; }
@@ -149,5 +156,63 @@ public class SelectionActionSpotlight extends SelectionAction {
         // add them to the UI annotation panel for display and user interaction
         panel.addAnnotations(annotations);
     }
+
+
+    // option keys
+    public static String SPOTLIGHT_CONFIDENCE = "NameDropper:SpotlightConfidence";
+    public static String SPOTLIGHT_SUPPORT = "NameDropper:SpotlightSupport";
+
+    public boolean hasUserOptions() {
+        return true;
+    }
+
+    public static String getSpotlightConfidence() {
+        return PluginOptions.getOption(SelectionActionSpotlight.SPOTLIGHT_CONFIDENCE, "0.4");
+    }
+    public static void setSpotlightConfidence(String value) {
+        PluginOptions.setOption(SelectionActionSpotlight.SPOTLIGHT_CONFIDENCE, value);
+    }
+    public static String getSpotlightSupport() {
+        return PluginOptions.getOption(SelectionActionSpotlight.SPOTLIGHT_SUPPORT, "200");
+    }
+    public static void setSpotlightSupport(String value) {
+        PluginOptions.setOption(SelectionActionSpotlight.SPOTLIGHT_SUPPORT, value);
+    }
+
+    // action for a dialog to show user-configurable parameters
+    public Action getOptionsAction() {
+        final Action showOptions = new AbstractAction() {
+            public void actionPerformed(ActionEvent selection) {
+                String dialogLabel = "DBpedia Spotlight settings";
+
+                IntegerField support = new IntegerField(4);
+                support.setValue(SelectionActionSpotlight.getSpotlightSupport());
+
+                DoubleField confidence = new DoubleField(4);
+                confidence.setValue(SelectionActionSpotlight.getSpotlightConfidence());
+
+                JPanel optionPanel = new JPanel();
+                // for simplicity, using simple grid layout: label, input
+                java.awt.GridLayout layout = new java.awt.GridLayout(2,2);  // rows, columns
+                optionPanel.setLayout(layout);
+                optionPanel.add(new JLabel("Confidence: "));
+                optionPanel.add(confidence);
+                optionPanel.add(new JLabel("Support: "));
+                optionPanel.add(support);
+
+                int result = JOptionPane.showConfirmDialog((java.awt.Frame)workspace.getParentFrame(),
+                    optionPanel, dialogLabel, JOptionPane.OK_CANCEL_OPTION);
+
+                if (result == JOptionPane.OK_OPTION) {
+                    // store updated values
+                    SelectionActionSpotlight.setSpotlightConfidence(confidence.getText());
+                    SelectionActionSpotlight.setSpotlightSupport(support.getText());
+                } // on cancel, do nothing (don't save changes)
+            }
+        };
+
+        return showOptions;
+    }
+
 
 }
