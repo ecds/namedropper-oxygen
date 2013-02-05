@@ -139,9 +139,8 @@ public class NameDropperMenu extends Menu {
       this.add(new JMenuItem(at.getAction(workspace)));
     }
 
-
+    // add action-specific options for any actions that have them
     JMenuItem options = null;
-    // add action-specific options for actions that have them
     for (ActionType at : ActionType.values()) {
       SelectionAction sel = at.getAction(workspace);
       if (sel.hasUserOptions()){
@@ -150,9 +149,11 @@ public class NameDropperMenu extends Menu {
           this.addSeparator();
         }
 
-        // FIXME: menu item label is NOT displaying !?!
+        // create an options menu item and add it to the menu
         options = new JMenuItem(sel.getShortName() + " settings");
         options.setAction(sel.getOptionsAction());
+        // seems redundant, but without this label does not display in menu
+        options.setText(sel.getShortName() + " settings");
         this.add(options);
       }
     }

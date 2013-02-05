@@ -166,6 +166,9 @@ public class SelectionActionSpotlight extends SelectionAction {
         return true;
     }
 
+    // TODO: find sensible defaults... where to store them?
+
+    // methods to get and store user-configured spotlight values in plugin options
     public static String getSpotlightConfidence() {
         return PluginOptions.getOption(SelectionActionSpotlight.SPOTLIGHT_CONFIDENCE, "0.4");
     }
@@ -193,18 +196,19 @@ public class SelectionActionSpotlight extends SelectionAction {
 
                 JPanel optionPanel = new JPanel();
                 // for simplicity, using simple grid layout: label, input
-                java.awt.GridLayout layout = new java.awt.GridLayout(2,2);  // rows, columns
+                java.awt.GridLayout layout = new java.awt.GridLayout(2,3);  // rows, columns
                 optionPanel.setLayout(layout);
                 optionPanel.add(new JLabel("Confidence: "));
                 optionPanel.add(confidence);
                 optionPanel.add(new JLabel("Support: "));
                 optionPanel.add(support);
+                // TODO: would be nice to add help or tips about these values
 
                 int result = JOptionPane.showConfirmDialog((java.awt.Frame)workspace.getParentFrame(),
                     optionPanel, dialogLabel, JOptionPane.OK_CANCEL_OPTION);
 
+                // if dialog was closed by clicking OK, store updated values
                 if (result == JOptionPane.OK_OPTION) {
-                    // store updated values
                     SelectionActionSpotlight.setSpotlightConfidence(confidence.getText());
                     SelectionActionSpotlight.setSpotlightSupport(support.getText());
                 } // on cancel, do nothing (don't save changes)

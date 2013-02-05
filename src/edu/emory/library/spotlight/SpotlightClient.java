@@ -59,6 +59,21 @@ public class SpotlightClient {
         this.support = support;
     }
 
+    /**
+     * Set confidence value to be used when querying DBpedia Spotlight
+     * via annotate method.
+     */
+    public void setConfidence(double confidence) {
+        this.confidence = confidence;
+    }
+    /**
+     * Set support value to be used when querying DBpedia Spotlight
+     * via annotate method.
+     */
+    public void setSupport(Integer support) {
+        this.support = support;
+    }
+
     public List<SpotlightAnnotation> annotate(String txt) throws Exception {
         List<SpotlightAnnotation> annotations = new ArrayList<SpotlightAnnotation>();
 

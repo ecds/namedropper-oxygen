@@ -56,7 +56,7 @@ public class PluginOptions {
     }
 
     /**
-     * Same as getOption, but with a configurable default value.
+     * Same as getOption, but with a user-supplied default value.
      */
     public static String getOption(String optionName, String def) {
         PluginWorkspace ws = PluginOptions.getWorkspace();

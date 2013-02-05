@@ -143,6 +143,7 @@ public class SpotlightClientTest {
         assertEquals(expectedOffset, anno.getOffset());
         assertEquals("Geographic", anno.getType());
 
+        // TODO: test calling annotate with custom confidence/support values?
     }
 
     // TODO: can we test getLabel and getAbstract without querying dbpedia in unit tests?

@@ -220,10 +220,19 @@ public abstract class SelectionAction extends AbstractAction {
 
     /** place-holder methods for action subclasses that have user-configurable options */
 
+    /**
+     * If true, indicates this selection action has user-configurable options
+     * which should be made accessible from the top-level NameDropper menu.
+     */
     public boolean hasUserOptions() {
         return false;
     }
 
+    /**
+     * If hasUserOptions returns true, this method should return an Action
+     * to display a dialog box with whatever user options are appropriate
+     * for this selection action.
+     */
     public Action getOptionsAction() {
         return null;
     }
