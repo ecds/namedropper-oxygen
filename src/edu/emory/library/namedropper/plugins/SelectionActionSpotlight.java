@@ -18,6 +18,7 @@
 
 package edu.emory.library.namedropper.plugins;
 
+import java.util.logging.Logger;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -41,10 +42,11 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 
 // local
-import edu.emory.library.spotlight.SpotlightClient;
-import edu.emory.library.spotlight.SpotlightAnnotation;
+import edu.emory.library.namedropper.plugins.DocumentType;
 import edu.emory.library.namedropper.plugins.SelectionAction;
 import edu.emory.library.namedropper.ui.AnnotationPanel;
+import edu.emory.library.spotlight.SpotlightClient;
+import edu.emory.library.spotlight.SpotlightAnnotation;
 import edu.emory.library.utils.IntegerField;
 import edu.emory.library.utils.DoubleField;
 
@@ -59,6 +61,8 @@ public class SelectionActionSpotlight extends SelectionAction {
     private static String description = "Identify resources in selected text";
     private static KeyStroke shortcut = KeyStroke.getKeyStroke(KeyEvent.VK_D,
             InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK);
+
+    private final static Logger LOGGER = Logger.getLogger(SelectionActionSpotlight.class.getName());
 
     public SelectionActionSpotlight(StandalonePluginWorkspace ws) {
         super(ws);
@@ -146,7 +150,7 @@ public class SelectionActionSpotlight extends SelectionAction {
         int i = 0;
         while (i < annotations.size()) {
             SpotlightAnnotation sa = annotations.get(i);
-            if (this.tagAllowed(sa.getOffset()) == false) {
+            if (this.tagAllowed(sa) == false) {
                 annotations.remove(sa);
             } else {
                 i++;
@@ -217,6 +221,24 @@ public class SelectionActionSpotlight extends SelectionAction {
 
         return showOptions;
     }
+
+    /**
+     * Variant of tagallowed where offset and nametype are inferred
+     * based on the spotlight annotation.
+     */
+    public Boolean tagAllowed(SpotlightAnnotation sa) {
+        // determine name type based on annotation if possible;
+        // otherwise, use generic name tag to check if tag is allowed
+        DocumentType.NameType nt = null;
+        try {
+            nt = DocumentType.NameType.fromSpotlightAnnotation(sa);
+        } catch (Exception e) {
+            LOGGER.warning(String.format("Error determining name type for %s (%s)",
+                    sa.getLabel(), sa.getUri()));
+        }
+        return this.tagAllowed(sa.getOffset(), nt);
+    }
+
 
 
 }

@@ -171,6 +171,14 @@ public abstract class SelectionAction extends AbstractAction {
     }
 
     /**
+     * Variant of tagAllowed method with no nametype (uses generic
+     * name tag for current document type).
+     */
+    public Boolean tagAllowed(int offset) {
+        return this.tagAllowed(offset, null);
+    }
+
+    /**
      * Attempt to determine if the tag that will be added for this document type
      * is allowed in the current context based on the XML Schema, if available.
      * Returns true or false when a schema is available to determine definitively
@@ -178,7 +186,7 @@ public abstract class SelectionAction extends AbstractAction {
      *
      * @return Boolean
      */
-    public Boolean tagAllowed(int offset) {
+    public Boolean tagAllowed(int offset, DocumentType.NameType nt) {
         Boolean tagAllowed = null;
 
         // shouldn't be called if doctype isn't set, but check and bail out just in case
@@ -187,7 +195,14 @@ public abstract class SelectionAction extends AbstractAction {
         WSTextEditorPage page = this.getCurrentPage();
         if (page == null) { return tagAllowed; }
 
-        String tag = this.docType.getTagName();
+        String tag = null;
+        if (nt == null) {
+            // get generic tag name for this docuent
+            tag = this.docType.getTagName();
+        } else {
+            // get a tag specific to the type of name
+            tag = this.docType.getTagName(nt);
+        }
 
         // use workspace context to get schema
         // cast as an xml text editor page if possible, for access to schema

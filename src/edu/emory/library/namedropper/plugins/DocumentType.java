@@ -55,6 +55,15 @@ public enum DocumentType {
             }
             return null;  // return null if no match was found
         }
+
+        public static NameType fromSpotlightAnnotation(SpotlightAnnotation sa) throws Exception {
+            String nameType = sa.getType();
+            NameType nt = NameType.fromString(nameType);
+            if (nt == null) {
+                throw new Exception("Unsupported nameType: " + nameType);
+            }
+            return nt;
+        }
     };
 
     /**
@@ -223,11 +232,7 @@ public enum DocumentType {
         String tag = null;
         String type = null;
 
-        String nameType = annotation.getType();
-        DocumentType.NameType nt = NameType.fromString(nameType);
-        if (nt == null) {
-            throw new Exception("Unsupported nameType: " + nameType);
-        }
+        DocumentType.NameType nt = NameType.fromSpotlightAnnotation(annotation);
 
         // use dbpedia URI as default identifier
         String uri = annotation.getUri();
