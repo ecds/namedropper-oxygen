@@ -242,7 +242,8 @@ public class AnnotationPanel extends JPanel {
                         ed = (WSTextEditorPage)editorAccess.getCurrentPage();
                         int start = an.getOffset();
                         ed.setCaretPosition(start);
-                        ed.select(start, start + an.getSurfaceForm().length());                    }
+                        ed.select(start, start + an.getOriginalSurfaceForm().length());
+                    }
                 }
             }
         });
@@ -349,7 +350,7 @@ public class AnnotationPanel extends JPanel {
                 // select recognized text for replacement
                 start = an.getOffset() + offsetAdjust;
                 ed.setCaretPosition(start);
-                ed.select(start, start + an.getSurfaceForm().length());
+                ed.select(start, start + an.getOriginalSurfaceForm().length());
 
                 try {
                     String result = docType.makeTag(an);
@@ -367,7 +368,7 @@ public class AnnotationPanel extends JPanel {
                     }
 
                     // keep track of change to upcoming offsets based on text added
-                    offsetAdjust += result.length() - an.getSurfaceForm().length();
+                    offsetAdjust += result.length() - an.getOriginalSurfaceForm().length();
 
                     // remove the processed annotation
                     model.removeRowAnnotation(i);

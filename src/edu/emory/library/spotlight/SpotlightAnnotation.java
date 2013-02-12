@@ -39,6 +39,7 @@ public class SpotlightAnnotation {
 
     private String uri;
     private String surfaceForm;
+    private String originalSurfaceForm;
     private String types;  // TODO: convert to a list internally?
     private Integer support;
     private Integer offset;
@@ -85,6 +86,22 @@ public class SpotlightAnnotation {
     public void adjustOffset(int relative) {
         this.offset += relative;
     }
+
+    /**
+     * Because dbpedia spotlight normalizes whitespace, the
+     * surface form returned by spotlight may differ from that
+     * in the original document.  This property allows
+     * other methods to store and retrieve a calculated original
+     * surface form.
+     */
+    public String getOriginalSurfaceForm() {
+        return this.originalSurfaceForm;
+    }
+
+    public void setOriginalSurfaceForm(String orig) {
+        this.originalSurfaceForm = orig;
+    }
+
 
     /**
      * Determine what type of name this resource is.

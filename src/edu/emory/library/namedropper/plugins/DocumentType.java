@@ -249,7 +249,14 @@ public enum DocumentType {
             }
 
         }
-        return this.makeTag(annotation.getSurfaceForm(), nt, uri,
+        // use original surface form if available, but use
+        // standard surface form as a fallback
+        String tagContent = annotation.getOriginalSurfaceForm();
+        if (tagContent == null || tagContent.isEmpty()) {
+            tagContent = annotation.getSurfaceForm();
+        }
+
+        return this.makeTag(tagContent, nt, uri,
             source, id);
     }
 

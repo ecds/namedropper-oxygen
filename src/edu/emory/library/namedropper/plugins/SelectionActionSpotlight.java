@@ -135,13 +135,17 @@ public class SelectionActionSpotlight extends SelectionAction {
         // Adjust offsets to account for any xml tags removed from the selection
         Integer offset = null;
         for (SpotlightAnnotation sa : annotations) {
+            // calculate document surface form based on text sent to the api
+            // NOTE: must be done *before* offsets are adjusted
+            this.calculateOriginalSurfaceForm(text, sa);
+
             // find the greatest offset less than or equal to the current annotation offset
             offset = offsetAdjustments.floorKey(sa.getOffset());
             // if there is an adjustment for this offset, use it
             if (offset != null) {
                 sa.adjustOffset(offsetAdjustments.get(offset));
             }
-            // all anntaotions must be adjusted so they are relative to the entire document
+            // all annotations must be adjusted so they are relative to the entire document
             sa.adjustOffset(selectionOffset);
         }
 
@@ -159,6 +163,43 @@ public class SelectionActionSpotlight extends SelectionAction {
 
         // add them to the UI annotation panel for display and user interaction
         panel.addAnnotations(annotations);
+    }
+
+    /**
+     * DBpedia Spotlight annotation appears to normalize whitespace in the
+     * surface form values it returns.  Use regular expressions to determine
+     * the corresponding surface form for the recognized entity in the original
+     * text, even if it includes extra whitespace, newline, tabs, etc.
+     * Stores the calculated value on the annotation for later use.
+     */
+    public void calculateOriginalSurfaceForm(String text, SpotlightAnnotation sa) {
+        // if surface form does not contain whitespace, no adjustment is needed
+        // - checking for whitespace anywhere in the content
+        if (! sa.getSurfaceForm().matches("^.*\\s.*$")) {
+            sa.setOriginalSurfaceForm(sa.getSurfaceForm());
+            return;
+        }
+
+        // otherwise, generate a regex from the surface form that will
+        // match multiple whitespace that may have been normalized
+        // by the spotlight api call
+        String subtext = text.substring(sa.getOffset(), text.length());
+        // match at the beginning of the string
+        String regex = '^' + sa.getSurfaceForm();
+        // replace whitespace with a regex to match one or more whitespace of any kind
+        // (could be multiple spaces, tabs, newlines, etc.)
+        regex = regex.replaceAll("\\s+", "\\\\s+");
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(subtext);
+        if (m.find()) {
+            // store the value from the original document on the annotation
+            // for later use (highlighting, inserting tags)
+            sa.setOriginalSurfaceForm(subtext.substring(m.start(), m.end()));
+        } else {
+            // if for some reason the regex fails, use the surface form returned
+            // by dbpedia spotlight
+            sa.setOriginalSurfaceForm(sa.getSurfaceForm());
+        }
     }
 
 
