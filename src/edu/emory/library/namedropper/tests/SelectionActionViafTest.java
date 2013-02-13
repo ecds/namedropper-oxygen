@@ -1,5 +1,5 @@
 /**
- * file src/edu/emory/library/namedropper/tests/NameDropperTest.java
+ * file src/edu/emory/library/namedropper/tests/SelectionActionViafTest.java
  *
  * Copyright 2012 Emory University Library
  *
