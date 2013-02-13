@@ -82,6 +82,7 @@ public class SelectionActionTest {
      public void testTagAllowed() throws Exception {
 
         Mockito.when(this.mockAction.tagAllowed(1)).thenCallRealMethod();
+        Mockito.when(this.mockAction.tagAllowed(1, null)).thenCallRealMethod();
         this.mockAction.docType = DocumentType.EAD;
 
         // simulate editor page unavailable - should be null
