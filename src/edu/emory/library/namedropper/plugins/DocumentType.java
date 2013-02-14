@@ -18,8 +18,11 @@
 
 package edu.emory.library.namedropper.plugins;
 
+import org.geonames.Toponym;
+
 import edu.emory.library.viaf.ViafResource;
 import edu.emory.library.spotlight.SpotlightAnnotation;
+
 
 /**
  * Information about supported document types.
@@ -259,6 +262,16 @@ public enum DocumentType {
         return this.makeTag(tagContent, nt, uri,
             source, id);
     }
+
+    public String makeTag(String name, Toponym place) throws Exception {
+        String result = null;
+        String tag = null;
+        DocumentType.NameType nt = NameType.GEOGRAPHIC;
+        //return this.makeTag(name, nt, resource.getUri(), "viaf", resource.getViafId());
+        String uri = "http://sws.geonames.org/" + place.getGeoNameId() + "/";
+        return this.makeTag(name, nt, uri, "geonames", Integer.toString(place.getGeoNameId()));
+    }
+
 
     /**
      * Generate an xml tag for the current document type, based on a name, a resource. Uses
