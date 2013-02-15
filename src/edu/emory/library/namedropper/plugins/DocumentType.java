@@ -267,7 +267,6 @@ public enum DocumentType {
         String result = null;
         String tag = null;
         DocumentType.NameType nt = NameType.GEOGRAPHIC;
-        //return this.makeTag(name, nt, resource.getUri(), "viaf", resource.getViafId());
         String uri = "http://sws.geonames.org/" + place.getGeoNameId() + "/";
         return this.makeTag(name, nt, uri, "geonames", Integer.toString(place.getGeoNameId()));
     }

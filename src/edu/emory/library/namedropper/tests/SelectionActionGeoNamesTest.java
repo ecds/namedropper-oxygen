@@ -41,8 +41,6 @@ import javax.swing.JOptionPane;
 import java.awt.Component;
 import javax.swing.Icon;
 
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-
 import org.geonames.WebService;
 import org.geonames.Toponym;
 import org.geonames.ToponymSearchCriteria;
@@ -62,7 +60,6 @@ public class SelectionActionGeoNamesTest {
     public void setUp() {
         // initialize mock action
         this.action = Mockito.mock(SelectionActionGeoNames.class);
-        //this.action = new SelectionActionGeoNames((StandalonePluginWorkspace)PluginOptions.getWorkspace());
     }
 
     @After
