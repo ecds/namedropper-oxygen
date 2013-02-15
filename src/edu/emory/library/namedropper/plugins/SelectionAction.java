@@ -165,9 +165,13 @@ public abstract class SelectionAction extends AbstractAction {
      * Gets selection offset and then calls tagAllowed.
      */
     public Boolean tagAllowedAtSelection() {
+        return tagAllowedAtSelection(null);
+    }
+
+    public Boolean tagAllowedAtSelection(DocumentType.NameType nt) {
         WSTextEditorPage ed = this.getCurrentPage();
         int selectionOffset = ed.getSelectionStart();
-        return tagAllowed(selectionOffset);
+        return tagAllowed(selectionOffset, nt);
     }
 
     /**

@@ -65,3 +65,5 @@ lib/httpmime-*.jar
 lib/aduna-*.jar
 lib/sesame-*.jar
 lib/slf4j-*.jar
+lib/geonames-*.jar
+lib/jdom-*.jar

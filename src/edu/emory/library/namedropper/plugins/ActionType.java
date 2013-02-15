@@ -29,6 +29,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import edu.emory.library.namedropper.plugins.SelectionAction;
 import edu.emory.library.namedropper.plugins.SelectionActionViaf;
 import edu.emory.library.namedropper.plugins.SelectionActionSpotlight;
+import edu.emory.library.namedropper.plugins.SelectionActionGeoNames;
 
 
 /**
@@ -38,7 +39,8 @@ import edu.emory.library.namedropper.plugins.SelectionActionSpotlight;
 public enum ActionType {
 
     VIAF,
-    DBPEDIA_SPOTLIGHT;
+    DBPEDIA_SPOTLIGHT,
+    GEONAMES;
 
     /**
      * Get an instance of the SelectionAction subclass for a specified ActionType.
@@ -53,6 +55,9 @@ public enum ActionType {
             case DBPEDIA_SPOTLIGHT:
                 return new SelectionActionSpotlight(ws);
 
+            case GEONAMES:
+                return new SelectionActionGeoNames(ws);
+
             default:
                 return null;
         }
@@ -62,10 +67,13 @@ public enum ActionType {
         if (shortName.equals(SelectionActionViaf.shortName)) {
             return VIAF;
         }
-
         if (shortName.equals(SelectionActionSpotlight.shortName)) {
             return DBPEDIA_SPOTLIGHT;
         }
+        if (shortName.equals(SelectionActionGeoNames.shortName)) {
+            return GEONAMES;
+        }
+
         return null;
     }
 

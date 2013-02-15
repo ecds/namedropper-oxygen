@@ -12,6 +12,17 @@
       <id>Aduna</id>
       <url>http://repo.aduna-software.org/maven2/releases/</url>
     </repository>
+    <!-- required for geonames-1.1.9 (main mvn repo only has 1.1) -->
+    <repository>
+        <id>wagstrom-net-external_free</id>
+        <url>http://patrick.wagstrom.net/maven/external_free</url>
+        <releases>
+            <updatePolicy>never</updatePolicy>
+        </releases>
+        <snapshots>
+            <updatePolicy>never</updatePolicy>
+        </snapshots>
+    </repository>
   </repositories>
   <!-- install deps to lib dir with: mvn dependency:copy-dependencies -DoutputDirectory=lib -->
   <!-- gen classpath with : mvn dependency:build-classpath -->
@@ -74,7 +85,7 @@
     <dependency>
       <groupId>org.geonames</groupId>
       <artifactId>geonames</artifactId>
-      <version>1.0</version>
+      <version>1.1.9</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

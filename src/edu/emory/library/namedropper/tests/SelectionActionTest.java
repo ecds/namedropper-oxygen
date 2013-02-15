@@ -116,12 +116,14 @@ public class SelectionActionTest {
         int offset = 55;
         WSXMLTextEditorPage mockPage = Mockito.mock(WSXMLTextEditorPage.class);
         Mockito.when(mockPage.getSelectionStart()).thenReturn(offset);
+        // method with no param calls method with nametype, so mock both
         Mockito.when(this.mockAction.tagAllowedAtSelection()).thenCallRealMethod();
+        Mockito.when(this.mockAction.tagAllowedAtSelection(null)).thenCallRealMethod();
         Mockito.when(this.mockAction.getCurrentPage()).thenReturn(mockPage);
 
         this.mockAction.tagAllowedAtSelection();
         // verify tag allowed was called with selection offset
-        Mockito.verify(this.mockAction).tagAllowed(offset);
+        Mockito.verify(this.mockAction).tagAllowed(offset, null);
 
      }
 
