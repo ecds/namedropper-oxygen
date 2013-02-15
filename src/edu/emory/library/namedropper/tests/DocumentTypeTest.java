@@ -31,6 +31,8 @@ import static org.junit.Assert.*;
 
 import static org.mockito.Mockito.*;
 
+import org.geonames.Toponym;
+
 import edu.emory.library.namedropper.plugins.DocumentType;
 import edu.emory.library.viaf.ViafResource;
 import edu.emory.library.spotlight.SpotlightAnnotation;
@@ -176,6 +178,21 @@ public class DocumentTypeTest {
 
         DocumentType tei = DocumentType.TEI;
         tei.makeTag("someName", mockvr);
+     }
+
+     @Test
+     public void testMakeTagToponym() throws Exception {
+        DocumentType tei = DocumentType.TEI;
+
+        String name = "Belfast";
+        Toponym place = new Toponym();
+        place.setGeoNameId(3333223);
+        String result = tei.makeTag(name, place);
+        assertEquals("<name ref=\"http://sws.geonames.org/3333223/\" type=\"place\">Belfast</name>",
+            result);
+        // really we just care that makeTag is called with the proper args,
+        // but adding mocking/spying to verify args doesn't seem worth the trouble
+
      }
 
 }
