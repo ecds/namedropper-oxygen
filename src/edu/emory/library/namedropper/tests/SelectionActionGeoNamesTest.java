@@ -37,6 +37,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.List;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import java.awt.Component;
+import javax.swing.Icon;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -51,7 +54,7 @@ import edu.emory.library.namedropper.plugins.PluginOptions;
 
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PluginOptions.class, WebService.class})
+@PrepareForTest({PluginOptions.class, WebService.class, JOptionPane.class})
 public class SelectionActionGeoNamesTest {
     SelectionActionGeoNames action;
 
@@ -114,8 +117,50 @@ public class SelectionActionGeoNamesTest {
         // doctype must still be set
         this.action.docType = DocumentType.EAD;
         this.action.queryGeoNames(term);
-        PowerMockito.verifyStatic(); //WebService.class);
+        PowerMockito.verifyStatic();
         WebService.setUserName(username);
+    }
+
+    @Test
+    public void testGetUserSelection() {
+        PowerMockito.mockStatic(JOptionPane.class);
+        List<Toponym> places = new ArrayList<Toponym>();
+        Toponym p1 = new Toponym();
+        p1.setName("Irish Sea");
+        p1.setCountryName("");
+        places.add(p1);
+        Toponym p2 = new Toponym();
+        p2.setName("Dublin");
+        p2.setCountryName("Ireland");
+        places.add(p2);
+
+        String[] expectedLabels = new String[2];
+        expectedLabels[0] = "Irish Sea";
+        expectedLabels[1] = "Dublin (Ireland)";
+
+        Mockito.when(this.action.getUserSelection(places)).thenCallRealMethod();
+        // no selection
+        Mockito.when(JOptionPane.showInputDialog((Component)Mockito.anyObject(),
+            Mockito.anyObject(), Mockito.anyString(),
+            Mockito.anyInt(), (Icon)Mockito.anyObject(),
+            Mockito.eq(expectedLabels), Mockito.anyObject())).thenReturn(null);
+        Toponym result = this.action.getUserSelection(places);
+        assertEquals(null, result);
+
+        // confirm label selection maps to correct Toponym object
+        Mockito.when(JOptionPane.showInputDialog((Component)Mockito.anyObject(),
+            Mockito.anyObject(), Mockito.anyString(),
+            Mockito.anyInt(), (Icon)Mockito.anyObject(),
+            Mockito.eq(expectedLabels), Mockito.anyObject())).thenReturn(expectedLabels[0]);
+        result = this.action.getUserSelection(places);
+        assertEquals(p1, result);
+
+        Mockito.when(JOptionPane.showInputDialog((Component)Mockito.anyObject(),
+            Mockito.anyObject(), Mockito.anyString(),
+            Mockito.anyInt(), (Icon)Mockito.anyObject(),
+            Mockito.eq(expectedLabels), Mockito.anyObject())).thenReturn(expectedLabels[1]);
+        result = this.action.getUserSelection(places);
+        assertEquals(p2, result);
     }
 
 

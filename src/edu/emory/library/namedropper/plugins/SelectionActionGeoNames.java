@@ -38,7 +38,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-
+// geonames.org api client
 import org.geonames.WebService;
 import org.geonames.Toponym;
 import org.geonames.ToponymSearchCriteria;
@@ -101,12 +101,10 @@ public class SelectionActionGeoNames extends SelectionAction {
             throw new Exception("Please set a GeoNames.org username");
         }
 
-        WebService geonamesClient = new WebService();
-        geonamesClient.setUserName(username);
+        WebService.setUserName(username);
         ToponymSearchCriteria search = new ToponymSearchCriteria();
         search.setQ(text);
-        ToponymSearchResult searchResult = geonamesClient.search(search);
-
+        ToponymSearchResult searchResult = WebService.search(search);
         if (searchResult.getTotalResultsCount() == 0) {
             throw new Exception("No Results");
         }
@@ -132,11 +130,12 @@ public class SelectionActionGeoNames extends SelectionAction {
         for (int i = 0; i < suggestions.size(); i++) {
             Toponym t = suggestions.get(i);
             labels[i] =  t.getName();
-            // not all places have a country
+            // not all places have a country; list it if available
             if (! t.getCountryName().isEmpty()) {
+                // NOTE: for U.S. cities, it would be nice to have state as well,
+                // but the additional hierarchy API call for each item is too slow
                 labels[i] += String.format(" (%s)", t.getCountryName());
             }
-            // FIXME: do we need to include state also (e.g. for U.S. cities?)
         }
         // display pop-up box and return a toponym based on the value the user selects
         Object choice = JOptionPane.showInputDialog(null, // parent component (?)
@@ -180,9 +179,8 @@ public class SelectionActionGeoNames extends SelectionAction {
                 // for simplicity, using simple grid layout: label, input
                 java.awt.GridLayout layout = new java.awt.GridLayout(2,2);  // rows, columns
                 optionPanel.setLayout(layout);
-                optionPanel.add(new JLabel("Username: "));
+                optionPanel.add(new JLabel("GeoNames API Username: "));
                 optionPanel.add(username);
-
 
                 int result = JOptionPane.showConfirmDialog((java.awt.Frame)workspace.getParentFrame(),
                     optionPanel, dialogLabel, JOptionPane.OK_CANCEL_OPTION);
