@@ -45,6 +45,11 @@ type of record found) with a VIAF id for for the first VIAF match found.  You sh
 see a warning message if no match is found for the highlighted text, or if a name
 tag is not valid in the current context.
 
+
+See `CHANGELOG`_ for features and changes by version.
+
+.. _CHANGELOG: CHANGELOG.rst
+
 License
 =======
 NameDropper Oxygen plugin is distributed under the
@@ -129,5 +134,7 @@ remove the locally installed plugin.
 
 -----
 
-See **HOWTO-RELEASE** for instructions on releasing or updating the user-
+See `HOWTO-RELEASE`_ for instructions on releasing or updating the user-
 installable Oxygen add-on.
+
+.. _HOWTO-RELEASE: HOWTO-RELEASE.rst
