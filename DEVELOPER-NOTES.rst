@@ -55,7 +55,7 @@ Run ``ant`` to build the distribution and run the tests.
 
 
 Oxygen developer documentation
-------------------------------
+==============================
 
 Developers may find it useful to refer to the `Oxygen XML Editor documentation`_,
 particularly the section on `extending Oxygen with plugins`_, as well as the
@@ -83,6 +83,37 @@ See `HOWTO-RELEASE`_ for instructions on releasing or updating the user-
 installable Oxygen add-on.
 
 .. _HOWTO-RELEASE: HOWTO-RELEASE.rst
+
+----
+
+Adding a new selection action to the plugin
+===========================================
+
+Currently, the NameDropper plugin consists of several different selection-based actions
+that interact with different services for different name look-up or recognition.  The plugin
+code is setup to be extensible for adding other selection actions; this is a summary of the
+process to add an new action.
+
+1. Add any new libraries or dependencies to `<pom.xml>`_ so they can be automatically
+   downloaded by other developers or continuous integration systems.
+
+2. Extend the base **SelectionAction** class:
+
+    * Set a short name, a full name (for display in the NameDropper menu),
+     and a keyboard shortcut key
+    * Extend the **processSelection** method with the desired functionality
+     to be triggered on user-selected text.
+    * If the new selection action has user-configurable options, extend the
+     **hasUserOptions** method and return True, and implement the **getOptionsAction**
+     to return a javax.swing.Action for displaying and processing your options.
+
+3. Update the **ActionType** enum to include your new selection action.  This should
+   automatically include your new action and settings, if present, in the NameDropper
+   menu and bind the keyboard shortcuts.
+
+4. Add a brief description of the new funtionality to the Oxygen plugin description in
+   `<res/OxygenAddons.xml>`_ and more detailed instructions (if necessary) to the usage
+   information in the project `README <README.rst>`_.
 
 
 
