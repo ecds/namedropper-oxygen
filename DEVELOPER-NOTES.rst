@@ -1,8 +1,8 @@
 Developer Notes
 ***************
 
-Development Requirements and Setup
-==================================
+Requirements and Setup
+======================
 
 * Ant
 * Java
@@ -77,8 +77,6 @@ If you set the **OXYGEN_HOME** environment variable, you can use the ``ant insta
 to build and copy the latest version of the code into the oxygen plugins directory, and ``ant uninstall`` to
 remove the locally installed plugin.
 
------
-
 See `HOWTO-RELEASE`_ for instructions on releasing or updating the user-
 installable Oxygen add-on.
 
@@ -96,23 +94,20 @@ process to add an new action.
 
 1. Add any new libraries or dependencies to `<pom.xml>`_ so they can be automatically
    downloaded by other developers or continuous integration systems.
-
 2. Extend the base **SelectionAction** class:
-
-    * Set a short name, a full name (for display in the NameDropper menu),
-     and a keyboard shortcut key
-    * Extend the **processSelection** method with the desired functionality
-     to be triggered on user-selected text.
-    * If the new selection action has user-configurable options, extend the
-     **hasUserOptions** method and return True, and implement the **getOptionsAction**
-     to return a javax.swing.Action for displaying and processing your options.
+ * Set a short name, a full name (for display in the NameDropper menu),
+   and a keyboard shortcut key
+ * Extend the **processSelection** method with the desired functionality
+   to be triggered on user-selected text.
+ * If the new selection action has user-configurable options, extend the
+   **hasUserOptions** method and return True, and implement the **getOptionsAction**
+   to return a javax.swing.Action for displaying and processing your options.
 
 3. Update the **ActionType** enum to include your new selection action.  This should
    automatically include your new action and settings, if present, in the NameDropper
    menu and bind the keyboard shortcuts.
-
 4. Add a brief description of the new funtionality to the Oxygen plugin description in
-   `<res/OxygenAddons.xml>`_ and more detailed instructions (if necessary) to the usage
+   `OxygenAddons.xml <res/OxygenAddons.xml>`_ and more detailed instructions (if necessary) to the usage
    information in the project `README <README.rst>`_.
 
 
