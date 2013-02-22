@@ -10,5 +10,7 @@
     </runtime>
     <extension type="WorkspaceAccess"
         class="edu.emory.library.namedropper.plugins.NameDropperPluginExtension"/>
+    <extension type="StylesFilter"
+        class="edu.emory.library.namedropper.plugins.NameDropperStylesFilter"/>
     <view id="AnnotationViewID" initialSide="WEST" initialRow="1" />
 </plugin>
