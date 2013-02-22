@@ -83,6 +83,7 @@ public class SelectionActionSpotlight extends SelectionAction {
      * in a pop-up window as a simple way to show that the spotlight request is working
      */
     public void findAnnotations(String text) throws Exception {
+        this.getCurrentPage().setEditable(false);
 
         // regular expression to remove xml tags from the selected text
         Pattern xmlTag = Pattern.compile("(</?\\w+[ =:.\\w\\\"]*>)");
@@ -124,6 +125,7 @@ public class SelectionActionSpotlight extends SelectionAction {
         // TODO: this should run in the background
         List<SpotlightAnnotation> annotations = spot.annotate(text);
         if (annotations.size() == 0) {
+            this.getCurrentPage().setEditable(true);
             throw new Exception("No resources were identified in the selected text");
         }
 

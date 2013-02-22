@@ -277,6 +277,18 @@ public class AnnotationPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 AnnotationTableModel model = (AnnotationTableModel) table.getModel();
                 model.clearAnnotations();
+
+                // make document editable again
+                PluginWorkspace ws = PluginOptions.getWorkspace();
+                // NOTE: once annotations are tied to a specific document,
+                // update this logic to make the correct document editable
+                // TODO: consider shifting repeated logic this to a common location
+                WSEditor editorAccess = ws.getCurrentEditorAccess(PluginWorkspace.MAIN_EDITING_AREA);
+                if (editorAccess != null && editorAccess.getCurrentPage() instanceof WSTextEditorPage) {
+                    WSTextEditorPage ed = (WSTextEditorPage)editorAccess.getCurrentPage();
+                    ed.setEditable(true);
+                }
+
             }
         });
         toolbar.add(clearAll, BorderLayout.SOUTH);
@@ -387,6 +399,9 @@ public class AnnotationPanel extends JPanel {
 
             // end of the compound edit (inserted all/selected items)
             ed.endCompoundUndoableEdit();
+
+            // make document editable again
+            ed.setEditable(true);
 
         } // end editor access
     }
