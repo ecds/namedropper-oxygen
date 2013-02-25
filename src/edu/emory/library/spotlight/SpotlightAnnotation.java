@@ -1,3 +1,4 @@
+
 /**
  * file src/edu/emory/library/namedropper/spotlight/SpotlightAnnotation.java
  *
@@ -36,6 +37,11 @@ import edu.emory.library.viaf.ViafClient;
 import edu.emory.library.viaf.ViafResource;
 
 public class SpotlightAnnotation {
+
+    /* NOTE: this class somewhat conflates an annotation result returned
+       from DBpedia Spotlight and the corresponding DBpedia resource.
+       They should probably be split out into separate classes at some point.
+    */
 
     private String uri;
     private String surfaceForm;
@@ -135,6 +141,32 @@ public class SpotlightAnnotation {
         return _abstract;
     }
 
+    private String _geonamesUri = null;
+    public String getGeoNamesUri() {
+        // BEWARE: *only* places are likely to have geonames URIs,
+        // and not all of them do either.  Use with caution.
+        if (_geonamesUri != null) { return _geonamesUri; }
+        // query for sameAs relationship where the uri contains geonames.org
+        // (NOTE: same principle could be used to get NYtimes URIs)
+        _geonamesUri = getDBpediaProperty("<http://www.w3.org/2002/07/owl#sameAs>",
+            null, "geonames.org");
+        return _geonamesUri;
+    }
+
+    public String getGeoNamesId() {
+        String id = null;
+        String geonamesUri = this.getGeoNamesUri();
+        if (geonamesUri != null) {
+            // example format: http://sws.geonames.org/3333223/
+            if (geonamesUri.endsWith("/")) { // strip off trailing slash
+                geonamesUri = geonamesUri.substring(0, geonamesUri.length() - 1);
+            }
+            // get substring after the last slash
+            id = geonamesUri.substring(geonamesUri.lastIndexOf("/")+1);
+        }
+        return id;
+    }
+
     private String _viafid = null;
     public String getViafId() {
         // viaf id look-up currently only supported for personal names
@@ -142,7 +174,7 @@ public class SpotlightAnnotation {
         if (_viafid != null) { return _viafid; }
         // some dbpedia records have a viaf property in DBpedia; check for that first
         _viafid = getDBpediaProperty("<http://dbpedia.org/property/viaf>",
-            null);  // null = disable language filter (numeric property, no language)
+            null, null);  // null = disable language filter (numeric property, no language)
 
         // if viafid is not available as a dbpedia property, search viaf for a match
         if (_viafid == null || _viafid.length() == 0) {
@@ -175,13 +207,13 @@ public class SpotlightAnnotation {
     }
 
     private String getDBpediaProperty(String property) {
-        return getDBpediaProperty(property, "EN");
+        return getDBpediaProperty(property, "EN", null);
     }
 
     // get a dbpedia property for this resource
     // property should either be a <uri> or a ns:property in a namespace dbpedia
     // has pre-defined
-    private String getDBpediaProperty(String property, String language) {
+    private String getDBpediaProperty(String property, String language, String contains) {
         String val = "";
         try {
 
@@ -192,18 +224,21 @@ public class SpotlightAnnotation {
 
             try {
                 // generate the sparql query for the requested property
-                String queryString =
-                    "SELECT ?val " +
-                    "\n WHERE { <%s> %s ?val";
+                String queryString = String.format("SELECT ?val " +
+                            "\n WHERE { <%s> %s ?val",
+                            this.uri, property);
+
                 // only use language filter if language is not null
                 // (some properties, such as viaf, are numeric and do not have a language)
                 if (language != null) {
-                    queryString += "\n FILTER langMatches( lang(?val), \"%s\" ) }";
-                    queryString = String.format(queryString, this.uri, property, language);
-                } else {
-                    queryString += "}";
-                    queryString = String.format(queryString, this.uri, property);
+                    queryString += String.format("\n FILTER langMatches( lang(?val), \"%s\" )",
+                        language);
                 }
+                if (contains != null) {
+                    queryString += String.format("\n FILTER contains(str(?val), \"%s\" )",
+                        contains);
+                }
+                queryString += "\n}";
 
                 TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
                 TupleQueryResult result = tupleQuery.evaluate();
