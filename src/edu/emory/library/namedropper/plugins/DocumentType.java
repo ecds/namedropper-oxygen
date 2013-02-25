@@ -250,7 +250,14 @@ public enum DocumentType {
                 // When VIAF id is available, use VIAF URI also
                 uri = String.format("http://viaf.org/viaf/%s", viafid);
             }
-
+        } else if (nt == DocumentType.NameType.GEOGRAPHIC) {
+            // for places, use geonames identifiers if possible
+            if (annotation.getGeoNamesUri() != null &&
+                ! annotation.getGeoNamesUri().isEmpty()) {
+                uri = annotation.getGeoNamesUri();
+                source = "geonames";
+                id = annotation.getGeoNamesId();
+            }
         }
         // use original surface form if available, but use
         // standard surface form as a fallback
