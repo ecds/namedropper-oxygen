@@ -12,7 +12,7 @@
         <!-- internal location for emory testers -->
         <xt:location href="https://wilson.library.emory.edu/jenkins/job/namedropper-oxygen/51/artifact/dist/NameDropper-0.3.0-dev.jar"/>
         <xt:version>0.3.0007</xt:version>
-        <xt:oxy_version>14.0+</xt:oxy_version>
+        <xt:oxy_version>14.2+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Emory University Library</xt:author>
         <xt:name>NameDropper</xt:name>
