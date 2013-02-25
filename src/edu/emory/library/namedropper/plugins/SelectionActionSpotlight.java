@@ -284,9 +284,4 @@ public class SelectionActionSpotlight extends SelectionAction {
         return this.tagAllowed(sa.getOffset(), nt);
     }
 
-    public WSTextEditorPage getCurrentPage() {
-        System.out.println("in extended getCurrentPage method");
-        return super.getCurrentPage();
-    }
-
 }
