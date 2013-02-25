@@ -97,6 +97,14 @@ public class SelectionActionViaf extends SelectionAction {
 
         // returns null if cancel button is clicked
         if (selection != null) {
+
+            // double-check that tag is allowed against the actual tag
+            // to be inserted (not just generic document-type tag)
+            DocumentType.NameType nt = DocumentType.NameType.fromString(selection.getType());
+            if (this.tagAllowedAtSelection(nt) == false) {
+                // warn user that tag is not allowed, and do not insert
+                throw new Exception("Tag is not allowed in the current context");
+            }
             result = this.docType.makeTag(name, selection);
          }
 
