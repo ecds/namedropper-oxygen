@@ -82,7 +82,7 @@ public class SelectionActionSpotlight extends SelectionAction {
      * Preliminary spotlight functionality: just display the identified resources
      * in a pop-up window as a simple way to show that the spotlight request is working
      */
-    public void findAnnotations(String text) throws Exception {
+    public int findAnnotations(String text) throws Exception {
         this.getCurrentPage().setEditable(false);
 
         // regular expression to remove xml tags from the selected text
@@ -117,7 +117,7 @@ public class SelectionActionSpotlight extends SelectionAction {
         SpotlightClient spot = new SpotlightClient(confidence, support);
         // store document offset for current selected text
         WSTextEditorPage ed = this.getCurrentPage();
-        if (ed == null) { return; }
+        if (ed == null) { return 0; }
         int selectionOffset = ed.getSelectionStart();
         // clear user-selected text by setting an empty selection
         ed.select(selectionOffset, selectionOffset);
@@ -165,6 +165,8 @@ public class SelectionActionSpotlight extends SelectionAction {
 
         // add them to the UI annotation panel for display and user interaction
         panel.addAnnotations(annotations);
+        // return count of annotations found
+        return annotations.size();
     }
 
     /**
@@ -282,6 +284,9 @@ public class SelectionActionSpotlight extends SelectionAction {
         return this.tagAllowed(sa.getOffset(), nt);
     }
 
-
+    public WSTextEditorPage getCurrentPage() {
+        System.out.println("in extended getCurrentPage method");
+        return super.getCurrentPage();
+    }
 
 }

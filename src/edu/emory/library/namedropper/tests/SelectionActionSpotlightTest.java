@@ -41,15 +41,19 @@ import java.util.ArrayList;
 import org.json.simple.JSONObject;
 
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.editor.page.text.WSTextEditorPage;
 
 //import edu.emory.library.namedropper.plugins.DocumentType;
 import edu.emory.library.namedropper.plugins.SelectionActionSpotlight;
 import edu.emory.library.namedropper.plugins.PluginOptions;
 import edu.emory.library.spotlight.SpotlightAnnotation;
+import edu.emory.library.spotlight.SpotlightClient;
 
-
-//@RunWith(PowerMockRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({SpotlightClient.class, SelectionActionSpotlight.class,
+    WSTextEditorPage.class})
 public class SelectionActionSpotlightTest {
+
     SelectionActionSpotlight action;
 
     @Before
@@ -61,16 +65,14 @@ public class SelectionActionSpotlightTest {
 
     @After
     public void tearDown() {
-        //this.mockAction = null;
+        this.action = null;
     }
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-//public void calculateOriginalSurfaceForm(String text, SpotlightAnnotation sa) {
-
-    @Test
-    public void testCalculateOriginalSurfaceForm() {
+    // utility methods for building annotation object
+    JSONObject getAnnotationData() {
         JSONObject data = new JSONObject();
         data.put("@URI", "http://some.uri");
         data.put("@surfaceForm", "John Smith");
@@ -79,7 +81,17 @@ public class SelectionActionSpotlightTest {
         data.put("@offset", "0");
         data.put("@similarityScore", "0.1");
         data.put("@percentageOfSecondRank", "0.1");
-        SpotlightAnnotation sa = new SpotlightAnnotation(data);
+        return data;
+    }
+
+    SpotlightAnnotation getTestAnnotation() {
+        return new SpotlightAnnotation(this.getAnnotationData());
+    }
+
+
+    @Test
+    public void testCalculateOriginalSurfaceForm() {
+        SpotlightAnnotation sa = this.getTestAnnotation();
         // name with extra whitespace
         String name = "John      Smith";
 
@@ -105,13 +117,60 @@ public class SelectionActionSpotlightTest {
         assertEquals(sa.getSurfaceForm(), sa.getOriginalSurfaceForm());
 
         // name with no whitespace
+        JSONObject data = this.getAnnotationData();
         data.put("@surfaceForm", "John");
         SpotlightAnnotation noSpace = new SpotlightAnnotation(data);
         // input text doesn't matter for terms with no spaces
         this.action.calculateOriginalSurfaceForm("", noSpace);
         assertEquals(noSpace.getSurfaceForm(), noSpace.getOriginalSurfaceForm());
 
-     }
+    }
 
+    @Test
+    public void testfindAnnotations() throws Exception {
+
+        // init a mock spotlight client and configure to turn empty result
+        SpotlightClient mockSpotlightClient = Mockito.mock(SpotlightClient.class);
+        List<SpotlightAnnotation> spotlightResult = new ArrayList<SpotlightAnnotation>();
+        Mockito.when(mockSpotlightClient.annotate(Mockito.anyString())).thenReturn(spotlightResult);
+        // use powermock to override constructor to return mock spotlight client
+        PowerMockito.whenNew(SpotlightClient.class).withArguments(Mockito.anyDouble(),
+            Mockito.anyInt()).thenReturn(mockSpotlightClient);
+        WSTextEditorPage mockPage = Mockito.mock(WSTextEditorPage.class);
+
+        SelectionActionSpotlight mockAction = Mockito.mock(SelectionActionSpotlight.class);
+
+        Mockito.when(mockAction.getCurrentPage()).thenReturn(mockPage);
+        // settings are static methods
+        PowerMockito.mockStatic(SelectionActionSpotlight.class);
+        Mockito.when(SelectionActionSpotlight.getSpotlightConfidence()).thenReturn("0.4");
+        Mockito.when(SelectionActionSpotlight.getSpotlightSupport()).thenReturn("250");
+        // finally, call the actual method we want to test
+        Mockito.when(mockAction.findAnnotations(Mockito.anyString())).thenCallRealMethod();
+
+        exception.expect(Exception.class);
+        exception.expectMessage("No resources were identified in the selected text");
+        mockAction.findAnnotations("some text to annotate");
+
+        // verify that document was set uneditable and then made editable
+        Mockito.verify(mockPage).setEditable(false);
+        Mockito.verify(mockPage).setEditable(true);
+
+        // simulate spotlight result found
+        spotlightResult.add(this.getTestAnnotation());
+
+        mockAction.findAnnotations("some text to annotate");
+        Mockito.verify(mockPage).setEditable(false);
+        // not switched back to editable because results were found
+        Mockito.verify(mockPage, Mockito.times(0)).setEditable(true);
+
+        /* NOTE: currently untested, but might be worth adding tests for
+          (and maybe splitting out into smaller functions):
+          - tag cleanup from highlighted text
+          - spotlight calling / interaction
+          - offset adjustments
+          - filtering based on allowed tags
+        */
+    }
 
 }
