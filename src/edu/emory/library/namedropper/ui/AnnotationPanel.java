@@ -328,6 +328,10 @@ public class AnnotationPanel extends JPanel {
 
             // select the matched term so we can replace it with a tag
             ed = (WSTextEditorPage)editorAccess.getCurrentPage();
+
+            // make document editable so we can insert tags
+            ed.setEditable(true);
+
             // begin a single undoable edit for ALL inserted tags
             ed.beginCompoundUndoableEdit();
 
@@ -399,9 +403,6 @@ public class AnnotationPanel extends JPanel {
 
             // end of the compound edit (inserted all/selected items)
             ed.endCompoundUndoableEdit();
-
-            // make document editable again
-            ed.setEditable(true);
 
         } // end editor access
     }
