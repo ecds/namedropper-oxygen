@@ -92,7 +92,7 @@ that interact with different services for different name look-up or recognition.
 code is setup to be extensible for adding other selection actions; this is a summary of the
 process to add an new action.
 
-1. Add any new libraries or dependencies to `<pom.xml>`_ so they can be automatically
+1. Add any new libraries or dependencies to `pom.xml <../pom.xml>`_ so they can be automatically
    downloaded by other developers or continuous integration systems.
 2. Extend the base **SelectionAction** class:
  * Set a short name, a full name (for display in the NameDropper menu),
@@ -107,7 +107,7 @@ process to add an new action.
    automatically include your new action and settings, if present, in the NameDropper
    menu and bind the keyboard shortcuts.
 4. Add a brief description of the new funtionality to the Oxygen plugin description in
-   `OxygenAddons.xml <res/OxygenAddons.xml>`_ and more detailed instructions (if necessary) to the usage
+   `OxygenAddons.xml <../res/OxygenAddons.xml>`_ and more detailed instructions (if necessary) to the usage
    information in the project `README <../README.rst>`_.
 
 
