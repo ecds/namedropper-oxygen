@@ -1,0 +1,85 @@
+/**
+ CSS for OxygenXML Author mode to style TEI and EAD tags and attributes
+ added by the NameDropper plugin.
+
+ Currently configured for namespaced TEI & EAD only.
+*/
+
+@namespace tei "http://www.tei-c.org/ns/1.0";
+@namespace ead "urn:isbn:1-931666-22-9";
+
+/* common formatting for TEI & EAD: highlight person, place, and org/corp names */
+ead|persname, tei|name[type='person'] {
+  background-color: #FFFFD1;
+}
+ead|geogname, tei|name[type='place'] {
+  background-color: #ABDCB7;
+}
+ead|corpname, tei|name[type='org'] {
+  background-color: #BAC2F3;
+}
+
+/** EAD-specific styles **/
+
+/* for names with a source and authfilenumber, display source id after the item */
+ead|*[authfilenumber][source]:after {
+    content:'[' attr(source) ':' attr(authfilenumber) ']';
+    font-size: 80%;
+    line-height: 120%;
+    color: blue;
+    background-color: white;
+    vertical-align: middle;
+}
+
+/* common formatting for known sources */
+ead|*[source='viaf']:after, ead|*[source='geonames']:after, ead|*[source='dbpedia']:after {
+  background-repeat:no-repeat;
+  background-position:left;
+  padding-left:20px;
+}
+/* source-specific details: generate a link to resource, display icon */
+ead|*[source='viaf']:after {
+  link: 'http://viaf.org/viaf/' attr(authfilenumber);
+  background-image:url("http://www.google.com/s2/u/0/favicons?domain=viaf.org");
+}
+ead|*[source='geonames']:after {
+  link: 'http://sws.geonames.org/' attr(authfilenumber);
+  background-image:url("http://www.google.com/s2/u/0/favicons?domain=geonames.org");
+}
+ead|*[source='dbpedia']:after {
+  link: 'http://dbpedia.org/resource/' attr(authfilenumber);
+  background-image:url("http://www.google.com/s2/u/0/favicons?domain=dbpedia.org");
+}
+
+/* this doesn't really belong here,
+but the oxygen defaults for EAD styling don't seem to be very good */
+ead|persname, ead|geogname, ead|corpname {
+  display: inline;
+}
+
+/** TEI-specific styles **/
+
+tei|name[ref^="http://"]:after {
+  link: attr(ref);
+  content: " ";
+  vertical-align: middle;
+  line-height: 105%;
+  background-color: white;
+  background-repeat:no-repeat;
+  background-position:left;
+  padding-left:12px;
+}
+
+/* source-specific icons */
+tei|name[ref^="http://dbpedia.org/resource"]:after {
+  background-image:url("http://www.google.com/s2/u/0/favicons?domain=dbpedia.org");
+}
+tei|name[ref^="http://viaf.org/"]:after {
+  background-image:url("http://www.google.com/s2/u/0/favicons?domain=viaf.org");
+}
+tei|name[ref^="http://sws.geonames.org/"]:after {
+  background-image:url("http://www.google.com/s2/u/0/favicons?domain=geonames.org");
+}
+/* NOTE: other sources will be clickable but have no icon */
+
+
