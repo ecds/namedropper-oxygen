@@ -79,6 +79,30 @@ The NameDropper plugin currently provides the following functionality:
  .. _GeoNames.org API username: http://www.geonames.org/login
  .. _DBpedia Spotlight: http://spotlight.dbpedia.org/
 
+
+Known Limitations
+=================
+
+* The NameDropper plugin does not interact very well with existing name tags in the XML:
+  * there is curently no support for adding attributes to existing name tags or filtering
+    a VIAF lookup based on the type of name tag
+  * entities recognized by DBpedia Spotlight annotation are filtered based on schema,
+    which could exclude recognized names in EAD that are tagged but do not have source and
+    authfilenumber; because the TEI <name> tag may contain <name>, annotating TEI text
+    with tagged names may result in nested name tags
+* The DBpedia Spotlight annotation API request is fairly slow, and the plugin has not
+  yet been modified to make this request in the background or even display a spinning icon,
+  so Oxygen may appear to hang for a while when making an annotation request.
+* VIAF and GeoNames ids are not always available for DBpedia persons and places respectively.
+* The plugin uses Oxygen's built-in schema to determine if tags are allowed at the selected
+  location; an invalid document may need to be corrected before using NameDropper actions.
+* The selected document type (TEI or EAD) is not auto-detected, nor is it stored per
+  document, so if you switch between working on TEI and EAD documents, you will need to manually change the NameDropper document type.
+* DBpedia Spotlight annotations are currently not restricted to the current document, so
+  if you annotate text and switch to a different document, the annotations will not match
+  the text.  Current recommended workflow is to annotate and then process the results before
+  switching to a different document.
+
 ----
 
 See `CHANGELOG`_ for features and changes by version.
