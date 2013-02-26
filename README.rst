@@ -1,7 +1,7 @@
 NameDropper OxygenXML plugin
 ****************************
 
-This is a plugin or add-on for the `Oxygen XML editor`_  (version 14.0) to
+This is a plugin or add-on for the `Oxygen XML editor`_  (version 14.2) to
 simplify the process of tagging names in XML and associating those names with
 authoritative identifiers (currently using `VIAF`_).  See the top-level
 `namedropper`_ repository for more information.

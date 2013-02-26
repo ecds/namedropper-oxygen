@@ -11,6 +11,7 @@ necessary information about installation or upgrade notes.
 * An Oxygen user can use the NameDropper menu to see and change the action (VIAF lookup or DBpedia Spotlight annotation) to be taken when they invoke the plugin OR trigger individual actions by keyboard shortcut, so that they have options for using the plugin functionality.
 * Oxygen users can choose to configure a CSS from the plugin to make added tags more visible when working in the Author view so they can review tags and enhancements more easily.
 * bugfix: The VIAF lookup will not insert <geogname> tags where they are not allowed (but other name tags are allowed) in an EAD document.
+* Now requires Oxygen 14.2.
 
 **DBpedia Spotlight** integration:
 
