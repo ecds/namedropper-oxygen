@@ -20,20 +20,44 @@ To install the current released version of the plugin as an Oxygen Add-On:
 Using the plugin in Oxygen
 --------------------------
 
+Generally, the NameDropper plugin is intended to be used in the ``Text`` display mode
+within the Oxygen editor.
+
 To use the plugin once you have it installed:
 
 * The first time you use the plugin, or if you need to switch between documents, use the
   NameDropper menu located in the main Oxygen menu bar to choose the type of document
-  you will be editing (TEI or EAD).
-* Highlight a name in your document and invoke the plugin either by using the top-level
-  **NameDropper** menu and selecting **Lookup names** or by using the keyboard
-  shortcut **Control + Shift + N**.
+  you will be editing (**TEI** or **EAD** so that the correct tags will be inserted).
 
-Current behavior is to add an appropriate name tag (based on the document type and the
-type of record found) with a VIAF id for for the first VIAF match found.  You should
-see a warning message if no match is found for the highlighted text, or if a name
-tag is not valid in the current context.
+* Generally, you will select text in your document and invoke one of the available
+  actions either by using the top-level**NameDropper** menu or by using the appropriate
+  keyboard shortcuts, which are listed in the menu.
 
+The NameDropper plugin currently provides the following functionality:
+
+ * Highlight a person, place, or corporate/organization name to be looked
+   up in `VIAF`_ (Virtual International Authority File).  If any matches are found,
+   you should see a list of names to select from; when you choose one, the appropriate
+   tags and identifier attributes should be inserted into your document.
+
+ * Highlight a place name to be looked up in `GeoNames.org`_ and select from the list
+   (works largely the same as the VIAF lookup).  The GeoNames lookup currently requires
+   that you configure a `GeoNames.org API username`_; plugin settings can be accessed
+   via the NameDropper menu.
+
+ * Highlight a passage of text (multiple sentence or paragraphs, which can include tags)
+   to be annotated with `DBpedia Spotlight`_.  Recognized entities will be displayed in
+   a side panel where you can review and select them for insertion into your document.
+   DBpedia Spotlight confidence and support settings can be configured via the NameDropper
+   menu.  When possible, VIAF identifiers and URIs will be used for DBpedia person entities,
+   and GeoNames.org identifiers and URIs will be used for DBpedia place entities.
+
+ .. _VIAF: http://viaf.org/
+ .. _GeoNames.org: http://geonames.org/
+ .. _GeoNames.org API username: http://www.geonames.org/login
+ .. _DBpedia Spotlight: http://spotlight.dbpedia.org/
+
+----
 
 See `CHANGELOG`_ for features and changes by version.
 
