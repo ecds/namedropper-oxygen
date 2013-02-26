@@ -15,7 +15,7 @@ To install the current released version of the plugin as an Oxygen Add-On:
 * As new versions are released, you should be able to update the NameDropper plugin by
   using the **Check for add-ons updates..** menu entry.
 
-.. _OxygenAddons.xml: ../res/OxygenAddons.xml
+.. _OxygenAddons.xml: ../res/OxygenAddons.xml?raw=true
 
 Configure CSS to style NameDropper tags and attributes in Author mode (Optional)
 --------------------------------------------------------------------------------
@@ -37,8 +37,7 @@ icons should be displayed for VIAF, GeoNames, or DBpedia resources, and the icon
 text immediately after the name will be a clickable link to the corresponding resource.
 For EAD documents, source names and identifiers will be listed after the name.
 
-.. _namedropper-oxygen.css: ../res/namedropper-oxygen.css
-
+.. _namedropper-oxygen.css: ../res/namedropper-oxygen.css?raw=true
 
 Using the plugin in Oxygen
 ==========================
@@ -53,27 +52,27 @@ To use the plugin once you have it installed:
   you will be editing (**TEI** or **EAD** so that the correct tags will be inserted).
 
 * Generally, you will select text in your document and invoke one of the available
-  actions either by using the top-level**NameDropper** menu or by using the appropriate
+  actions either by using the top-level **NameDropper** menu or by using the appropriate
   keyboard shortcuts, which are listed in the menu.
 
 The NameDropper plugin currently provides the following functionality:
 
- * Highlight a person, place, or corporate/organization name to be looked
-   up in `VIAF`_ (Virtual International Authority File).  If any matches are found,
-   you should see a list of names to select from; when you choose one, the appropriate
-   tags and identifier attributes should be inserted into your document.
+* Highlight a person, place, or corporate/organization name to be looked
+  up in `VIAF`_ (Virtual International Authority File).  If any matches are found,
+  you should see a list of names to select from; when you choose one, the appropriate
+  tags and identifier attributes should be inserted into your document.
 
- * Highlight a place name to be looked up in `GeoNames.org`_ and select from the list
-   (works largely the same as the VIAF lookup).  The GeoNames lookup currently requires
-   that you configure a `GeoNames.org API username`_; plugin settings can be accessed
-   via the NameDropper menu.
+* Highlight a place name to be looked up in `GeoNames.org`_ and select from the list
+  (works largely the same as the VIAF lookup).  The GeoNames lookup currently requires
+  that you configure a `GeoNames.org API username`_; plugin settings can be accessed
+  via the NameDropper menu.
 
- * Highlight a passage of text (multiple sentence or paragraphs, which can include tags)
-   to be annotated with `DBpedia Spotlight`_.  Recognized entities will be displayed in
-   a side panel where you can review and select them for insertion into your document.
-   DBpedia Spotlight confidence and support settings can be configured via the NameDropper
-   menu.  When possible, VIAF identifiers and URIs will be used for DBpedia person entities,
-   and GeoNames.org identifiers and URIs will be used for DBpedia place entities.
+* Highlight a passage of text (multiple sentence or paragraphs, which can include tags)
+  to be annotated with `DBpedia Spotlight`_.  Recognized entities will be displayed in
+  a side panel where you can review and select them for insertion into your document.
+  DBpedia Spotlight confidence and support settings can be configured via the NameDropper
+  menu.  When possible, VIAF identifiers and URIs will be used for DBpedia person entities,
+  and GeoNames.org identifiers and URIs will be used for DBpedia place entities.
 
  .. _VIAF: http://viaf.org/
  .. _GeoNames.org: http://geonames.org/
