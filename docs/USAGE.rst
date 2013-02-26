@@ -1,5 +1,21 @@
-USAGE
-*****
+Usage & Installation
+********************
+
+Plugin installation via Oxygen Add-Ons
+======================================
+
+To install the current released version of the plugin as an Oxygen Add-On:
+
+* Open Oxygen Preferences and select **Add-Ons**
+* Add and save a new add-on site URL: `OxygenAddons.xml`_
+  (Right click and select "copy link location" or "copy link address" to get the full url)
+* Under the Oxygen Help menu, select **Manage add-ons...**
+* Select **NameDropper** and then click install.  You should be prompted to accept the
+  license and then restart Oxygen.
+* As new versions are released, you should be able to update the NameDropper plugin by
+  using the **Check for add-ons updates..** menu entry.
+
+.. _OxygenAddons.xml: ../res/OxygenAddons.xml
 
 Using the plugin in Oxygen
 --------------------------
