@@ -17,8 +17,31 @@ To install the current released version of the plugin as an Oxygen Add-On:
 
 .. _OxygenAddons.xml: ../res/OxygenAddons.xml
 
+Configure CSS to style NameDropper tags and attributes in Author mode (Optional)
+--------------------------------------------------------------------------------
+
+As a convenience, to allow for an easier way to review tagged names and access the
+related resources, we have created a CSS file to style the tags and attributes
+inserted by NameDropper, for use in Author mode. To configure this CSS:
+
+* Open Oxygen Preferences and select **Document Type Association**
+* Select the Document type(s) you will be working with, e.g. **EAD** or **TEI P5**,
+  and click **edit**
+* Switch to the **Author** tab and click on the **+** icon to add a new CSS.
+* Add the URL for `namedropper-oxygen.css`_ (right click and copy link location
+  to get the full URL), an optional label, and save.
+
+When you switch from **Text** mode to **Author** mode in Oxygen, you should see the
+styles take effect. For both TEI and EAD documents, name tags will be highlighted,
+icons should be displayed for VIAF, GeoNames, or DBpedia resources, and the icon or
+text immediately after the name will be a clickable link to the corresponding resource.
+For EAD documents, source names and identifiers will be listed after the name.
+
+.. _namedropper-oxygen.css: ../res/namedropper-oxygen.css
+
+
 Using the plugin in Oxygen
---------------------------
+==========================
 
 Generally, the NameDropper plugin is intended to be used in the ``Text`` display mode
 within the Oxygen editor.
