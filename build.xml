@@ -104,7 +104,8 @@
     <echo message="Running tests." />
 
     <mkdir dir="${reports.tests}"/>
-    <junit printsummary="no" haltonfailure="yes" haltonerror="yes">
+    <junit printsummary="no" haltonfailure="yes" haltonerror="yes" fork="yes">
+        <jvmarg value="-XX:-UseSplitVerifier"/>
 
       <!-- reference the path defined at the top of the file-->
       <classpath refid="project.test.class.path" />
