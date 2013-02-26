@@ -108,7 +108,7 @@ process to add an new action.
    menu and bind the keyboard shortcuts.
 4. Add a brief description of the new funtionality to the Oxygen plugin description in
    `OxygenAddons.xml <res/OxygenAddons.xml>`_ and more detailed instructions (if necessary) to the usage
-   information in the project `README <README.rst>`_.
+   information in the project `README <../README.rst>`_.
 
 
 
