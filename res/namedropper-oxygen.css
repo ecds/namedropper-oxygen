@@ -43,7 +43,7 @@ ead|*[source='viaf']:after {
   background-image:url("http://www.google.com/s2/u/0/favicons?domain=viaf.org");
 }
 ead|*[source='geonames']:after {
-  link: 'http://sws.geonames.org/' attr(authfilenumber);
+  link: 'http://sws.geonames.org/' attr(authfilenumber) '/';
   background-image:url("http://www.google.com/s2/u/0/favicons?domain=geonames.org");
 }
 ead|*[source='dbpedia']:after {
