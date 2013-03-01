@@ -44,7 +44,9 @@ public class SpotlightClient {
     /**
      * Default base url for DBpedia Spotlight web service
      */
-    public static String baseUrl = "http://spotlight.dbpedia.org/rest";
+    public static String defaultUrl = "http://spotlight.dbpedia.org/rest";
+
+    private String baseUrl;
 
     private Double confidence = null;
     private Integer support = null;
@@ -57,6 +59,13 @@ public class SpotlightClient {
     public SpotlightClient(double confidence, int support) {
         this.confidence = confidence;
         this.support = support;
+        this.baseUrl = this.defaultUrl;
+    }
+
+    public SpotlightClient(double confidence, int support, String baseUrl) {
+        this.confidence = confidence;
+        this.support = support;
+        this.baseUrl = baseUrl;
     }
 
     /**

@@ -36,6 +36,7 @@ import java.awt.GridLayout;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 // oxygen dependencies
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -114,7 +115,8 @@ public class SelectionActionSpotlight extends SelectionAction {
         // query spotlight to annotate the text and display identified resources
         double confidence = Double.parseDouble(SelectionActionSpotlight.getSpotlightConfidence());
         int support = Integer.parseInt(SelectionActionSpotlight.getSpotlightSupport());
-        SpotlightClient spot = new SpotlightClient(confidence, support);
+        String spotlightUrl = SelectionActionSpotlight.getSpotlightUrl();
+        SpotlightClient spot = new SpotlightClient(confidence, support, spotlightUrl);
         // store document offset for current selected text
         WSTextEditorPage ed = this.getCurrentPage();
         if (ed == null) { return 0; }
@@ -210,6 +212,7 @@ public class SelectionActionSpotlight extends SelectionAction {
     // option keys
     public static String SPOTLIGHT_CONFIDENCE = "NameDropper:SpotlightConfidence";
     public static String SPOTLIGHT_SUPPORT = "NameDropper:SpotlightSupport";
+    public static String SPOTLIGHT_URL = "NameDropper:SpotlightUrl";
 
     public boolean hasUserOptions() {
         return true;
@@ -230,6 +233,13 @@ public class SelectionActionSpotlight extends SelectionAction {
     public static void setSpotlightSupport(String value) {
         PluginOptions.setOption(SelectionActionSpotlight.SPOTLIGHT_SUPPORT, value);
     }
+    public static String getSpotlightUrl() {
+        return PluginOptions.getOption(SelectionActionSpotlight.SPOTLIGHT_URL,
+            SpotlightClient.defaultUrl);
+    }
+    public static void setSpotlightUrl(String value) {
+        PluginOptions.setOption(SelectionActionSpotlight.SPOTLIGHT_URL, value);
+    }
 
     // action for a dialog to show user-configurable parameters
     public Action getOptionsAction() {
@@ -243,14 +253,19 @@ public class SelectionActionSpotlight extends SelectionAction {
                 DoubleField confidence = new DoubleField(4);
                 confidence.setValue(SelectionActionSpotlight.getSpotlightConfidence());
 
+                JTextField url = new JTextField(SelectionActionSpotlight.getSpotlightUrl(),
+                    15);
+
                 JPanel optionPanel = new JPanel();
                 // for simplicity, using simple grid layout: label, input
-                java.awt.GridLayout layout = new java.awt.GridLayout(2,3);  // rows, columns
+                java.awt.GridLayout layout = new java.awt.GridLayout(3,3);  // rows, columns
                 optionPanel.setLayout(layout);
                 optionPanel.add(new JLabel("Confidence: "));
                 optionPanel.add(confidence);
                 optionPanel.add(new JLabel("Support: "));
                 optionPanel.add(support);
+                optionPanel.add(new JLabel("DBpedia Spotlight URL: "));
+                optionPanel.add(url);
                 // TODO: would be nice to add help or tips about these values
 
                 int result = JOptionPane.showConfirmDialog((java.awt.Frame)workspace.getParentFrame(),
@@ -260,6 +275,12 @@ public class SelectionActionSpotlight extends SelectionAction {
                 if (result == JOptionPane.OK_OPTION) {
                     SelectionActionSpotlight.setSpotlightConfidence(confidence.getText());
                     SelectionActionSpotlight.setSpotlightSupport(support.getText());
+                    // if url is cleared, set back to default
+                    if (url.getText().isEmpty()) {
+                        SelectionActionSpotlight.setSpotlightUrl(SpotlightClient.defaultUrl);
+                    } else {
+                        SelectionActionSpotlight.setSpotlightUrl(url.getText());
+                    }
                 } // on cancel, do nothing (don't save changes)
             }
         };

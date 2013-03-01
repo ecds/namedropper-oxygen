@@ -135,7 +135,7 @@ public class SelectionActionSpotlightTest {
         Mockito.when(mockSpotlightClient.annotate(Mockito.anyString())).thenReturn(spotlightResult);
         // use powermock to override constructor to return mock spotlight client
         PowerMockito.whenNew(SpotlightClient.class).withArguments(Mockito.anyDouble(),
-            Mockito.anyInt()).thenReturn(mockSpotlightClient);
+            Mockito.anyInt(), Mockito.anyString()).thenReturn(mockSpotlightClient);
         WSTextEditorPage mockPage = Mockito.mock(WSTextEditorPage.class);
 
         SelectionActionSpotlight mockAction = Mockito.mock(SelectionActionSpotlight.class);
@@ -145,6 +145,7 @@ public class SelectionActionSpotlightTest {
         PowerMockito.mockStatic(SelectionActionSpotlight.class);
         Mockito.when(SelectionActionSpotlight.getSpotlightConfidence()).thenReturn("0.4");
         Mockito.when(SelectionActionSpotlight.getSpotlightSupport()).thenReturn("250");
+        Mockito.when(SelectionActionSpotlight.getSpotlightUrl()).thenReturn(SpotlightClient.defaultUrl);
         // finally, call the actual method we want to test
         Mockito.when(mockAction.findAnnotations(Mockito.anyString())).thenCallRealMethod();
 
