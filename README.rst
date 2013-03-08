@@ -6,7 +6,7 @@ simplify the process of tagging names in XML and associating those names with
 authoritative identifiers (currently using `VIAF`_).  See the top-level
 `namedropper`_ repository for more information.
 
-.. image:: https://travis-ci.org/emory-libraries-disc/namedropper-oxygen.png?branch=develop
+.. image:: https://travis-ci.org/emory-libraries-disc/namedropper-oxygen.png?branch=release/0.3.0
   :alt: current build status for namedropper-oxygen
   :target: https://travis-ci.org/emory-libraries-disc/namedropper-oxygen
 
