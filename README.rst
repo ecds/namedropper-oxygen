@@ -3,7 +3,7 @@ NameDropper OxygenXML plugin
 
 This is a plugin or add-on for the `Oxygen XML editor`_  (version 14.2) to
 simplify the process of tagging names in XML and associating those names with
-authoritative identifiers (currently using `VIAF`_).  See the top-level
+authoritative identifiers (currently using `VIAF`_, `DBpedia Spotlight`_, and `GeoNames`_).  See the top-level
 `namedropper`_ repository for more information.
 
 .. image:: https://travis-ci.org/emory-libraries-disc/namedropper-oxygen.png?branch=release/0.3.0
@@ -13,6 +13,8 @@ authoritative identifiers (currently using `VIAF`_).  See the top-level
 .. _Oxygen XML editor: http://oxygenxml.com/
 .. _VIAF: http://viaf.org/
 .. _namedropper: https://github.com/emory-libraries-disc/name-dropper
+.. _DBpedia Spotlight: https://github.com/dbpedia-spotlight/dbpedia-spotlight/wiki
+.. _GeoNames: http://geonames.org/
 
 See `USAGE`_ for installation and usage instructions.
 
