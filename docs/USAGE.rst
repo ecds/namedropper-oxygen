@@ -111,3 +111,5 @@ Known Limitations
   if you annotate text and switch to a different document, the annotations will not match
   the text.  Current recommended workflow is to annotate and then process the results before
   switching to a different document.
+* While DBpedia Spotlight lookup works on passages of text, VIAF and GeoNames lookup only work on single terms. These terms can be multiple words (example, "Battle of Gettysburg"). 
+* DBpedia Spotlight lookup depends on context. Results vary based on how much text is selected when starting lookup.
