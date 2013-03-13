@@ -2,7 +2,7 @@
 <project basedir="." default="default" name="NameDropper">
   <description>NameDropper extension for oXygen XML.</description>
 
-  <property name="version" value="0.3.0-dev"/>
+  <property name="version" value="0.3.0"/>
   <!-- properties -->
   <property name="src" location="src" />
   <property name="lib" location="lib" />

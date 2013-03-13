@@ -7,29 +7,30 @@ Plugin installation via Oxygen Add-Ons
 To install the current released version of the plugin as an Oxygen Add-On:
 
 * Open Oxygen Preferences and select **Add-Ons**
-* Add and save a new add-on site URL: `OxygenAddons.xml`_
-  (Right click and select "copy link location" or "copy link address" to get the full url)
+* Click **Add** and save a new add-on site URL: `OxygenAddons.xml`_
+  (Right click and select "copy link location" or "copy link address" to get the full url).
+* Click **OK** and exit Preferences. 
 * Under the Oxygen Help menu, select **Manage add-ons...**
-* Select **NameDropper** and then click install.  You should be prompted to accept the
-  license and then restart Oxygen.
+* Select **NameDropper** and then click install.  You should be prompted to **accept the Apache 2
+  license** and then to restart Oxygen.
 * As new versions are released, you should be able to update the NameDropper plugin by
-  using the **Check for add-ons updates..** menu entry.
+  using the **Check for add-ons updates..** menu entry under Help.
 
 .. _OxygenAddons.xml: ../res/OxygenAddons.xml?raw=true
 
 Configure CSS to style NameDropper tags and attributes in Author mode (Optional)
 --------------------------------------------------------------------------------
 
-As a convenience, to allow for an easier way to review tagged names and access the
+To allow for an easier way to review tagged names and access the
 related resources, we have created a CSS file to style the tags and attributes
-inserted by NameDropper, for use in Author mode. To configure this CSS:
+inserted by NameDropper, for use in Oxygen's Author mode. To configure this CSS:
 
-* Open Oxygen Preferences and select **Document Type Association**
+* Open **Oxygen Preferences** and select **Document Type Association**
 * Select the Document type(s) you will be working with, e.g. **EAD** or **TEI P5**,
   and click **edit**
 * Switch to the **Author** tab and click on the **+** icon to add a new CSS.
 * Add the URL for `namedropper-oxygen.css`_ (right click and copy link location
-  to get the full URL), an optional label, and save.
+  to get the full URL), an optional label (for example "NameDropper CSS), and click **OK** until out of Preferences.
 
 When you switch from **Text** mode to **Author** mode in Oxygen, you should see the
 styles take effect. For both TEI and EAD documents, name tags will be highlighted,
@@ -47,9 +48,9 @@ within the Oxygen editor.
 
 To use the plugin once you have it installed:
 
-* The first time you use the plugin, or if you need to switch between documents, use the
+* The first time you use the plugin on a particular document, or if you need to switch between documents, use the
   NameDropper menu located in the main Oxygen menu bar to choose the type of document
-  you will be editing (**TEI** or **EAD** so that the correct tags will be inserted).
+  you will be editing (**TEI** or **EAD**) so that the correct tags will be inserted.
 
 * Generally, you will select text in your document and invoke one of the available
   actions either by using the top-level **NameDropper** menu or by using the appropriate
@@ -100,9 +101,8 @@ Known Limitations
     with tagged names may result in nested name tags
 
 * The DBpedia Spotlight annotation API request is fairly slow, and the plugin has not
-  yet been modified to make this request in the background or even display a spinning icon,
-  so Oxygen may appear to hang for a while when making an annotation request.
-* VIAF and GeoNames ids are not always available for DBpedia persons and places respectively.
+  yet been modified to make this request in the background. Consequently, Oxygen may appear to hang for a while when making an annotation request.
+* VIAF and GeoNames ids are not always available for DBpedia persons and places, respectively.
 * The plugin uses Oxygen's built-in schema to determine if tags are allowed at the selected
   location; an invalid document may need to be corrected before using NameDropper actions.
 * The selected document type (TEI or EAD) is not auto-detected, nor is it stored per
@@ -111,3 +111,5 @@ Known Limitations
   if you annotate text and switch to a different document, the annotations will not match
   the text.  Current recommended workflow is to annotate and then process the results before
   switching to a different document.
+* While DBpedia Spotlight lookup works on passages of text, VIAF and GeoNames lookup only work on single terms. These terms can be multiple words (example, "Battle of Gettysburg"). 
+* DBpedia Spotlight lookup depends on context. Results vary based on how much text is selected when starting lookup.

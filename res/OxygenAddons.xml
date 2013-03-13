@@ -9,9 +9,8 @@
     <!-- <xi:include href="OxygenExtension-NameDropper.xml" /> -->
 
     <xt:extension id="edu.emory.library.namedropper.plugins.NameDropper">
-        <!-- internal location for emory testers -->
-        <xt:location href="https://wilson.library.emory.edu/jenkins/job/namedropper-oxygen/55/artifact/dist/NameDropper-0.3.0-dev.jar"/>
-        <xt:version>0.3.0009</xt:version>
+        <xt:location href="https://s3.amazonaws.com/emorydisc/NameDropper-0.3.0.jar"/>
+        <xt:version>0.3.0</xt:version>
         <xt:oxy_version>14.2+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Emory University Library</xt:author>
