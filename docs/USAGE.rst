@@ -11,8 +11,8 @@ To install the current released version of the plugin as an Oxygen Add-On:
   (Right click and select "copy link location" or "copy link address" to get the full url).
 * Click **OK** and exit Preferences. 
 * Under the Oxygen Help menu, select **Manage add-ons...**
-* Select **NameDropper** and then click install.  You should be prompted to accept the
-  license and then to restart Oxygen.
+* Select **NameDropper** and then click install.  You should be prompted to **accept the Apache 2
+  license** and then to restart Oxygen.
 * As new versions are released, you should be able to update the NameDropper plugin by
   using the **Check for add-ons updates..** menu entry under Help.
 
