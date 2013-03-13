@@ -8,10 +8,10 @@
     <!-- NOTE: if we ever want to split out, or list multiple plugins, look at using an include for each plugin -->
     <!-- <xi:include href="OxygenExtension-NameDropper.xml" /> -->
 
-    <xt:extension id="edu.emory.library.oxygen_plugin.NameDropper" >
-        <xt:location href="https://github.com/downloads/emory-libraries-disc/name-dropper/NameDropper-0.2.0.jar"/>
-        <xt:version>0.2.0</xt:version>
-        <xt:oxy_version>14.0+</xt:oxy_version>
+    <xt:extension id="edu.emory.library.namedropper.plugins.NameDropper">
+        <xt:location href="https://s3.amazonaws.com/emorydisc/NameDropper-0.3.0.jar"/>
+        <xt:version>0.3.0</xt:version>
+        <xt:oxy_version>14.2+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Emory University Library</xt:author>
         <xt:name>NameDropper</xt:name>
@@ -21,15 +21,22 @@
             </head>
             <body>
                 <div>
-                    <p>This plugin allows you to highlight a name and look it up in VIAF (Virtual International Authority File) in order to automatically add name tags and VIAF identifiers.</p>
-                    <p>After installing the plugin it can be used by highlighting a name and then opening the editor's contextual menu and selecting <b>Plugins -> NameDropper</b> or using the keyboard
-                    shortcut of <b>Control + Shift + N</b>.</p>
-                    <p>To choose between EAD and TEI formated tags use the NameDropper menu located in the main menu bar.</p>
+                    <p>This plugin allows you to highlight a name and look it up in
+                        <a href="http://viaf.org/">VIAF (Virtual International Authority File)</a> or
+                        <a href="http://geonames.org">GeoNames.org</a> in order to automatically add name tags and identifiers.  It also supports highlighting a passage of text
+                        to be annotated with <a href="http://spotlight.dbpedia.org/">DBpedia Spotlight</a> to identify and select names to be tagged.</p>
+                    <p>After installing the plugin it can be used by highlighting a name or
+                        section of text (depending on the mode) and then using the
+                        <b>NameDropper</b> menu in the editor's top-level menu and selecting
+                        <b>Lookup Names</b> or by using the keyboard shortcut of
+                        <b>Control + Shift + N</b>, or the individual shortcut for the individual
+                        actions as listed in the menu.</p>
+                    <p>To choose between EAD and TEI formatted tags use the NameDropper menu located in the main menu bar.</p>
                 </div>
             </body>
         </html>
         </xt:description>
-        <xt:license><xi:include href="../../APACHE-LICENSE-2.0.txt" parse="text"/></xt:license>
+        <xt:license><xi:include href="../APACHE-LICENSE-2.0.txt" parse="text"/></xt:license>
     </xt:extension>
 </xt:extensions>
 

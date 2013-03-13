@@ -2,17 +2,24 @@
 <project basedir="." default="default" name="NameDropper">
   <description>NameDropper extension for oXygen XML.</description>
 
-  <property name="version" value="0.2.0rc"/>
+  <property name="version" value="0.3.0"/>
   <!-- properties -->
   <property name="src" location="src" />
   <property name="lib" location="lib" />
   <property name="build" location="build" />
+  <property name="reports.tests" location="${build}/test-results/" />
+
   <property name="dist" location="dist" />
+  <property name="dist.docs" location="${dist}/docs/" />
   <property name="res" location="res" />
+  <property environment="env"/>
 
   <!-- setup classpath for compilation -->
   <path id="project.class.path">
-    <fileset dir="${lib}/" includes="**/*.jar" />
+    <fileset dir="${lib}/" includes="**/*.jar">
+      <exclude name="mockito-all-1.9.5.jar" />
+      <exclude name="xercesImpl-2.8.0.jar" /> <!-- version installed by maven causes a conflict -->
+    </fileset>
   </path>
 
   <!-- the classpath to be used for the JUnit tests -->
@@ -70,14 +77,23 @@
         <exclude name="junit/" />
         <exclude name="junit*/" />
         <exclude name="nblibraries*" />
+
+        <!-- don't duplicate oxygen files (these items included in oxygen SDK)  -->
+        <exclude name="oxygen.jar" />
+        <exclude name="api.zip" />
+        <exclude name="workspaceaccess.jar"/>
+        <exclude name="jide-*.jar"/>
+
+        <!-- don't include test dependencies -->
+        <exclude name="powermock-*.jar" />
+        <exclude name="mockito-*.jar" />
       </fileset>
     </copy>
 
     <copy file="plugin.xml" todir="${dist}/${ant.project.name}" />
-
-    <buildnumber/>
     <jar jarfile="${dist}/${ant.project.name}-${version}.jar">
-      <fileset dir="${dist}/${ant.project.name}" />
+      <!-- plugin must include the wrapping NameDropper directory -->
+      <fileset dir="${dist}" includes="${ant.project.name}/**" />
     </jar>
   </target>
 
@@ -86,15 +102,21 @@
   -->
   <target name="test" depends="compile,dist" description="Run the unit tests">
     <echo message="Running tests." />
-    <junit printsummary="yes" haltonfailure="yes" haltonerror="yes">
+
+    <mkdir dir="${reports.tests}"/>
+    <junit printsummary="no" haltonfailure="yes" haltonerror="yes" fork="yes">
+        <jvmarg value="-XX:-UseSplitVerifier"/>
 
       <!-- reference the path defined at the top of the file-->
       <classpath refid="project.test.class.path" />
 
-      <!-- run the tests and output results in plaintext as well as xml -->
-      <test name="edu.emory.library.oxygen_plugin.tests.NameDropperTest" haltonfailure="no" outfile="result">
-        <formatter type="plain" usefile="false"/>
-      </test>
+      <formatter type="plain" usefile="false"/>
+      <formatter type="xml"/>
+
+      <batchtest fork="yes" haltonfailure="no" todir="${reports.tests}">
+        <fileset dir="${src}" includes="**/tests/*Test*.java" />
+      </batchtest>
+
     </junit>
 
   </target>
@@ -108,5 +130,39 @@
     <delete dir="${dist}" />
   </target>
 
-  <target name="default" depends="dist,test" description="Compile, Build Distribution and Test the NameDropper Oxygen plugin" />
+  <!-- convenience task to install built version to a local oxygen instance -->
+  <target description="Copy built plugin to local Oxygen installation" name="install" depends="default">
+      <fail unless="env.OXYGEN_HOME" message="Install requires OXYGEN_HOME environment variable."/>
+      <copy todir="${env.OXYGEN_HOME}/plugins/${ant.project.name}">
+        <fileset dir="${dist}/${ant.project.name}"/>
+      </copy>
+  </target>
+
+  <!-- convenience task to install built version to a local oxygen instance -->
+  <target description="Copy built plugin to local Oxygen installation without running tests or javadocs." name="install-no-doc" depends="dist">
+      <fail unless="env.OXYGEN_HOME" message="Install requires OXYGEN_HOME environment variable."/>
+      <copy todir="${env.OXYGEN_HOME}/plugins/${ant.project.name}">
+        <fileset dir="${dist}/${ant.project.name}"/>
+      </copy>
+  </target>
+
+  <!-- convenience task to uninstall built version copied to a local oxygen instance -->
+  <target description="Remove built plugin from local Oxygen installation" name="uninstall">
+      <fail unless="env.OXYGEN_HOME" message="Uninstall requires OXYGEN_HOME environment variable."/>
+      <delete dir="${env.OXYGEN_HOME}/plugins/${ant.project.name}"/>
+  </target>
+
+  <!-- generate javadocs -->
+  <target name="doc">
+      <mkdir dir="${dist.docs}"/>
+      <javadoc charset="UTF-8" destdir="${dist.docs}" failonerror="true">
+            <classpath refid="project.class.path" />
+            <fileset dir="${src}">
+                <filename name="**/*.java"/>
+            </fileset>
+        </javadoc>
+  </target>
+
+  <target name="default" depends="dist,test,doc"
+      description="Compile, Build Distribution and Test the NameDropper Oxygen plugin" />
 </project>

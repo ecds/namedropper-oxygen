@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:void="http://rdfs.org/ns/void#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:viaf="http://viaf.org/ontology/1.1/#" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:skosxl="http://www.w3.org/2008/05/skos-xl#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:rdaGr2="http://rdvocab.info/ElementsGr2/" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:rdaEnt="http://rdvocab.info/uri/schema/FRBRentitiesRDA/" xml:base="http://viaf.org/">
+<foaf:Document rdf:about="http://viaf.org/viaf/39398205/">
+<void:inDataset rdf:resource="http://viaf.org/viaf/data"/>
+<foaf:primaryTopic rdf:resource="http://viaf.org/viaf/39398205"/>
+</foaf:Document>
+<rdf:Description rdf:about="http://viaf.org/viaf/39398205">
+<!--The primary entity (formerly a viaf:NameAuthorityCluster)-->
+<rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+<rdf:type rdf:resource="http://rdvocab.info/uri/schema/FRBRentitiesRDA/Person"/>
+<foaf:name>Longley, Michael, 1939-....</foaf:name>
+<foaf:name>Longley, Michael</foaf:name>
+<rdaGr2:dateOfBirth>1939-07-27</rdaGr2:dateOfBirth>
+<owl:sameAs rdf:resource="http://data.bnf.fr/ark:/12148/cb12058813z#foaf:Person"/>
+<owl:sameAs rdf:resource="http://dbpedia.org/resource/Michael_Longley"/>
+<owl:sameAs rdf:resource="http://d-nb.info/gnd/119471914"/>
+<owl:sameAs rdf:resource="http://www.idref.fr/02883416X/id"/>
+</rdf:Description>
+<!--Controlled and alternate headings from various authority files-->
+<skos:Concept rdf:about="http://viaf.org/viaf/sourceID/NLA%7C000035312227#skos:Concept">
+<skos:inScheme rdf:resource="http://viaf.org/authorityScheme/NLA"/>
+<skos:prefLabel>Longley, Michael, 1939-....</skos:prefLabel>
+<foaf:focus rdf:resource="http://viaf.org/viaf/39398205"/>
+</skos:Concept>
+<skos:Concept rdf:about="http://viaf.org/viaf/sourceID/NUKAT%7Cn++98070495#skos:Concept">
+<skos:inScheme rdf:resource="http://viaf.org/authorityScheme/NUKAT"/>
+<skos:prefLabel>Longley, Michael, 1939-....</skos:prefLabel>
+<foaf:focus rdf:resource="http://viaf.org/viaf/39398205"/>
+</skos:Concept>
+<skos:Concept rdf:about="http://viaf.org/viaf/sourceID/NKC%7Cxx0015164#skos:Concept">
+<skos:inScheme rdf:resource="http://viaf.org/authorityScheme/NKC"/>
+<skos:prefLabel>Longley, Michael, 1939-....</skos:prefLabel>
+<foaf:focus rdf:resource="http://viaf.org/viaf/39398205"/>
+</skos:Concept>
+<skos:Concept rdf:about="http://viaf.org/viaf/sourceID/BNF%7C12058813#skos:Concept">
+<skos:inScheme rdf:resource="http://viaf.org/authorityScheme/BNF"/>
+<skos:prefLabel>Longley, Michael, 1939-....</skos:prefLabel>
+<skos:exactMatch rdf:resource="http://data.bnf.fr/ark:/12148/cb12058813z"/>
+<rdfs:seeAlso rdf:resource="http://catalogue.bnf.fr/ark:/12148/cb12058813z"/>
+<foaf:focus rdf:resource="http://viaf.org/viaf/39398205"/>
+</skos:Concept>
+<skos:Concept rdf:about="http://viaf.org/viaf/sourceID/LC%7Cn++50044363#skos:Concept">
+<skos:inScheme rdf:resource="http://viaf.org/authorityScheme/LC"/>
+<skos:prefLabel>Longley, Michael, 1939-....</skos:prefLabel>
+<skos:exactMatch rdf:resource="http://id.loc.gov/authorities/names/n50044363"/>
+<foaf:focus rdf:resource="http://viaf.org/viaf/39398205"/>
+</skos:Concept>
+<skos:Concept rdf:about="http://viaf.org/viaf/sourceID/WKP%7CMichael_Longley#skos:Concept">
+<skos:inScheme rdf:resource="http://viaf.org/authorityScheme/WKP"/>
+<skos:prefLabel>Longley, Michael</skos:prefLabel>
+<foaf:focus rdf:resource="http://viaf.org/viaf/39398205"/>
+</skos:Concept>
+<skos:Concept rdf:about="http://viaf.org/viaf/sourceID/DNB%7C119471914#skos:Concept">
+<skos:inScheme rdf:resource="http://viaf.org/authorityScheme/DNB"/>
+<skos:prefLabel>Longley, Michael, 1939-....</skos:prefLabel>
+<foaf:focus rdf:resource="http://viaf.org/viaf/39398205"/>
+</skos:Concept>
+<skos:Concept rdf:about="http://viaf.org/viaf/sourceID/NTA%7C068605005#skos:Concept">
+<skos:inScheme rdf:resource="http://viaf.org/authorityScheme/NTA"/>
+<skos:prefLabel>Longley, Michael, 1939-....</skos:prefLabel>
+<foaf:focus rdf:resource="http://viaf.org/viaf/39398205"/>
+</skos:Concept>
+<skos:Concept rdf:about="http://viaf.org/viaf/sourceID/SUDOC%7C02883416X#skos:Concept">
+<skos:inScheme rdf:resource="http://viaf.org/authorityScheme/SUDOC"/>
+<skos:prefLabel>Longley, Michael, 1939-....</skos:prefLabel>
+<foaf:focus rdf:resource="http://viaf.org/viaf/39398205"/>
+</skos:Concept>
+<!--Deprecated identifiers-->
+<rdf:Description rdf:about="http://viaf.org/viaf/39398205/#skos:Concept">
+<rdfs:comment>This concept identifier is deprecated. See the foaf:focus link for the primary entity.</rdfs:comment>
+<foaf:focus rdf:resource="http://viaf.org/viaf/39398205"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://viaf.org/viaf/39398205/#foaf:Person">
+<rdfs:comment>This primary entity identifier is deprecated. See the owl:sameAs link for the new identifier.</rdfs:comment>
+<owl:sameAs rdf:resource="http://viaf.org/viaf/39398205"/>
+</rdf:Description>
+</rdf:RDF>

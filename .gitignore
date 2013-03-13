@@ -43,3 +43,27 @@ build.number
 namedropper-py/test-results/
 namedropper-py/coverage.xml
 namedropper-py/nosetests.xml
+
+# java deps downloaded with maven but not checked in to source control
+lib/log4j-*.jar
+lib/junit-*.jar
+lib/xom-*.jar
+lib/json-simple-*.jar
+lib/jide-oss-*.jar
+lib/junit-*.jar
+lib/mockito-all-*.jar
+lib/powermock-*.jar
+lib/xalan-*.jar
+lib/xercesImpl-*.jar
+lib/xml-apis-*.jar
+lib/objenesis-*.jar
+lib/javassist-*.jar
+lib/commons-*.jar
+lib/httpclient-*.jar
+lib/httpcore-*.jar
+lib/httpmime-*.jar
+lib/aduna-*.jar
+lib/sesame-*.jar
+lib/slf4j-*.jar
+lib/geonames-*.jar
+lib/jdom-*.jar
