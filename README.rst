@@ -6,13 +6,13 @@ simplify the process of tagging names in XML and associating those names with
 authoritative identifiers (currently using `VIAF`_, `DBpedia Spotlight`_, and `GeoNames`_).  See the top-level
 `namedropper`_ repository for more information.
 
-.. image:: https://travis-ci.org/emory-libraries-disc/namedropper-oxygen.png?branch=master
+.. image:: https://travis-ci.org/emory-libraries-ecds/namedropper-oxygen.svg?branch=master
   :alt: current build status for namedropper-oxygen
-  :target: https://travis-ci.org/emory-libraries-disc/namedropper-oxygen
+  :target: https://travis-ci.org/emory-libraries-ecds/namedropper-oxygen
 
 .. _Oxygen XML editor: http://oxygenxml.com/
 .. _VIAF: http://viaf.org/
-.. _namedropper: https://github.com/emory-libraries-disc/name-dropper
+.. _namedropper: https://github.com/emory-libraries-ecds/name-dropper
 .. _DBpedia Spotlight: https://github.com/dbpedia-spotlight/dbpedia-spotlight/wiki
 .. _GeoNames: http://geonames.org/
 
